@@ -14,11 +14,15 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
+    "axios": "^1.9.0",
+    "event-book-baw": "^1.0.0",
     "gsap": "^3.13.0",
+    "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.5.3",
-    "split-type": "^0.3.4"
+    "split-type": "^0.3.4",
+    "zod": "^3.25.41"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

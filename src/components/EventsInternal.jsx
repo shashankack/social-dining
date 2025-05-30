@@ -5,33 +5,47 @@ import {
   Stack,
   Typography,
   Button,
+  CircularProgress,
 } from "@mui/material";
-
-import dot from "../assets/images/dot.svg";
-import { eventsData } from "../assets/data";
-
 import { useParams } from "react-router-dom";
-import EventRegister from "./Forms/EventRegister";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
+import dot from "../assets/images/dot.svg";
+import EventRegister from "./Forms/EventRegister";
+import { fetchEventById } from "../services/eventService"; // ✅ use your service
 
 const Events = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [open, setOpen] = useState(false);
-
-  const { slug } = useParams();
-  const data = eventsData.find((e) => e.redirect === `/events/${slug}`);
+  const { id } = useParams();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const containerRef = useRef(null);
   const textGroupRef = useRef([]);
   const imageRef = useRef(null);
 
   useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const event = await fetchEventById(id);
+        setData(event);
+      } catch (err) {
+        console.error("Failed to fetch event:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvent();
+  }, [id]);
+
+  useEffect(() => {
+    if (!data) return;
+
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // Fade in + stagger text
     tl.fromTo(
       textGroupRef.current,
       { y: 30, opacity: 0 },
@@ -43,7 +57,6 @@ const Events = () => {
       }
     );
 
-    // Image slide from top
     tl.fromTo(
       imageRef.current,
       { xPercent: 400, opacity: 0 },
@@ -55,21 +68,31 @@ const Events = () => {
       gsap.killTweensOf(textGroupRef.current);
       gsap.killTweensOf(imageRef.current);
     };
-  }, [slug]);
+  }, [data]);
 
   const formatTime = (timeStr) => {
     if (!timeStr) return "";
-
     let hour = parseInt(timeStr, 10);
     const minute = "00";
-    if (hour === 24 || hour === 0) hour = 0;
     const suffix = hour >= 12 ? "pm" : "am";
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-
     return `${displayHour}:${minute} ${suffix}`;
   };
 
-  if (!data) return <div>Loading... </div>;
+  if (loading) {
+    return (
+      <Box
+        height="70vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CircularProgress sx={{ color: "#B55725" }} />
+      </Box>
+    );
+  }
+
+  if (!data) return <div>Event not found.</div>;
 
   return (
     <Stack
@@ -120,7 +143,7 @@ const Events = () => {
           fontWeight={700}
           fontSize={isMobile ? "4vw" : "1.4vw"}
         >
-          Rs {data.registrationFee}/-
+          Rs {data.price}/-
         </Typography>
 
         <Stack
@@ -136,7 +159,7 @@ const Events = () => {
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
           >
-            Date: {data.date}
+            Date: {new Date(data.date).toLocaleDateString()}
           </Typography>
           <Typography
             ref={(el) => (textGroupRef.current[4] = el)}
@@ -144,7 +167,7 @@ const Events = () => {
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
           >
-            Venue: {data.venue}
+            Venue: {data.location}
           </Typography>
           <Typography
             ref={(el) => (textGroupRef.current[5] = el)}
@@ -160,7 +183,7 @@ const Events = () => {
           ref={(el) => (textGroupRef.current[6] = el)}
           onClick={() => setOpen(true)}
           variant="contained"
-          fullWidth={isMobile ? true : false}
+          fullWidth={isMobile}
           sx={{
             backgroundColor: "#B55725",
             color: "white",
@@ -188,7 +211,7 @@ const Events = () => {
       >
         <Box
           component="img"
-          src={data.thumbnail}
+          src={data.thumbnail || "https://placehold.co/600x400"}
           sx={{
             width: "100%",
             height: "100%",
