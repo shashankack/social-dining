@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -10,6 +10,7 @@ import {
   Grow,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import api from "../../utils/api";
 
 const style = {
   position: "absolute",
@@ -35,6 +36,93 @@ const textFieldStyle = {
 };
 
 const EventRegister = ({ open, handleClose, event }) => {
+  const [form, setForm] = useState({
+    Name: "",
+    Contact: "",
+    Email: "",
+    Instagram: "",
+    Locality: "",
+    Questions: "",
+  });
+
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/user/me", { withCredentials: true });
+        const user = res.data.user || res.data.safeUserLogin || {};
+        setUserId(user.id || null);
+        setForm((prev) => ({
+          ...prev,
+          Name: user.name || "",
+          Contact: user.phone || "",
+          Email: user.email || "",
+        }));
+      } catch (err) {
+        console.error("Failed to fetch user info:", err);
+        setUserId(null);
+      }
+    };
+
+    fetchUser();
+    setSuccessMsg("");
+    setErrorMsg("");
+  }, [open]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    if (!userId) {
+      setErrorMsg("User not authenticated");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    try {
+      const payload = {
+        eventId: event.id,
+        userId,
+      };
+      const res = await api.post("/booking/protected/book", payload, {
+        withCredentials: true,
+      });
+      setSuccessMsg(res.data.message || "Booked successfully!");
+    } catch (error) {
+      setErrorMsg(
+        error.response?.data?.message ||
+          "Failed to book the event. Please try again."
+      );
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        setSuccessMsg("");
+        setErrorMsg("");
+        handleClose();
+      }, 2000);
+    }
+  };
+
+  const labels = [
+    "Name",
+    "Contact",
+    "Email",
+    "Instagram",
+    "Locality",
+    "Any questions to ask?",
+  ];
+
   return (
     <Modal
       open={open}
@@ -66,31 +154,42 @@ const EventRegister = ({ open, handleClose, event }) => {
             </Stack>
 
             <Stack spacing={2} mt={2}>
-              {[
-                "Name",
-                "Contact",
-                "Email",
-                "Instagram",
-                "Locality",
-                "Any questions to ask?",
-              ].map((label) => (
-                <TextField
-                  key={label}
-                  label={label}
-                  variant="standard"
-                  fullWidth
-                  InputProps={{ disableUnderline: false }}
-                  InputLabelProps={{ style: { color: "#fff" } }}
-                  sx={textFieldStyle}
-                />
-              ))}
+              {labels.map((label) => {
+                let key = label.replace(/\s+/g, "");
+                if (label === "Any questions to ask?") key = "Questions";
+
+                return (
+                  <TextField
+                    key={label}
+                    label={label}
+                    variant="standard"
+                    fullWidth
+                    name={key}
+                    value={form[key] || ""}
+                    onChange={handleChange}
+                    InputProps={{ disableUnderline: false }}
+                    InputLabelProps={{ style: { color: "#fff" } }}
+                    sx={textFieldStyle}
+                  />
+                );
+              })}
+
+              {errorMsg && (
+                <Typography color="error" fontSize="0.9rem">
+                  {errorMsg}
+                </Typography>
+              )}
+              {successMsg && (
+                <Typography color="success.main" fontSize="0.9rem">
+                  {successMsg}
+                </Typography>
+              )}
 
               <Button
                 variant="contained"
                 fullWidth
-                onClick={() => {
-                  console.log("Redirecting to payment...");
-                }}
+                onClick={handleSubmit}
+                disabled={loading}
                 sx={{
                   mt: 2,
                   bgcolor: "#B55725",
@@ -99,7 +198,7 @@ const EventRegister = ({ open, handleClose, event }) => {
                   "&:hover": { bgcolor: "#B55725" },
                 }}
               >
-                Submit & Pay ₹{event.registrationFee}
+                {loading ? "Booking..." : `Submit & Pay ₹${event.price}/-`}
               </Button>
             </Stack>
           </Box>

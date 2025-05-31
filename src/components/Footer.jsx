@@ -17,13 +17,14 @@ const Footer = () => {
 
   return (
     <Stack
-      height="40vh"
+      height={isMobile ? "auto" : "40vh"}
       width="100%"
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      px={isMobile ? 4 : 14}
+      px={isMobile ? 2 : 14}
       position="relative"
+      py={isMobile ? 4 : 0}
     >
       <Box width={isMobile ? "40vw" : "20vw"}>
         <Box
@@ -71,12 +72,12 @@ const Footer = () => {
       <Box
         sx={{
           position: "absolute",
-          top: -40,
-          right: 20,
+          top: isMobile ? 0 : -40,
+          right: isMobile ? 0 : 20,
           backgroundColor: "#B55725",
           borderRadius: "50%",
-          width: isMobile ? "10vw" : " 3vw",
-          height: isMobile ? "10vw" : "3vw",
+          width: isMobile ? "7vw" : " 3vw",
+          height: isMobile ? "7vw" : "3vw",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

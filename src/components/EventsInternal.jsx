@@ -12,7 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import dot from "../assets/images/dot.svg";
 import EventRegister from "./Forms/EventRegister";
-import { fetchEventById } from "../services/eventService"; // ✅ use your service
+import { fetchEventById } from "../services/eventService";
 
 const Events = () => {
   const theme = useTheme();
@@ -31,6 +31,8 @@ const Events = () => {
     const loadEvent = async () => {
       try {
         const event = await fetchEventById(id);
+        console.log("ID:", id);
+        console.log("Fetched event:", event);
         setData(event);
       } catch (err) {
         console.error("Failed to fetch event:", err);
@@ -94,10 +96,25 @@ const Events = () => {
 
   if (!data) return <div>Event not found.</div>;
 
+  const eventDate = new Date(data.date);
+
+  const formattedDate = eventDate.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const formattedTime = eventDate.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
   return (
     <Stack
       ref={containerRef}
       my={isMobile ? 0 : 10}
+      minHeight="100vh"
       flexDirection={isMobile ? "column-reverse" : "row"}
       justifyContent={isMobile ? "center" : "space-between"}
       alignItems="start"
@@ -115,6 +132,7 @@ const Events = () => {
           variant="h3"
           fontSize={isMobile ? "8vw" : "4vw"}
           fontWeight={700}
+          textTransform="capitalize"
         >
           {data.title}
           <span>
@@ -159,23 +177,26 @@ const Events = () => {
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
           >
-            Date: {new Date(data.date).toLocaleDateString()}
+            Date: {formattedDate}
           </Typography>
-          <Typography
-            ref={(el) => (textGroupRef.current[4] = el)}
-            color="#B55725"
-            fontWeight={600}
-            fontSize={isMobile ? "4vw" : "1.1vw"}
-          >
-            Venue: {data.location}
-          </Typography>
+
           <Typography
             ref={(el) => (textGroupRef.current[5] = el)}
             color="#B55725"
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
           >
-            Time: {formatTime(data.startTime)} - {formatTime(data.endTime)}
+            Time: {formattedTime}
+          </Typography>
+
+          <Typography
+            ref={(el) => (textGroupRef.current[4] = el)}
+            color="#B55725"
+            fontWeight={600}
+            fontSize={isMobile ? "4vw" : "1.1vw"}
+            textTransform={"capitalize"}
+          >
+            Venue: {data.location}
           </Typography>
         </Stack>
 
@@ -203,10 +224,11 @@ const Events = () => {
       </Stack>
 
       <Box
+        border={1}
         ref={imageRef}
         mt={isMobile ? 6 : 0}
-        width={isMobile ? "100%" : "40vw"}
-        height={isMobile ? "50vh" : "auto"}
+        width={isMobile ? "100%" : 800}
+        height={isMobile ? "50vh" : 500}
         overflow="hidden"
       >
         <Box
@@ -215,7 +237,7 @@ const Events = () => {
           sx={{
             width: "100%",
             height: "100%",
-            objectFit: "contain",
+            objectFit: "cover",
           }}
         />
       </Box>

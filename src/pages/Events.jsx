@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { fetchEvents } from "../services/eventService";
-import { jwtDecode } from "jwt-decode";
+import { getCurrentUser } from "../services/authService";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,23 +62,16 @@ const Events = () => {
     }
   }, [loading, isMobile]);
 
-  const isUserLoggedIn = () => {
-    const match = document.cookie.match(/token=([^;]+)/);
-    if (!match) return false;
-
+  const handleEventClick = async (eventId) => {
     try {
-      const decoded = jwtDecode(match[1]);
-      return !!decoded?.id;
-    } catch {
-      return false;
-    }
-  };
-
-  const handleEventClick = (eventId) => {
-    if (!isUserLoggedIn()) {
-      navigate("/login", { state: { from: `/events/${eventId}` } });
-    } else {
+      const user = await getCurrentUser();
+      if (!user || !user.id) {
+        navigate("/signup", { state: { from: `/events/${eventId}` } });
+        return;
+      }
       navigate(`/events/${eventId}`);
+    } catch (error) {
+      navigate("/login", { state: { from: `/events/${eventId}` } });
     }
   };
 
