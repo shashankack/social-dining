@@ -90,7 +90,7 @@ const Events = () => {
   }
 
   return (
-    <Box px={isMobile ? 0 : 2} py={8}>
+    <Box px={isMobile ? 0 : 2} py={8} minHeight="100vh">
       <Typography
         textAlign="center"
         fontSize="3vw"
