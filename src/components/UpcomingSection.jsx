@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -9,16 +9,10 @@ import {
 } from "@mui/material";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { fetchEvents } from "../services/eventService";
-
-import event1 from "../assets/images/event1.png";
-import event2 from "../assets/images/event2.png";
-
 import dot from "../assets/images/dot.svg";
 import { getCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-
-const images = [event1, event2];
+import { useEventsCache } from "../context/EventsCacheContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,8 +21,7 @@ const UpcomingSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
 
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
-
+  const { events, hasLoaded } = useEventsCache();
   const containerRef = useRef(null);
   const imageRefs = useRef([]);
 
@@ -46,7 +39,6 @@ const UpcomingSection = () => {
         window.scrollTo(0, 0);
         return;
       }
-      // Logged in, so navigate to the event
       navigate(`/events/${eventId}`);
       window.scrollTo(0, 0);
     } catch (err) {
@@ -56,24 +48,41 @@ const UpcomingSection = () => {
     }
   };
 
+  // Filter only future events
+  const now = new Date();
+  const upcomingEvents = events.filter((e) => new Date(e.date) > now);
+
   useEffect(() => {
-    fetchEvents()
-      .then((data) => {
-        setUpcomingEvents(data.allEvents);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  }, []);
+    if (!hasLoaded || upcomingEvents.length === 0) return;
+
+    imageRefs.current.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, scale: 0.9 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 90%",
+          },
+        }
+      );
+    });
+  }, [hasLoaded, upcomingEvents]);
+
+  // Wait for cache to load
+  if (!hasLoaded || upcomingEvents.length === 0) {
+    return <Box sx={{ minHeight: "100vh", backgroundColor: "#000" }} />;
+  }
 
   return (
     <Box
       overflow="hidden"
       height="100vh"
-      sx={{
-        position: "relative",
-        bgcolor: "#000",
-      }}
+      sx={{ position: "relative", bgcolor: "#000" }}
       display="flex"
       alignItems={isMobile ? "start" : "center"}
       justifyContent="start"
@@ -92,41 +101,33 @@ const UpcomingSection = () => {
         <span>
           <img
             src={dot}
-            style={{
-              width: "6px",
-              height: "6px",
-              marginLeft: "4px",
-            }}
+            style={{ width: "6px", height: "6px", marginLeft: "4px" }}
+            alt="dot"
           />
         </span>
       </Typography>
+
       {isMobile ? (
         <Grid
-          width="100%"
           container
-          height="100%"
           spacing={2}
+          height="100%"
+          width="100%"
           alignItems="center"
           justifyContent="end"
         >
-          {upcomingEvents.map((event, index) => (
-            <Grid size={6} key={index}>
+          {upcomingEvents.map((event) => (
+            <Grid item xs={6} key={event.id}>
               <Box
                 component="img"
                 src={event.thumbnail}
-                sx={{
-                  objectFit: "contain",
-                }}
-                onClick={() => {
-                  handleEventClick(event.id);
-                  console.log("Event clicked:", event.eventId);
-                }}
+                sx={{ objectFit: "contain", width: "100%" }}
+                onClick={() => handleEventClick(event.id)}
               />
             </Grid>
           ))}
         </Grid>
       ) : (
-        // Desktop view
         <Box
           ref={containerRef}
           display="flex"
@@ -148,12 +149,17 @@ const UpcomingSection = () => {
           >
             {upcomingEvents.map((event, index) => (
               <Box
+                key={event.id}
+                ref={addToRefs}
+                component="img"
+                src={event.thumbnail}
+                onClick={() => handleEventClick(event.id)}
                 onMouseEnter={() => {
                   gsap.to(imageRefs.current[index], {
                     scale: 1.05,
                     duration: 0.3,
                     ease: "back.out(1.7)",
-                    zIndex: 5,
+                    onStart: () => (imageRefs.current[index].style.zIndex = 5),
                   });
                 }}
                 onMouseLeave={() => {
@@ -161,14 +167,10 @@ const UpcomingSection = () => {
                     scale: 1,
                     duration: 0.4,
                     ease: "back.out(1.7)",
-                    zIndex: 1,
+                    onComplete: () =>
+                      (imageRefs.current[index].style.zIndex = 1),
                   });
                 }}
-                key={index}
-                ref={addToRefs}
-                component="img"
-                src={event.thumbnail}
-                onClick={() => handleEventClick(event.eventId)}
                 sx={{
                   cursor: "pointer",
                   width: 350,
@@ -177,13 +179,14 @@ const UpcomingSection = () => {
                   position: "absolute",
                   left: index === 0 ? "23%" : "47%",
                   transform: index === 0 ? "rotate(-10deg)" : "rotate(7deg)",
-                  zIndex: index === 0 ? 1 : 1,
+                  zIndex: 1,
                 }}
               />
             ))}
           </Box>
         </Box>
       )}
+
       <Link
         mt={5}
         mr={5}
@@ -197,11 +200,8 @@ const UpcomingSection = () => {
         <span>
           <img
             src={dot}
-            style={{
-              width: "3px",
-              height: "3px",
-              marginLeft: "2px",
-            }}
+            style={{ width: "3px", height: "3px", marginLeft: "2px" }}
+            alt="dot"
           />
         </span>
       </Link>

@@ -1,17 +1,11 @@
-import {
-  Box,
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { fetchEvents } from "../services/eventService";
 import { getCurrentUser } from "../services/authService";
+import { useEventsCache } from "../context/EventsCacheContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,47 +14,64 @@ const Events = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
 
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { events, setEvents, hasLoaded, setHasLoaded } = useEventsCache();
+
   const rowRefs = useRef([]);
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const { allEvents = [] } = await fetchEvents();
-        setEvents(allEvents);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      } finally {
-        setLoading(false);
+    const initEvents = async () => {
+      const cached = sessionStorage.getItem("events");
+
+      if (cached) {
+        setEvents(JSON.parse(cached));
+        setHasLoaded(true);
+        return;
+      }
+
+      if (!hasLoaded) {
+        try {
+          const { allEvents = [] } = await fetchEvents();
+          setEvents(allEvents);
+          setHasLoaded(true);
+          sessionStorage.setItem("events", JSON.stringify(allEvents));
+          console.log(events);
+        } catch (err) {
+          console.error("Failed to fetch events:", err);
+        }
       }
     };
-    loadEvents();
-  }, []);
+
+    initEvents();
+  }, [hasLoaded, setEvents, setHasLoaded]);
 
   useEffect(() => {
-    if (!loading) {
-      rowRefs.current.forEach((el) => {
-        if (el) {
-          gsap.fromTo(
-            el,
-            { scale: 0.6, opacity: 0 },
-            {
-              scale: 1,
-              opacity: 1,
-              duration: 0.4,
-              ease: "back",
-              scrollTrigger: {
-                trigger: el,
-                start: isMobile ? "top 80%" : "top 70%",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-        }
-      });
-    }
-  }, [loading, isMobile]);
+    const triggers = [];
+
+    rowRefs.current.forEach((el) => {
+      if (el) {
+        const animation = gsap.fromTo(
+          el,
+          { scale: 0.6, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.4,
+            ease: "back",
+            scrollTrigger: {
+              trigger: el,
+              start: isMobile ? "top 80%" : "top 70%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+        triggers.push(animation.scrollTrigger);
+      }
+    });
+
+    return () => {
+      triggers.forEach((t) => t && t.kill());
+    };
+  }, [events, isMobile]);
 
   const handleEventClick = async (eventId) => {
     try {
@@ -75,18 +86,8 @@ const Events = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box
-        height="80vh"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        sx={{ bgcolor: "#000" }}
-      >
-        <CircularProgress sx={{ color: "#B55725" }} />
-      </Box>
-    );
+  if (events.length === 0) {
+    return <Box sx={{ minHeight: "100vh", backgroundColor: "#000" }} />;
   }
 
   return (
@@ -108,12 +109,13 @@ const Events = () => {
       <Grid container mt={isMobile ? 0 : 4} spacing={4} p={4}>
         {events.map((event, index) => (
           <Grid
-            item
             key={event.id}
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+              lg: 3,
+            }}
             ref={(el) => (rowRefs.current[index] = el)}
           >
             <Box

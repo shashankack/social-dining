@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useEffect } from "react";
 import aboutVideo from "../assets/videos/about.mp4";
 import { Stack, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import gsap from "gsap";
 import dot from "../assets/images/dot.svg";
 import ImageSlider from "./ImageSlider";
+import ScrollTrigger from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 import slide1 from "../assets/images/about_slide/slide_1.png";
 import slide2 from "../assets/images/about_slide/slide_2.png";
@@ -24,76 +26,86 @@ const AboutSection = () => {
   const slides = [slide1, slide2, slide3, slide4, slide5, slide6];
 
   useEffect(() => {
-    const container = containerRef.current;
-    const follower = followerRef.current;
+    const onLoad = () => ScrollTrigger.refresh(true);
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
 
-    if (!container || !follower) return;
-
-    const followerWidth = follower.offsetWidth;
-    const followerHeight = follower.offsetHeight;
-
+  // Vertical images slide
+  useLayoutEffect(() => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const totalHeight = slider.scrollHeight / 2;
+    let tween;
 
-    gsap.to(slider, {
-      y: `-=${totalHeight}`,
-      duration: 20,
-      ease: "linear",
-      repeat: -1,
-      modifiers: {
-        y: gsap.utils.unitize((y) => parseFloat(y) % totalHeight),
-      },
+    const buildTween = () => {
+      const total = slider.scrollHeight / 2;
+      if (!total) return;
+
+      tween?.kill();
+      gsap.set(slider, { y: 0 });
+      tween = gsap.to(slider, {
+        y: -total,
+        duration: 20,
+        ease: "none",
+        repeat: -1,
+        modifiers: { y: gsap.utils.unitize((v) => parseFloat(v) % -total) },
+      });
+    };
+
+    buildTween();
+
+    const imgs = slider.querySelectorAll("img");
+    imgs.forEach((img) => {
+      if (!img.complete) img.addEventListener("load", buildTween);
     });
 
-    const handleMouseEnter = () => {
-      gsap.to(follower, {
-        scale: 1,
-        duration: 0.4,
-        ease: "power2.out",
-        display: "block",
-      });
-    };
-
-    const handleMouseMove = (e) => {
-      const rect = container.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const clampedX = Math.min(
-        Math.max(mouseX - followerWidth / 2, 0),
-        rect.width - followerWidth
-      );
-      const clampedY = Math.min(
-        Math.max(mouseY - followerHeight / 2, 0),
-        rect.height - followerHeight
-      );
-
-      gsap.to(follower, {
-        x: clampedX,
-        y: clampedY,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(follower, {
-        scale: 0,
-        duration: 0.4,
-        ease: "power2.in",
-      });
-    };
-
-    container.addEventListener("mouseenter", handleMouseEnter);
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
+    const ro = new ResizeObserver(buildTween);
+    ro.observe(slider);
 
     return () => {
-      container.removeEventListener("mouseenter", handleMouseEnter);
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
+      tween?.kill();
+      ro.disconnect();
+      imgs.forEach((img) => img.removeEventListener("load", buildTween));
+    };
+  }, []);
+
+  // Mouse follower effect
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const follower = followerRef.current;
+    if (!container || !follower) return;
+
+    const { offsetWidth: fw, offsetHeight: fh } = follower;
+
+    const enter = () =>
+      gsap.to(follower, { scale: 1, duration: 0.4, ease: "power2.out" });
+
+    const move = (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = Math.min(
+        Math.max(e.clientX - rect.left - fw / 2, 0),
+        rect.width - fw
+      );
+      const y = Math.min(
+        Math.max(e.clientY - rect.top - fh / 2, 0),
+        rect.height - fh
+      );
+
+      gsap.to(follower, { x, y, duration: 0.3, ease: "power2.out" });
+    };
+
+    const leave = () =>
+      gsap.to(follower, { scale: 0, duration: 0.4, ease: "power2.in" });
+
+    container.addEventListener("mouseenter", enter);
+    container.addEventListener("mousemove", move);
+    container.addEventListener("mouseleave", leave);
+
+    return () => {
+      container.removeEventListener("mouseenter", enter);
+      container.removeEventListener("mousemove", move);
+      container.removeEventListener("mouseleave", leave);
     };
   }, []);
 
@@ -231,7 +243,7 @@ const AboutSection = () => {
               <div data-animate>
                 <Typography
                   variant="h5"
-                  fontSize={"1.4vw"}
+                  fontSize={28}
                   fontWeight={300}
                   mt={3}
                   lineHeight={1.1}

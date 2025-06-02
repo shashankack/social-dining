@@ -1,5 +1,5 @@
 import { useLocation, Link as RouterLink } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Box,
   Link,
@@ -9,10 +9,10 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import SplitType from "split-type";
 
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import SplitType from "split-type";
 
 import logo from "../assets/images/logo_no_dot.png";
 import desktopVideo from "../assets/videos/hero_desktop.mp4";
@@ -143,46 +143,6 @@ const HeroSection = () => {
       document.body.style.overflow = "auto";
     };
   }, [hasPlayed]);
-
-  // Animated text gradient
-  useEffect(() => {
-    if (!textRef.current) return;
-
-    // Delay to ensure DOM is painted
-    const timeout = setTimeout(() => {
-      const split = new SplitType(textRef.current, {
-        types: "words",
-        tagName: "span",
-      });
-
-      gsap.fromTo(
-        split.words,
-        {
-          y: 30,
-          opacity: 0,
-          color: "#fff",
-        },
-        {
-          y: 0,
-          opacity: 1,
-          color: "#B55725",
-          ease: "power3.out",
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: textRef.current,
-            start: "top 80%",
-            end: "bottom 60%",
-            scrub: true,
-          },
-        }
-      );
-    }, 100);
-
-    return () => {
-      split?.revert();
-      clearTimeout(timeout);
-    };
-  }, []);
 
   return (
     <>
@@ -345,7 +305,13 @@ const HeroSection = () => {
             },
           }}
         >
-          <Link underline="none" variant="h3" fontWeight={700} href="#book">
+          <Link
+            underline="none"
+            variant="h4"
+            fontWeight={600}
+            href="/events"
+            textTransform="uppercase"
+          >
             Book Now
           </Link>
         </Box>
@@ -360,19 +326,18 @@ const HeroSection = () => {
           mx="auto"
         >
           <Box
-            ref={isMobile || isTablet ? null : textRef}
+            ref={textRef}
             component="div"
             sx={{
               fontSize: isMobile ? 16 : "2.3vw",
               lineHeight: "100.6%",
-              textTransform: isMobile ? "none" : "uppercase",
               fontWeight: 400,
               textAlign: "center",
-              color: "#fff",
+              color: "#B55725",
               width: "100%",
             }}
           >
-            The tiny dot in our logo isn’t just a design choice—it’s our ethos.
+            The tiny dot in our logo isn’t just a design choice it’s our ethos.
             It represents the close-knit, meaningful circles we create. Small in
             size, rich in depth. That’s what makes Social Dining unique.
           </Box>

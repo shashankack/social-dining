@@ -6,6 +6,8 @@ import {
   useTheme,
   Grid,
   useMediaQuery,
+  Snackbar,
+  Alert,
   CircularProgress,
 } from "@mui/material";
 import dot from "../assets/images/dot.svg";
@@ -65,6 +67,11 @@ const ClubSection = () => {
   const [selectedClub, setSelectedClub] = useState(null);
   const [clubList, setClubList] = useState([]);
   const [loading, setLoading] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const imageRefs = useRef([]);
   const textRefs = useRef([]);
@@ -135,7 +142,11 @@ const ClubSection = () => {
     try {
       await getCurrentUser();
       await registerForClub(club.id);
-      alert(`You have successfully joined ${club.title}`);
+      setSnackbar({
+        open: true,
+        message: `You have successfully joined ${club.title}`,
+        severity: "success",
+      });
     } catch (error) {
       navigate("/login", {
         state: {
@@ -270,7 +281,7 @@ const ClubSection = () => {
           alignItems="center"
         >
           {clubList.map((club, index) => (
-            <Grid item xs={6} key={index}>
+            <Grid size={6} key={index}>
               <Box
                 position="relative"
                 height={450}
@@ -393,6 +404,35 @@ const ClubSection = () => {
         </Grid>
       </Box>
       <ClubRegister open={open} handleClose={handleClose} club={selectedClub} />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          iconMapping={{
+            success: (
+              <img
+                src={dot}
+                alt="dot"
+                style={{ width: 10, height: 10, marginRight: 8 }}
+              />
+            ),
+          }}
+          sx={{
+            width: "100%",
+            backgroundColor: "#000", // background
+            color: "#fff", // text
+            border: "1px solid #B55725",
+            fontWeight: 600,
+          }}
+          icon={false} // optional: remove icon
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

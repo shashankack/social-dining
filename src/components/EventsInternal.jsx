@@ -8,7 +8,6 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
-  CircularProgress,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -18,47 +17,48 @@ import EventRegister from "./Forms/EventRegister";
 import { fetchEventById, fetchEvents } from "../services/eventService";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const EventsInternal = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const navigate = useNavigate();
+
   const [otherEvents, setOtherEvents] = useState([]);
   const [open, setOpen] = useState(false);
   const { id } = useParams();
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const containerRef = useRef(null);
   const textGroupRef = useRef([]);
   const imageRef = useRef(null);
 
   useEffect(() => {
-    const otherEvents = async () => {
+    // Fetch "other events"
+    const loadOtherEvents = async () => {
       try {
         const events = await fetchEvents();
         const filtered = events.allEvents.filter((e) => e.id !== id);
         setOtherEvents(filtered);
-        console.log("Other Events:", filtered);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
     };
 
+    // Fetch the main event by its ID
     const loadEvent = async () => {
       try {
         const event = await fetchEventById(id);
         setData(event);
       } catch (err) {
         console.error("Failed to fetch event:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
     loadEvent();
-    otherEvents();
+    loadOtherEvents();
   }, [id]);
 
   useEffect(() => {
@@ -95,29 +95,16 @@ const EventsInternal = () => {
     };
   }, [data]);
 
-  if (loading) {
-    return (
-      <Box
-        height="100vh"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <CircularProgress sx={{ color: "#B55725" }} />
-      </Box>
-    );
+  if (data === null) {
+    return <Box sx={{ minHeight: "100vh", backgroundColor: "#000" }} />;
   }
 
-  if (!data) return <div>Event not found.</div>;
-
   const eventDate = new Date(data.date);
-
   const formattedDate = eventDate.toLocaleDateString(undefined, {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
   const formattedTime = eventDate.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
@@ -212,6 +199,7 @@ const EventsInternal = () => {
                 objectFit: "contain",
                 marginLeft: isMobile ? "1vw" : "0.2vw",
               }}
+              alt="dot"
             />
           </span>
         </Typography>
@@ -238,7 +226,7 @@ const EventsInternal = () => {
           direction={isMobile ? "column" : "row"}
           gap={isMobile ? 1 : 4}
           width="100%"
-          justifyContent={isMobile ? "space-between" : ""}
+          justifyContent={isMobile ? "space-between" : undefined}
         >
           <Typography
             ref={(el) => (textGroupRef.current[3] = el)}
@@ -263,7 +251,7 @@ const EventsInternal = () => {
             color="#B55725"
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
-            textTransform={"capitalize"}
+            textTransform="capitalize"
           >
             Venue: {data.location}
           </Typography>
@@ -307,6 +295,7 @@ const EventsInternal = () => {
             height: "100%",
             objectFit: "cover",
           }}
+          alt="Event Thumbnail"
         />
       </Box>
 
