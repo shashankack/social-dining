@@ -114,6 +114,7 @@ const HeroSection = () => {
       duration: 0.8,
       ease: "expo.out",
       stagger: 0.2,
+      delay: 1,
     });
 
     tl.to(introTextContainerRef.current, {
