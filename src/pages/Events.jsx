@@ -93,7 +93,7 @@ const Events = () => {
     <Box px={isMobile ? 0 : 2} py={8} minHeight="100vh">
       <Typography
         textAlign="center"
-        fontSize="3vw"
+        fontSize={isMobile ? "6vw" : "3vw"}
         textTransform="uppercase"
         sx={{
           textDecoration: "underline",
@@ -105,7 +105,7 @@ const Events = () => {
         Events
       </Typography>
 
-      <Grid container mt={4} spacing={4} p={4}>
+      <Grid container mt={isMobile ? 0 : 4} spacing={4} p={4}>
         {events.map((event, index) => (
           <Grid
             item
@@ -128,9 +128,7 @@ const Events = () => {
             >
               <Box
                 component="img"
-                src={`https://placehold.co/600x400?text=${encodeURIComponent(
-                  event.title
-                )}`}
+                src={event.thumbnail}
                 alt={event.title}
                 sx={{
                   width: "100%",

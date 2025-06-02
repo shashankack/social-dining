@@ -15,7 +15,7 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "axios": "^1.9.0",
-    "event-book-baw": "^1.0.5",
+    "event-book-baw": "^1.0.6",
     "gsap": "^3.13.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",

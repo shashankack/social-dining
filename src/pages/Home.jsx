@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
 import UpcomingSection from "../components/UpcomingSection";
-import CulbSection from "../components/CulbSection";
+import ClubSection from "../components/ClubSection";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
@@ -17,7 +17,6 @@ const Home = () => {
   const upcomingRef = useRef(null);
   const clubRef = useRef(null);
 
-  // GSAP Scroll animation
   useEffect(() => {
     if (aboutRef.current && upcomingRef.current) {
       const tl = gsap.timeline({
@@ -40,48 +39,44 @@ const Home = () => {
     return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
   }, []);
 
-  // Scroll-to logic
   useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const target = params.get("scrollTo");
+    const params = new URLSearchParams(location.search);
+    const target = params.get("scrollTo");
 
-  const refsMap = {
-    about: aboutRef,
-    clubs: clubRef,
-  };
+    const refsMap = {
+      about: aboutRef,
+      clubs: clubRef,
+    };
 
-  let attempts = 0;
-  const maxAttempts = 15;
+    let attempts = 0;
+    const maxAttempts = 15;
 
-  const scrollToRef = (ref) => {
-    if (ref?.current) {
-      ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
-      return true;
-    }
-    return false;
-  };
+    const scrollToRef = (ref) => {
+      if (ref?.current) {
+        ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        return true;
+      }
+      return false;
+    };
 
-  const tryScroll = () => {
-    if (!target) return;
-    const key = target.toLowerCase();
-    const ref = refsMap[key];
-    if (!ref) return;
+    const tryScroll = () => {
+      if (!target) return;
+      const key = target.toLowerCase();
+      const ref = refsMap[key];
+      if (!ref) return;
 
-    if (scrollToRef(ref)) {
-      // ✅ Refresh ScrollTrigger after scroll completes
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 800);
-    } else if (attempts < maxAttempts) {
-      attempts++;
-      setTimeout(tryScroll, 600);
-    }
-  };
+      if (scrollToRef(ref)) {
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 800);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(tryScroll, 600);
+      }
+    };
 
-  // 🚨 THIS WAS MISSING:
-  setTimeout(tryScroll, 600);
-}, [location.search]);
-
+    setTimeout(tryScroll, 600);
+  }, [location.search]);
 
   return (
     <Box>
@@ -98,7 +93,7 @@ const Home = () => {
         </div>
       </div>
       <div ref={clubRef}>
-        <CulbSection />
+        <ClubSection />
       </div>
     </Box>
   );

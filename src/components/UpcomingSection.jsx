@@ -9,21 +9,28 @@ import {
 } from "@mui/material";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { fetchEvents } from "../services/eventService";
 
 import event1 from "../assets/images/event1.png";
 import event2 from "../assets/images/event2.png";
 
 import dot from "../assets/images/dot.svg";
+import { getCurrentUser } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 const images = [event1, event2];
+
+gsap.registerPlugin(ScrollTrigger);
 
 const UpcomingSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
   const containerRef = useRef(null);
   const imageRefs = useRef([]);
-
-  imageRefs.current = [];
 
   const addToRefs = (el) => {
     if (el && !imageRefs.current.includes(el)) {
@@ -31,39 +38,32 @@ const UpcomingSection = () => {
     }
   };
 
+  const handleEventClick = async (eventId) => {
+    try {
+      const user = await getCurrentUser();
+      if (!user || !user.id) {
+        navigate("/login", { state: { from: `/events/${eventId}` } });
+        window.scrollTo(0, 0);
+        return;
+      }
+      // Logged in, so navigate to the event
+      navigate(`/events/${eventId}`);
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error("Error checking user login:", err);
+      navigate("/login", { state: { from: `/events/${eventId}` } });
+      window.scrollTo(0, 0);
+    }
+  };
+
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.set(imageRefs.current, {
-        opacity: 1,
-        yPercent: 120,
+    fetchEvents()
+      .then((data) => {
+        setUpcomingEvents(data.allEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
       });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 60%",
-          toggleActions: "play none none reverse",
-        },
-      });
-
-      tl.to(imageRefs.current[1], {
-        opacity: 1,
-        yPercent: 0,
-        duration: 2,
-        ease: "elastic.out(.8, .6)",
-      }).to(
-        imageRefs.current[0],
-        {
-          opacity: 1,
-          yPercent: 0,
-          duration: 2,
-          ease: "elastic.out(.8, .6)",
-        },
-        "-=1.6"
-      );
-    }, containerRef);
-
-    return () => ctx.revert();
   }, []);
 
   return (
@@ -103,20 +103,23 @@ const UpcomingSection = () => {
       {isMobile ? (
         <Grid
           width="100%"
-          mt={2}
           container
           height="100%"
           spacing={2}
           alignItems="center"
           justifyContent="end"
         >
-          {images.map((image, index) => (
+          {upcomingEvents.map((event, index) => (
             <Grid size={6} key={index}>
               <Box
                 component="img"
-                src={image}
+                src={event.thumbnail}
                 sx={{
                   objectFit: "contain",
+                }}
+                onClick={() => {
+                  handleEventClick(event.id);
+                  console.log("Event clicked:", event.eventId);
                 }}
               />
             </Grid>
@@ -143,7 +146,7 @@ const UpcomingSection = () => {
             position="relative"
             height={500}
           >
-            {images.map((src, index) => (
+            {upcomingEvents.map((event, index) => (
               <Box
                 onMouseEnter={() => {
                   gsap.to(imageRefs.current[index], {
@@ -164,7 +167,8 @@ const UpcomingSection = () => {
                 key={index}
                 ref={addToRefs}
                 component="img"
-                src={src}
+                src={event.thumbnail}
+                onClick={() => handleEventClick(event.eventId)}
                 sx={{
                   cursor: "pointer",
                   width: 350,

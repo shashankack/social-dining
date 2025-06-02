@@ -1,15 +1,27 @@
 import { Box, Paper } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import Auth from "../components/Forms/Auth"; // ✅ import your AuthForm component
+import Auth from "../components/Forms/Auth";
+import { registerForClub } from "../services/clubService";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  const handleLoginSuccess = (user) => {
-    console.log("Logged in:", user);
-    navigate(from); // ✅ redirect to intended page
+  const handleLoginSuccess = async (user) => {
+    const clubId = location.state?.clubId;
+
+    if (clubId) {
+      try {
+        await registerForClub(clubId);
+        alert("You’ve successfully joined the club!");
+      } catch (error) {
+        console.error("Error joining club after login:", error);
+        alert("Login was successful, but joining the club failed.");
+      }
+    }
+
+    navigate(from);
   };
 
   return (

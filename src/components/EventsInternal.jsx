@@ -4,6 +4,9 @@ import {
   useTheme,
   Stack,
   Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Button,
   CircularProgress,
 } from "@mui/material";
@@ -12,12 +15,16 @@ import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import dot from "../assets/images/dot.svg";
 import EventRegister from "./Forms/EventRegister";
-import { fetchEventById } from "../services/eventService";
+import { fetchEventById, fetchEvents } from "../services/eventService";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useNavigate } from "react-router-dom";
 
-const Events = () => {
+const EventsInternal = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const navigate = useNavigate();
+  const [otherEvents, setOtherEvents] = useState([]);
   const [open, setOpen] = useState(false);
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -28,11 +35,20 @@ const Events = () => {
   const imageRef = useRef(null);
 
   useEffect(() => {
+    const otherEvents = async () => {
+      try {
+        const events = await fetchEvents();
+        const filtered = events.allEvents.filter((e) => e.id !== id);
+        setOtherEvents(filtered);
+        console.log("Other Events:", filtered);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
     const loadEvent = async () => {
       try {
         const event = await fetchEventById(id);
-        console.log("ID:", id);
-        console.log("Fetched event:", event);
         setData(event);
       } catch (err) {
         console.error("Failed to fetch event:", err);
@@ -40,7 +56,9 @@ const Events = () => {
         setLoading(false);
       }
     };
+
     loadEvent();
+    otherEvents();
   }, [id]);
 
   useEffect(() => {
@@ -54,15 +72,20 @@ const Events = () => {
       {
         y: 0,
         opacity: 1,
-        stagger: 0.11,
-        duration: 0.8,
+        stagger: 0.1,
+        delay: 0.6,
       }
     );
 
     tl.fromTo(
       imageRef.current,
-      { xPercent: 400, opacity: 0 },
-      { xPercent: 0, opacity: 1, duration: 1, ease: "back.out(.6)" },
+      { yPercent: -400, opacity: 0 },
+      {
+        yPercent: 0,
+        opacity: 1,
+        duration: 1,
+        ease: "back.out(.8)",
+      },
       "-=1.7"
     );
 
@@ -72,19 +95,10 @@ const Events = () => {
     };
   }, [data]);
 
-  const formatTime = (timeStr) => {
-    if (!timeStr) return "";
-    let hour = parseInt(timeStr, 10);
-    const minute = "00";
-    const suffix = hour >= 12 ? "pm" : "am";
-    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-    return `${displayHour}:${minute} ${suffix}`;
-  };
-
   if (loading) {
     return (
       <Box
-        height="70vh"
+        height="100vh"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -113,14 +127,68 @@ const Events = () => {
   return (
     <Stack
       ref={containerRef}
-      my={isMobile ? 0 : 10}
+      my={isMobile ? 0 : 4}
       minHeight="100vh"
-      flexDirection={isMobile ? "column-reverse" : "row"}
-      justifyContent={isMobile ? "center" : "space-between"}
+      flexDirection="column-reverse"
+      justifyContent="center"
       alignItems="start"
       padding={isMobile ? 2 : 4}
+      gap={isMobile ? 2 : 4}
     >
+      <Accordion
+        sx={{
+          width: "100%",
+          mt: 4,
+          bgcolor: "#000",
+          color: "#fff",
+          border: "4px solid #B55725",
+          boxShadow: "none",
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{ color: "#B55725" }} />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography fontSize={isMobile ? "5vw" : "1.5vw"} fontWeight={600}>
+            Other Events
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack gap={2}>
+            {otherEvents.length === 0 ? (
+              <Typography>No other events found.</Typography>
+            ) : (
+              otherEvents.map((event) => (
+                <Box
+                  key={event.id}
+                  onClick={() => navigate(`/events/${event.id}`)}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: "#111",
+                    border: "1px solid #B55725",
+                    "&:hover": {
+                      bgcolor: "#1a1a1a",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  <Typography fontWeight={700} color="#fff">
+                    {event.title}
+                  </Typography>
+                  <Typography fontSize="0.9rem" color="#B55725">
+                    {event.location}
+                  </Typography>
+                </Box>
+              ))
+            )}
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
+
       <Stack
+        width="100%"
         direction="column"
         justifyContent="start"
         alignItems="start"
@@ -142,6 +210,7 @@ const Events = () => {
                 width: isMobile ? "1.6vw" : ".6vw",
                 height: isMobile ? "1.6vw" : ".6vw",
                 objectFit: "contain",
+                marginLeft: isMobile ? "1vw" : "0.2vw",
               }}
             />
           </span>
@@ -181,7 +250,7 @@ const Events = () => {
           </Typography>
 
           <Typography
-            ref={(el) => (textGroupRef.current[5] = el)}
+            ref={(el) => (textGroupRef.current[4] = el)}
             color="#B55725"
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
@@ -190,7 +259,7 @@ const Events = () => {
           </Typography>
 
           <Typography
-            ref={(el) => (textGroupRef.current[4] = el)}
+            ref={(el) => (textGroupRef.current[5] = el)}
             color="#B55725"
             fontWeight={600}
             fontSize={isMobile ? "4vw" : "1.1vw"}
@@ -204,7 +273,7 @@ const Events = () => {
           ref={(el) => (textGroupRef.current[6] = el)}
           onClick={() => setOpen(true)}
           variant="contained"
-          fullWidth={isMobile}
+          fullWidth
           sx={{
             backgroundColor: "#B55725",
             color: "white",
@@ -213,7 +282,7 @@ const Events = () => {
             fontSize: isMobile ? "4vw" : "1.2vw",
             padding: isMobile ? "1vw 2vw" : "0.5vw 2vw",
             borderRadius: "5px",
-            transition: "all 0.3s ease",
+            transition: "background-color 0.3s ease",
             "&:hover": {
               backgroundColor: "#B55725",
             },
@@ -224,14 +293,13 @@ const Events = () => {
       </Stack>
 
       <Box
-        border={1}
-        ref={imageRef}
         mt={isMobile ? 6 : 0}
-        width={isMobile ? "100%" : 800}
+        width="100%"
         height={isMobile ? "50vh" : 500}
         overflow="hidden"
       >
         <Box
+          ref={imageRef}
           component="img"
           src={data.thumbnail || "https://placehold.co/600x400"}
           sx={{
@@ -251,4 +319,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default EventsInternal;

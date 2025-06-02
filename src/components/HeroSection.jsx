@@ -147,36 +147,40 @@ const HeroSection = () => {
   useEffect(() => {
     if (!textRef.current) return;
 
-    const typeSplit = new SplitType(textRef.current, {
-      types: "words",
-      tagName: "span",
-    });
+    // Delay to ensure DOM is painted
+    const timeout = setTimeout(() => {
+      const split = new SplitType(textRef.current, {
+        types: "words",
+        tagName: "span",
+      });
 
-    const words = textRef.current.querySelectorAll(".word");
-
-    gsap.fromTo(
-      words,
-      {
-        y: 30,
-        opacity: 0,
-        color: "#fff",
-      },
-      {
-        y: 0,
-        opacity: 1,
-        color: "#B55725",
-        ease: "power3.out",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "top 80%",
-          end: "bottom 60%",
-          scrub: true,
+      gsap.fromTo(
+        split.words,
+        {
+          y: 30,
+          opacity: 0,
+          color: "#fff",
         },
-      }
-    );
+        {
+          y: 0,
+          opacity: 1,
+          color: "#B55725",
+          ease: "power3.out",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: textRef.current,
+            start: "top 80%",
+            end: "bottom 60%",
+            scrub: true,
+          },
+        }
+      );
+    }, 100);
 
-    return () => typeSplit.revert();
+    return () => {
+      split?.revert();
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
@@ -331,19 +335,23 @@ const HeroSection = () => {
           width="100%"
           mx="auto"
         >
-          <Typography
+          <Box
             ref={isMobile || isTablet ? null : textRef}
             component="div"
-            lineHeight={"100.6%"}
-            fontSize={isMobile ? 16 : "2.3vw"}
-            textTransform={isMobile ? "" : "uppercase"}
-            fontWeight={400}
-            textAlign="center"
+            sx={{
+              fontSize: isMobile ? 16 : "2.3vw",
+              lineHeight: "100.6%",
+              textTransform: isMobile ? "none" : "uppercase",
+              fontWeight: 400,
+              textAlign: "center",
+              color: "#fff",
+              width: "100%",
+            }}
           >
-            The tiny dot in our logo isn’t just a design choice it’s our ethos.
+            The tiny dot in our logo isn’t just a design choice—it’s our ethos.
             It represents the close-knit, meaningful circles we create. Small in
             size, rich in depth. That’s what makes Social Dining unique.
-          </Typography>
+          </Box>
         </Box>
       </Box>
     </>

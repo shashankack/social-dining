@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Modal,
   Box,
@@ -10,8 +9,6 @@ import {
   Grow,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
-import { bookingEvent } from "event-book-baw";
 
 const style = {
   position: "absolute",
