@@ -252,20 +252,43 @@ const HeroSection = () => {
         <Stack mt={2} sx={{ borderLeft: 5, borderColor: "#B55725" }}>
           {navItems.map((item) => (
             <Box key={item.path} sx={{ fontSize: 28, px: 2, py: 0.5 }}>
-              <Link
-                component={RouterLink}
-                to={item.path}
-                underline="none"
-                sx={{
-                  color: currentPath === item.path ? "#B55725" : "white",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    color: "#B55725",
-                  },
-                }}
-              >
-                {item.label}
-              </Link>
+              {item.label === "Events" ? (
+                <Link
+                  underline="none"
+                  sx={{
+                    color:
+                      location.pathname === "/events" ? "#B55725" : "white",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      color: "#B55725",
+                      cursor: "pointer",
+                    },
+                  }}
+                  onClick={() => {
+                    window.location.href = "/events";
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <Link
+                  component={RouterLink}
+                  to={item.path}
+                  underline="none"
+                  sx={{
+                    color:
+                      location.pathname + location.search === item.path
+                        ? "#B55725"
+                        : "white",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      color: "#B55725",
+                    },
+                  }}
+                >
+                  {item.label}
+                </Link>
+              )}
             </Box>
           ))}
         </Stack>

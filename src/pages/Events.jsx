@@ -69,7 +69,7 @@ const Events = () => {
         navigate("/signup", { state: { from: `/events/${eventId}` } });
         return;
       }
-      navigate(`/events/${eventId}`);
+      window.location.href = `/events/${eventId}`;
     } catch (error) {
       navigate("/login", { state: { from: `/events/${eventId}` } });
     }
