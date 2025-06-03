@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userSignIn, createUserSchema } from "event-book-baw";
-import { signIn, signUp } from "../../services/authService";
+import { signIn, signUp, getCurrentUser } from "../../services/authService";
 
 const orange = "#B55725";
 
@@ -28,6 +28,8 @@ const textFieldSx = {
   "& .Mui-focused": { color: orange },
   "& label.Mui-focused": { color: orange },
 };
+
+// ...imports remain unchanged
 
 const AuthForm = ({ onSuccess }) => {
   const [mode, setMode] = useState("signin");
@@ -51,18 +53,36 @@ const AuthForm = ({ onSuccess }) => {
     try {
       if (mode === "signin") {
         userSignIn.parse(form);
-        const res = await signIn(form.email, form.password);
-        onSuccess(res.safeUserLogin);
+        const loginRes = await signIn(form.email, form.password);
+        console.log("Login Response ✅:", loginRes);
+
+        const user = await getCurrentUser();
+        console.log("User Me ✅:", user);
+
+        localStorage.setItem("authToken", "COOKIE_SESSION");
+        onSuccess(user);
       } else {
         createUserSchema.parse(form);
-        const res = await signUp(form);
-        onSuccess(res.user);
+        const registerRes = await signUp(form);
+        console.log("Register Response ✅:", registerRes);
+
+        const user = await getCurrentUser();
+        console.log("User Me ✅:", user);
+
+        localStorage.setItem("authToken", "COOKIE_SESSION");
+        onSuccess(user);
       }
     } catch (err) {
+      console.error("AUTH ERROR ❌", err);
+
       if (err.name === "ZodError") {
         setError(err.issues[0]?.message || "Invalid input");
+      } else if (err?.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (typeof err === "string") {
+        setError(err);
       } else {
-        setError(err?.response?.data?.message || "Something went wrong");
+        setError("Something went wrong");
       }
     } finally {
       setLoading(false);
