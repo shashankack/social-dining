@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,6 +13,7 @@ import dot from "../assets/images/dot.svg";
 import { getCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useEventsCache } from "../context/EventsCacheContext";
+import { fetchEvents } from "../services/eventService";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,8 +21,9 @@ const UpcomingSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
+  const { events, hasLoaded, setEvents, setHasLoaded } = useEventsCache();
+  const [ready, setReady] = useState(false);
 
-  const { events, hasLoaded } = useEventsCache();
   const containerRef = useRef(null);
   const imageRefs = useRef([]);
 
@@ -41,40 +43,55 @@ const UpcomingSection = () => {
       }
       navigate(`/events/${eventId}`);
       window.scrollTo(0, 0);
-    } catch (err) {
-      console.error("Error checking user login:", err);
+    } catch {
       navigate("/login", { state: { from: `/events/${eventId}` } });
       window.scrollTo(0, 0);
     }
   };
 
-  // Filter only future events
-  const now = new Date();
-  const upcomingEvents = events.filter((e) => new Date(e.date) > now);
-
+  // Load from sessionStorage or fetch if needed
   useEffect(() => {
-    if (!hasLoaded || upcomingEvents.length === 0) return;
+    const loadData = async () => {
+      const cached = sessionStorage.getItem("events");
 
-    imageRefs.current.forEach((el) => {
-      gsap.fromTo(
-        el,
-        { opacity: 0, scale: 0.9 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 90%",
-          },
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            setEvents(parsed);
+            setHasLoaded(true);
+            setReady(true);
+            console.log("Loaded from session:", parsed);
+            return;
+          }
+        } catch (err) {
+          console.error("Invalid cached events:", err);
         }
-      );
-    });
-  }, [hasLoaded, upcomingEvents]);
+      }
 
-  // Wait for cache to load
-  if (!hasLoaded || upcomingEvents.length === 0) {
+      try {
+        const { allEvents = [] } = await fetchEvents();
+        setEvents(allEvents);
+        setHasLoaded(true);
+        sessionStorage.setItem("events", JSON.stringify(allEvents));
+        console.log("Fetched from API:", allEvents);
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      } finally {
+        setReady(true);
+      }
+    };
+
+    if (!hasLoaded) loadData();
+    else setReady(true);
+  }, [hasLoaded, setEvents, setHasLoaded]);
+
+  const now = new Date();
+  const upcomingEvents = Array.isArray(events)
+    ? events.filter((e) => new Date(e.date) > now)
+    : [];
+
+  if (!ready || upcomingEvents.length === 0) {
     return <Box sx={{ minHeight: "100vh", backgroundColor: "#000" }} />;
   }
 
@@ -108,14 +125,7 @@ const UpcomingSection = () => {
       </Typography>
 
       {isMobile ? (
-        <Grid
-          container
-          spacing={2}
-          height="100%"
-          width="100%"
-          alignItems="center"
-          justifyContent="end"
-        >
+        <Grid container spacing={2} width="100%" alignItems="center">
           {upcomingEvents.map((event) => (
             <Grid item xs={6} key={event.id}>
               <Box
@@ -187,24 +197,50 @@ const UpcomingSection = () => {
         </Box>
       )}
 
-      <Link
-        mt={5}
-        mr={5}
-        textAlign="end"
-        underline="none"
-        href="/events"
-        fontSize={30}
-        color="#fff"
+      <Box
+        position="relative"
+        sx={{
+          "& a": {
+            display: "inline-block",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+            color: "white",
+            letterSpacing: "0.05em",
+          },
+          "& a:before": {
+            content: '""',
+            position: "absolute",
+            width: "100%",
+            height: "3px",
+            backgroundColor: "#B55725",
+            bottom: -2,
+            transform: "scaleX(1)",
+            transition: "transform 0.3s ease",
+          },
+          "& a:hover:before": {
+            transform: "scaleX(0)",
+          },
+          "& a:hover": {
+            transform: "scale(1.05)",
+            color: "#B55725",
+          },
+        }}
       >
-        see more
-        <span>
-          <img
-            src={dot}
-            style={{ width: "3px", height: "3px", marginLeft: "2px" }}
-            alt="dot"
-          />
-        </span>
-      </Link>
+        <Link underline="none" variant="h5" fontWeight={600} href="/events">
+          see more{" "}
+          <span>
+            <img
+              src={dot}
+              style={{
+                height: "6px",
+                width: "6px",
+                marginLeft: "-4px",
+                objectFit: "contain",
+              }}
+            />
+          </span>
+        </Link>
+      </Box>
     </Box>
   );
 };
