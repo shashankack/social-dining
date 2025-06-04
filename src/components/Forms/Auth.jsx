@@ -1,4 +1,15 @@
-import { Box, Tabs, Tab, TextField, Typography, Stack, IconButton, InputAdornment, Button, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Tabs,
+  Tab,
+  TextField,
+  Typography,
+  Stack,
+  IconButton,
+  InputAdornment,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userSignIn, createUserSchema } from "event-book-baw";
@@ -38,20 +49,27 @@ const AuthForm = ({ onSuccess }) => {
     setError("");
     setLoading(true);
     try {
+      let res;
       if (mode === "signin") {
         userSignIn.parse(form);
-        const res = await signIn(form.email, form.password);
+        res = await signIn(form.email, form.password);
 
-        // Storing token manually (without Safari check)
-        if (res.token) localStorage.setItem("authToken", res.token);
+        // Store the token in localStorage or use it directly in headers
+        if (res.token) {
+          // Set token in localStorage (for persistent login) or directly use in axios header
+          localStorage.setItem("authToken", res.token);
+          // Optionally, you could set the Authorization header here for future requests
+        }
 
         onSuccess(res.safeUserLogin);
       } else {
         createUserSchema.parse(form);
-        const res = await signUp(form);
+        res = await signUp(form);
 
-        // Storing token manually (without Safari check)
-        if (res.token) localStorage.setItem("authToken", res.token);
+        // Store the token in localStorage
+        if (res.token) {
+          localStorage.setItem("authToken", res.token);
+        }
 
         onSuccess(res.user);
       }
