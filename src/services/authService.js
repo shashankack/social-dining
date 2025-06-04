@@ -11,14 +11,10 @@ export const signUp = async (userData) => {
 };
 
 export const getCurrentUser = async () => {
-  const res = await api.get("/user/me", { withCredentials: true });
+  const res = await api.get("/user/me");
   return res.data.user;
 };
 
 export const signOut = () => {
-  localStorage.removeItem("events");
-  localStorage.removeItem("authToken");
-  sessionStorage.clear();
-  document.cookie = "token=; Max-Age=0; path=/";
   window.location.href = "/";
 };

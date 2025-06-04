@@ -1,19 +1,8 @@
-import {
-  Box,
-  Tabs,
-  Tab,
-  TextField,
-  Typography,
-  Stack,
-  IconButton,
-  InputAdornment,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Tabs, Tab, TextField, Typography, Stack, IconButton, InputAdornment, Button, CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { userSignIn, createUserSchema } from "event-book-baw";
-import { signIn, signUp, getCurrentUser } from "../../services/authService";
+import { signIn, signUp } from "../../services/authService";
 
 const orange = "#B55725";
 
@@ -28,8 +17,6 @@ const textFieldSx = {
   "& .Mui-focused": { color: orange },
   "& label.Mui-focused": { color: orange },
 };
-
-// ...imports remain unchanged
 
 const AuthForm = ({ onSuccess }) => {
   const [mode, setMode] = useState("signin");
@@ -53,36 +40,26 @@ const AuthForm = ({ onSuccess }) => {
     try {
       if (mode === "signin") {
         userSignIn.parse(form);
-        const loginRes = await signIn(form.email, form.password);
-        console.log("Login Response ✅:", loginRes);
+        const res = await signIn(form.email, form.password);
 
-        const user = await getCurrentUser();
-        console.log("User Me ✅:", user);
+        // Storing token manually (without Safari check)
+        if (res.token) localStorage.setItem("authToken", res.token);
 
-        localStorage.setItem("authToken", "COOKIE_SESSION");
-        onSuccess(user);
+        onSuccess(res.safeUserLogin);
       } else {
         createUserSchema.parse(form);
-        const registerRes = await signUp(form);
-        console.log("Register Response ✅:", registerRes);
+        const res = await signUp(form);
 
-        const user = await getCurrentUser();
-        console.log("User Me ✅:", user);
+        // Storing token manually (without Safari check)
+        if (res.token) localStorage.setItem("authToken", res.token);
 
-        localStorage.setItem("authToken", "COOKIE_SESSION");
-        onSuccess(user);
+        onSuccess(res.user);
       }
     } catch (err) {
-      console.error("AUTH ERROR ❌", err);
-
       if (err.name === "ZodError") {
         setError(err.issues[0]?.message || "Invalid input");
-      } else if (err?.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (typeof err === "string") {
-        setError(err);
       } else {
-        setError("Something went wrong");
+        setError(err?.response?.data?.message || "Something went wrong");
       }
     } finally {
       setLoading(false);
