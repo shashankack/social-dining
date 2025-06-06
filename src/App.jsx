@@ -5,12 +5,12 @@ import {
   useLocation,
 } from "react-router-dom";
 import { LoadingProvider, useLoading } from "./context/LoadingContext";
-import { EventsCacheProvider } from "./context/EventsCacheContext";
 import { useAttachLoaderInterceptor } from "./utils/axiosWithLoader";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
 import EventsInternal from "./components/EventsInternal";
+import ClubsInternal from "./components/ClubsInternal";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
@@ -33,6 +33,7 @@ const AppContent = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/events" element={<Events data={eventsData} />} />
         <Route path="/events/:id" element={<EventsInternal />} />
+        <Route path="/club/:id" element={<ClubsInternal />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
         <Route path="/test" element={<Loader />} />
       </Routes>
@@ -43,13 +44,9 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <LoadingProvider>
-      <EventsCacheProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </EventsCacheProvider>
-    </LoadingProvider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 };
 

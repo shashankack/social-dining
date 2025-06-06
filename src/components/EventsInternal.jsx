@@ -40,7 +40,7 @@ const EventsInternal = () => {
     const loadOtherEvents = async () => {
       try {
         const events = await fetchEvents();
-        const filtered = events.allEvents.filter((e) => e.id !== id);
+        const filtered = events.filter((e) => e.id !== id);
         setOtherEvents(filtered);
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -111,6 +111,24 @@ const EventsInternal = () => {
     hour12: true,
   });
 
+  // Check if the token exists and the user is authenticated
+  const checkAuthentication = () => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      navigate("/login", { state: { from: `/events/${id}` } });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleEventRegistration = () => {
+    if (checkAuthentication()) {
+      setOpen(true);
+    }
+  };
+
   return (
     <Stack
       ref={containerRef}
@@ -147,27 +165,39 @@ const EventsInternal = () => {
               <Typography>No other events found.</Typography>
             ) : (
               otherEvents.map((event) => (
-                <Box
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  gap={2}
                   key={event.id}
                   onClick={() => navigate(`/events/${event.id}`)}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    bgcolor: "#111",
-                    border: "1px solid #B55725",
-                    "&:hover": {
-                      bgcolor: "#1a1a1a",
-                      cursor: "pointer",
-                    },
-                  }}
+                  sx={{ cursor: "pointer" }}
                 >
-                  <Typography fontWeight={700} color="#fff">
-                    {event.title}
-                  </Typography>
-                  <Typography fontSize="0.9rem" color="#B55725">
-                    {event.location}
-                  </Typography>
-                </Box>
+                  <Box
+                    component="img"
+                    src={event.thumbnail || "https://placehold.co/100x100"}
+                    alt={event.title}
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      objectFit: "cover",
+                      borderRadius: 2,
+                      border: "2px solid #B55725",
+                    }}
+                  />
+                  <Stack>
+                    <Typography fontWeight={700} color="#fff">
+                      {event.title}
+                    </Typography>
+                    <Typography fontSize="0.9rem" color="#B55725">
+                      {new Date(event.date).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Typography>
+                  </Stack>
+                </Stack>
               ))
             )}
           </Stack>
@@ -259,7 +289,7 @@ const EventsInternal = () => {
 
         <Button
           ref={(el) => (textGroupRef.current[6] = el)}
-          onClick={() => setOpen(true)}
+          onClick={handleEventRegistration}
           variant="contained"
           fullWidth
           sx={{

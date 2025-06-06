@@ -202,10 +202,10 @@ const AboutSection = () => {
             ref={containerRef}
             className="about-container"
             position="absolute"
-            top="13vh"
-            left="10vw"
-            width="70%"
-            height="75%"
+            top="10vh"
+            left="6vw"
+            width="75%"
+            height="80%"
             overflow="hidden"
             sx={{
               cursor: "none",
@@ -214,8 +214,8 @@ const AboutSection = () => {
             <Box
               ref={followerRef}
               sx={{
-                width: "350px",
-                height: "450px",
+                width: "20vw",
+                height: "55vh",
                 padding: "20px",
                 bgcolor: "black",
                 boxShadow: "6.348px 6.348px 0px #B55725",
@@ -232,7 +232,7 @@ const AboutSection = () => {
                   <img
                     src={dot}
                     style={{
-                      width: "2%",
+                      width: "3%",
                       marginLeft: "3px",
                       objectFit: "contain",
                     }}
@@ -243,17 +243,23 @@ const AboutSection = () => {
               <div data-animate>
                 <Typography
                   variant="h5"
-                  fontSize={28}
+                  fontSize={isMobile ? "1.2vw" : "1vw"}
                   fontWeight={300}
                   mt={3}
                   lineHeight={1.1}
                   color="#dddddd"
                   sx={{ "& span": { color: "#B55725" } }}
                 >
-                  A premium social club curating unique experiences for a
-                  carefully selected circle<span>.</span> <br /> <br /> Bringing
-                  together like-minded individuals from diverse industries for
-                  networking, fun and indulgence<span>.</span>
+                  Welcome to Social Dining, where connections are curated and
+                  experiences are unforgettable. We are a premium social club
+                  designed for a carefully selected circle of individuals who
+                  crave meaningful interactions, indulgent experiences, and a
+                  vibrant community. We bring together people from diverse
+                  industries and backgrounds, fostering a space for networking,
+                  fun, and collaboration. Whether you’re an entrepreneur,
+                  fitness enthusiast, foodie, or someone who enjoys lively
+                  conversation, our exclusive clubs offer something for everyone
+                  <span>.</span>
                 </Typography>
               </div>
             </Box>

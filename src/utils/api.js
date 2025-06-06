@@ -7,19 +7,20 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // If you're still using cookies for other things
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken"); // Or wherever you store the token
+    const token = localStorage.getItem("authToken");
+
     if (token) {
-      // Set Authorization header if token exists
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log("Request with token:", config.headers.Authorization);
     }
     return config;
   },
   (error) => {
+    console.log("Request error:", error);
     return Promise.reject(error);
   }
 );

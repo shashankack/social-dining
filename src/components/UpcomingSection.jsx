@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -10,90 +10,52 @@ import {
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import dot from "../assets/images/dot.svg";
-import { getCurrentUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { useEventsCache } from "../context/EventsCacheContext";
 import { fetchEvents } from "../services/eventService";
+import { isAuthenticated } from "../services/authService";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const UpcomingSection = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const navigate = useNavigate();
-  const { events, hasLoaded, setEvents, setHasLoaded } = useEventsCache();
-  const [ready, setReady] = useState(false);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
-  const containerRef = useRef(null);
-  const imageRefs = useRef([]);
-
-  const addToRefs = (el) => {
-    if (el && !imageRefs.current.includes(el)) {
-      imageRefs.current.push(el);
-    }
-  };
-
-  const handleEventClick = async (eventId) => {
-    try {
-      const user = await getCurrentUser();
-      if (!user || !user.id) {
-        navigate("/login", { state: { from: `/events/${eventId}` } });
-        window.scrollTo(0, 0);
-        return;
-      }
+  const handleEventClick = (eventId) => {
+    if (isAuthenticated()) {
       navigate(`/events/${eventId}`);
       window.scrollTo(0, 0);
-    } catch {
-      navigate("/login", { state: { from: `/events/${eventId}` } });
+    } else {
+      navigate("/login", {
+        state: { from: `/events/${eventId}` },
+      });
       window.scrollTo(0, 0);
     }
   };
 
-  // Load from sessionStorage or fetch if needed
   useEffect(() => {
-    const loadData = async () => {
-      const cached = sessionStorage.getItem("events");
-
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed)) {
-            setEvents(parsed);
-            setHasLoaded(true);
-            setReady(true);
-            console.log("Loaded from session:", parsed);
-            return;
-          }
-        } catch (err) {
-          console.error("Invalid cached events:", err);
-        }
-      }
-
+    const fetchUpcomingEvents = async () => {
       try {
-        const { allEvents = [] } = await fetchEvents();
-        setEvents(allEvents);
-        setHasLoaded(true);
-        sessionStorage.setItem("events", JSON.stringify(allEvents));
-        console.log("Fetched from API:", allEvents);
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      } finally {
-        setReady(true);
+        const cachedEvents = localStorage.getItem("events");
+
+        if (cachedEvents) {
+          const parsedEvents = JSON.parse(cachedEvents);
+          setUpcomingEvents(parsedEvents);
+          console.log("Using cached events:", parsedEvents);
+          return;
+        }
+
+        const events = await fetchEvents();
+        setUpcomingEvents(events);
+        localStorage.setItem("events", JSON.stringify(events));
+        console.log("Fetched and cached events:", events);
+      } catch (error) {
+        console.error("Error fetching events:", error);
       }
     };
-
-    if (!hasLoaded) loadData();
-    else setReady(true);
-  }, [hasLoaded, setEvents, setHasLoaded]);
-
-  const now = new Date();
-  const upcomingEvents = Array.isArray(events)
-    ? events.filter((e) => new Date(e.date) > now)
-    : [];
-
-  if (!ready || upcomingEvents.length === 0) {
-    return <Box sx={{ minHeight: "100vh", backgroundColor: "#000" }} />;
-  }
+    fetchUpcomingEvents();
+  }, []);
 
   return (
     <Box
@@ -139,7 +101,6 @@ const UpcomingSection = () => {
         </Grid>
       ) : (
         <Box
-          ref={containerRef}
           display="flex"
           justifyContent="center"
           alignItems="center"
@@ -157,30 +118,12 @@ const UpcomingSection = () => {
             position="relative"
             height={500}
           >
-            {upcomingEvents.map((event, index) => (
+            {upcomingEvents.slice(0, 2).map((event, index) => (
               <Box
                 key={event.id}
-                ref={addToRefs}
                 component="img"
                 src={event.thumbnail}
                 onClick={() => handleEventClick(event.id)}
-                onMouseEnter={() => {
-                  gsap.to(imageRefs.current[index], {
-                    scale: 1.05,
-                    duration: 0.3,
-                    ease: "back.out(1.7)",
-                    onStart: () => (imageRefs.current[index].style.zIndex = 5),
-                  });
-                }}
-                onMouseLeave={() => {
-                  gsap.to(imageRefs.current[index], {
-                    scale: 1,
-                    duration: 0.4,
-                    ease: "back.out(1.7)",
-                    onComplete: () =>
-                      (imageRefs.current[index].style.zIndex = 1),
-                  });
-                }}
                 sx={{
                   cursor: "pointer",
                   width: 350,
@@ -189,7 +132,15 @@ const UpcomingSection = () => {
                   position: "absolute",
                   left: index === 0 ? "23%" : "47%",
                   transform: index === 0 ? "rotate(-10deg)" : "rotate(7deg)",
+                  transition: "transform 0.3s ease",
                   zIndex: 1,
+                  "&:hover": {
+                    transform:
+                      index === 0
+                        ? "rotate(-10deg) scale(1.03)"
+                        : "rotate(7deg) scale(1.03)",
+                    zIndex: 2,
+                  },
                 }}
               />
             ))}

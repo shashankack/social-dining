@@ -12,11 +12,10 @@ import {
 } from "@mui/material";
 import dot from "../assets/images/dot.svg";
 
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-
-import ClubRegister from "./Forms/ClubRegister";
 
 import morningClub from "../assets/images/clubs/morning.png";
 import foudnersClub from "../assets/images/clubs/founders.png";
@@ -24,12 +23,10 @@ import fitnessClub from "../assets/images/clubs/fitness.png";
 import supperClub from "../assets/images/clubs/supper.png";
 
 import clubVideo from "../assets/videos/club.mp4";
-
-import { registerForClub, getClubs } from "../services/clubService";
-import { getCurrentUser } from "../services/authService";
-import { useLocation, useNavigate } from "react-router-dom";
+import { getClubs } from "../services/clubService";
 
 gsap.registerPlugin(ScrollTrigger);
+
 const clubData = [
   {
     thumbnail: morningClub,
@@ -61,32 +58,8 @@ const ClubSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [open, setOpen] = useState(false);
-  const [selectedClub, setSelectedClub] = useState(null);
   const [clubList, setClubList] = useState([]);
-  const [loading, setLoading] = useState(null);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-
-  const imageRefs = useRef([]);
-  const textRefs = useRef([]);
-
-  const addToImageRefs = (el) => {
-    if (el && !imageRefs.current.includes(el)) {
-      imageRefs.current.push(el);
-    }
-  };
-
-  const addToTextRefs = (el) => {
-    if (el && !textRefs.current.includes(el)) {
-      textRefs.current.push(el);
-    }
-  };
 
   useEffect(() => {
     getClubs().then((data) => {
@@ -101,67 +74,8 @@ const ClubSection = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const boxes = imageRefs.current;
-
-    boxes.forEach((imageBox) => {
-      gsap.from(imageBox, {
-        xPercent: -100,
-        duration: 0.6,
-        scrollTrigger: {
-          trigger: imageBox,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-    });
-
-    const textBoxes = textRefs.current;
-    textBoxes.forEach((textBox) => {
-      gsap.from(textBox, {
-        xPercent: 100,
-        duration: 0.6,
-        scrollTrigger: {
-          trigger: textBox,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => {
-        trigger.kill();
-      });
-    };
-  });
-
-  const handleOpen = async (club) => {
-    setLoading(club.id);
-
-    try {
-      await getCurrentUser();
-      await registerForClub(club.id);
-      setSnackbar({
-        open: true,
-        message: `You have successfully joined ${club.title}`,
-        severity: "success",
-      });
-    } catch (error) {
-      navigate("/login", {
-        state: {
-          from: location.pathname,
-          clubId: club.id,
-        },
-      });
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedClub(null);
+  const handleNavigate = (clubId) => {
+    navigate(`/club/${clubId}`);
   };
 
   return isMobile ? (
@@ -173,28 +87,19 @@ const ClubSection = () => {
       position="relative"
     >
       <Box component="video" src={clubVideo} autoPlay muted loop playsInline />
-
       <Stack
         direction="column"
         gap={2}
         position="absolute"
         width="94%"
-        sx={{
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
+        sx={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
       >
         <Typography textAlign="center" fontSize="14vw" mb={4}>
           Clubs
           <span>
             <img
               src={dot}
-              style={{
-                width: "6px",
-                height: "6px",
-                marginLeft: "3px",
-              }}
+              style={{ width: "6px", height: "6px", marginLeft: "3px" }}
             />
           </span>
         </Typography>
@@ -204,7 +109,7 @@ const ClubSection = () => {
             <Stack
               alignItems="start"
               height="100%"
-              justifyContent={"space-between"}
+              justifyContent="space-between"
             >
               <Typography fontWeight={800}>{club.title}</Typography>
               <Typography fontSize="4vw" lineHeight={1.2}>
@@ -213,29 +118,21 @@ const ClubSection = () => {
               <Button
                 variant="contained"
                 fullWidth
-                onClick={() => handleOpen(club)}
-                disabled={loading === club.id}
+                onClick={() => handleNavigate(club.id)}
                 sx={{
                   backgroundColor: "#B55725",
                   color: "#fff",
                   fontWeight: 600,
                   textTransform: "none",
-                  "&:hover": {
-                    backgroundColor: "#a7491c",
-                  },
+                  "&:hover": { backgroundColor: "#a7491c" },
                 }}
               >
-                {loading === club.id ? (
-                  <CircularProgress size={20} sx={{ color: "#b55725" }} />
-                ) : (
-                  "Join Now"
-                )}
+                Join Now
               </Button>
             </Stack>
           </Stack>
         ))}
       </Stack>
-      <ClubRegister open={open} handleClose={handleClose} club={selectedClub} />
     </Box>
   ) : (
     <Box position="relative">
@@ -246,11 +143,7 @@ const ClubSection = () => {
         muted
         loop
         playsInline
-        sx={{
-          maxHeight: "150vh",
-          width: "100%",
-          objectFit: "cover",
-        }}
+        sx={{ maxHeight: "150vh", width: "100%", objectFit: "cover" }}
       />
       <Box
         position="absolute"
@@ -281,7 +174,7 @@ const ClubSection = () => {
           alignItems="center"
         >
           {clubList.map((club, index) => (
-            <Grid size={6} key={index}>
+            <Grid item xs={6} key={index}>
               <Box
                 position="relative"
                 height={450}
@@ -306,7 +199,6 @@ const ClubSection = () => {
                   },
                 }}
               >
-                {/* Image */}
                 <Box
                   component="img"
                   src={club.thumbnail}
@@ -318,8 +210,6 @@ const ClubSection = () => {
                     transition: "transform 0.4s ease, filter 0.4s ease",
                   }}
                 />
-
-                {/* Title - Slide from Top */}
                 <Box
                   className="slide-top"
                   sx={{
@@ -339,17 +229,15 @@ const ClubSection = () => {
                     {club.title}
                   </Typography>
                 </Box>
-
-                {/* Description - Slide from Left */}
                 <Box
                   className="slide-left"
                   sx={{
                     position: "absolute",
-                    top: "40%",
+                    top: "50%",
                     left: 0,
                     width: "100%",
                     px: 2,
-                    transform: "translateX(-30px) translateY(-60%)",
+                    transform: "translateX(-30px) translateY(-50%)",
                     color: "#fff",
                     opacity: 0,
                     transition: "all 0.4s ease",
@@ -359,8 +247,6 @@ const ClubSection = () => {
                     {club.description}
                   </Typography>
                 </Box>
-
-                {/* Button - Slide from Bottom */}
                 <Box
                   className="slide-bottom"
                   sx={{
@@ -379,23 +265,16 @@ const ClubSection = () => {
                   <Button
                     variant="contained"
                     fullWidth
-                    onClick={() => handleOpen(club)}
-                    disabled={loading === club.id}
+                    onClick={() => handleNavigate(club.id)}
                     sx={{
                       backgroundColor: "#B55725",
                       color: "#fff",
                       fontWeight: 600,
                       textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: "#a7491c",
-                      },
+                      "&:hover": { backgroundColor: "#a7491c" },
                     }}
                   >
-                    {loading === club.id ? (
-                      <CircularProgress size={20} sx={{ color: "#b55725" }} />
-                    ) : (
-                      "Join Now"
-                    )}
+                    Join Now
                   </Button>
                 </Box>
               </Box>
@@ -403,36 +282,6 @@ const ClubSection = () => {
           ))}
         </Grid>
       </Box>
-      <ClubRegister open={open} handleClose={handleClose} club={selectedClub} />
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          iconMapping={{
-            success: (
-              <img
-                src={dot}
-                alt="dot"
-                style={{ width: 10, height: 10, marginRight: 8 }}
-              />
-            ),
-          }}
-          sx={{
-            width: "100%",
-            backgroundColor: "#000", // background
-            color: "#fff", // text
-            border: "1px solid #B55725",
-            fontWeight: 600,
-          }}
-          icon={false} // optional: remove icon
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
