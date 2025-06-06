@@ -99,18 +99,18 @@ const AuthForm = ({ onSuccess }) => {
         res = await signUp(form);
       }
 
-      if (mode === "signin") {
+      if (res.token) {
         localStorage.setItem("authToken", res.token);
-        localStorage.setItem("currentUser", JSON.stringify(res));
-        onSuccess(res);
-      } else {
-        localStorage.setItem("authToken", res.token);
-        localStorage.setItem("currentUser", JSON.stringify(res.user));
-        onSuccess(res.user);
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify(mode === "signin" ? res.safeUserLogin : res.user)
+        );
       }
+
+      onSuccess(mode === "signin" ? res.safeUserLogin : res.user);
     } catch (err) {
       console.error("Auth error:", err);
-      setApiError(err.message || "Something went wrong");
+      setApiError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
