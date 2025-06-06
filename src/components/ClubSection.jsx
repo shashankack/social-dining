@@ -127,7 +127,7 @@ const ClubSection = () => {
                   "&:hover": { backgroundColor: "#a7491c" },
                 }}
               >
-                Join Now
+                Learn More
               </Button>
             </Stack>
           </Stack>
@@ -214,7 +214,7 @@ const ClubSection = () => {
                   className="slide-top"
                   sx={{
                     position: "absolute",
-                    top: 0,
+                    top: "30%",
                     left: 0,
                     width: "100%",
                     px: 2,
@@ -233,11 +233,11 @@ const ClubSection = () => {
                   className="slide-left"
                   sx={{
                     position: "absolute",
-                    top: "50%",
+                    transform: "translateX(-30px)",
+                    top: "45%",
                     left: 0,
                     width: "100%",
                     px: 2,
-                    transform: "translateX(-30px) translateY(-50%)",
                     color: "#fff",
                     opacity: 0,
                     transition: "all 0.4s ease",
@@ -274,7 +274,7 @@ const ClubSection = () => {
                       "&:hover": { backgroundColor: "#a7491c" },
                     }}
                   >
-                    Join Now
+                    Learn More
                   </Button>
                 </Box>
               </Box>

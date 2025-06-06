@@ -5,6 +5,8 @@ import {
   Stack,
   Button,
   CircularProgress,
+  Snackbar,
+  Alert as MuiAlert,
   Grid,
   useTheme,
   Accordion,
@@ -27,7 +29,7 @@ import sd2 from "../assets/images/clubs/internal/sd-2.jpg";
 import sd3 from "../assets/images/clubs/internal/sd-3.jpg";
 import sd4 from "../assets/images/clubs/internal/sd-4.jpg";
 
-import { getClubs } from "../services/clubService";
+import { getClubs, registerForClub } from "../services/clubService";
 
 const clubData = [
   {
@@ -154,6 +156,12 @@ const ClubsInternal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [club, setClub] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     const fetchClub = async () => {
@@ -172,7 +180,29 @@ const ClubsInternal = () => {
     };
 
     fetchClub();
+    console.log(id);
   }, [id]);
+
+  const handleClick = async (clubId) => {
+    try {
+      setLoading(true);
+      await registerForClub(clubId);
+      setSnackbar({
+        open: true,
+        message: "Successfully registered for the club!",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error("Error registering for club:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to register. Please try again later.",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!club) return <Box>Club not found</Box>;
 
@@ -215,12 +245,15 @@ const ClubsInternal = () => {
           <Button
             variant="contained"
             fullWidth
+            disabled={loading}
             endIcon={
-              <ArrowOutwardIcon
-                sx={{
-                  scale: isMobile ? "1.5" : "2",
-                }}
-              />
+              !loading && (
+                <ArrowOutwardIcon
+                  sx={{
+                    scale: isMobile ? "1.5" : "2",
+                  }}
+                />
+              )
             }
             sx={{
               color: "#B55725",
@@ -236,8 +269,17 @@ const ClubsInternal = () => {
                 boxShadow: "none",
               },
             }}
+            onClick={() => handleClick(club.id)}
           >
-            Join Now
+            {loading ? (
+              <CircularProgress
+                size={24}
+                thickness={5}
+                sx={{ color: "#fff", margin: "0 auto" }}
+              />
+            ) : (
+              "Join Now"
+            )}
           </Button>
         </Stack>
       </Stack>
@@ -332,6 +374,24 @@ const ClubsInternal = () => {
           </Grid>
         ))}
       </Grid>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <MuiAlert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{
+            width: "100%",
+            backgroundColor:
+              snackbar.severity === "success" ? "#b55725" : "#d32f2f",
+          }}
+          variant="filled"
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </Stack>
   );
 };

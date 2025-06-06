@@ -35,7 +35,7 @@ const textFieldStyle = {
   },
 };
 
-const EventRegister = ({ open, handleClose, event }) => {
+const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
   const [form, setForm] = useState({
     Name: "",
     Contact: "",
@@ -99,18 +99,30 @@ const EventRegister = ({ open, handleClose, event }) => {
         withCredentials: true,
       });
       setSuccessMsg(res.data.message || "Booked successfully!");
+      if (setSnackbar) {
+        setSnackbar({
+          open: true,
+          message: res.data.message || "Event booked successfully!",
+          severity: "success",
+        });
+      }
     } catch (error) {
-      setErrorMsg(
-        error.response?.data?.message ||
-          "Failed to book the event. Please try again."
-      );
+      if (setSnackbar) {
+        setSnackbar({
+          open: true,
+          message:
+            error.response?.data?.message ||
+            "Failed to book the event. Please try again.",
+          severity: "error",
+        });
+      }
     } finally {
       setLoading(false);
       setTimeout(() => {
         setSuccessMsg("");
         setErrorMsg("");
         handleClose();
-      }, 2000);
+      }, 4000);
     }
   };
 

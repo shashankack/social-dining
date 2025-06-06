@@ -8,6 +8,9 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
+  Snackbar,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -18,6 +21,9 @@ import { fetchEventById, fetchEvents } from "../services/eventService";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import ScrollTrigger from "gsap/ScrollTrigger";
+
+import { registerForEvent } from "../services/eventService";
+import { getCurrentUser } from "../services/authService";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,6 +36,12 @@ const EventsInternal = () => {
   const [open, setOpen] = useState(false);
   const { id } = useParams();
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const containerRef = useRef(null);
   const textGroupRef = useRef([]);
@@ -124,9 +136,8 @@ const EventsInternal = () => {
   };
 
   const handleEventRegistration = () => {
-    if (checkAuthentication()) {
-      setOpen(true);
-    }
+    if (!checkAuthentication()) return;
+    setOpen(true); // Just open modal
   };
 
   return (
@@ -292,6 +303,7 @@ const EventsInternal = () => {
           onClick={handleEventRegistration}
           variant="contained"
           fullWidth
+          disabled={loading}
           sx={{
             backgroundColor: "#B55725",
             color: "white",
@@ -306,7 +318,11 @@ const EventsInternal = () => {
             },
           }}
         >
-          Book Now
+          {loading ? (
+            <CircularProgress size={24} sx={{ color: "#B55725" }} />
+          ) : (
+            "Book Now"
+          )}
         </Button>
       </Stack>
 
@@ -333,7 +349,30 @@ const EventsInternal = () => {
         open={open}
         handleClose={() => setOpen(false)}
         event={data}
+        setSnackbar={setSnackbar}
       />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{
+            width: "100%",
+            backgroundColor:
+              snackbar.severity === "success" ? "#B55725" : "#D32F2F",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: 2,
+          }}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };
