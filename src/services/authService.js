@@ -56,7 +56,7 @@ export const getCurrentUser = async () => {
 
 export const signOut = () => {
   clearAuthData();
-  window.location.href = "/signin";
+  window.location.href = "/login";
 };
 
 export const isAuthenticated = () => {

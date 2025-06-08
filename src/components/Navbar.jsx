@@ -62,6 +62,8 @@ const Navbar = () => {
         borderRadius: 2,
         borderColor: "#B55725",
         color: "#fff",
+        fontWeight: 600,
+        fontSize: ".8rem",
         px: 2,
         py: 0.5,
         transition: "all 0.3s ease",
@@ -151,7 +153,12 @@ const Navbar = () => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography fontWeight={700} fontSize="1.4rem" color="#fff" fontFamily="League Spartan">
+            <Typography
+              fontWeight={700}
+              fontSize="1.4rem"
+              color="#fff"
+              fontFamily="League Spartan"
+            >
               Social Dining
             </Typography>
             <IconButton onClick={() => setDrawerOpen(false)}>
@@ -208,6 +215,7 @@ const Navbar = () => {
                 color: "#B55725",
                 fontWeight: 600,
                 textTransform: "none",
+                fontSize: "1rem",
                 "&:hover": {
                   backgroundColor: "#B55725",
                   color: "#000",

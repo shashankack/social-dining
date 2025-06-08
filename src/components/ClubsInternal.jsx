@@ -30,6 +30,7 @@ import sd3 from "../assets/images/clubs/internal/sd-3.jpg";
 import sd4 from "../assets/images/clubs/internal/sd-4.jpg";
 
 import { getClubs, registerForClub } from "../services/clubService";
+import Loader from "./Loader";
 
 const clubData = [
   {
@@ -204,7 +205,7 @@ const ClubsInternal = () => {
     }
   };
 
-  if (!club) return <Box>Club not found</Box>;
+  if (!club) return <Loader />;
 
   return (
     <Stack px={isMobile ? 0 : 10} py={10} flexDirection="column">
