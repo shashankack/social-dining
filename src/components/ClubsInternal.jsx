@@ -18,10 +18,15 @@ import { useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
-import morningClub from "../assets/images/clubs/morning.png";
+import hotMom from "../assets/images/clubs/hotMom.png";
 import foudnersClub from "../assets/images/clubs/founders.png";
 import fitnessClub from "../assets/images/clubs/fitness.png";
 import supperClub from "../assets/images/clubs/supper.png";
+
+import hotMomReel from "../assets/videos/clubs/hot_moms.mp4";
+import fitnessReel from "../assets/videos/clubs/fitness.mp4";
+import foundersReel from "../assets/videos/clubs/founders.mp4";
+import supperReel from "../assets/videos/clubs/supper.mp4";
 
 import reel from "../assets/images/clubs/internal/reel.mp4";
 import sd1 from "../assets/images/clubs/internal/sd-1.jpg";
@@ -34,8 +39,8 @@ import Loader from "./Loader";
 
 const clubData = [
   {
-    thumbnail: morningClub,
-    reel: "",
+    thumbnail: hotMom,
+    reel: hotMomReel,
     title: "Hot Moms Club",
     description:
       "Welcome to the Hot Moms Club a space where moms can unwind, connect, and have fun. While your little ones enjoy their own playground area, you get to mingle, share stories, and make new friends. Whether you’re bonding with your kids or enjoying some “me-time,” there’s something for everyone!",
@@ -70,6 +75,7 @@ const clubData = [
   },
   {
     thumbnail: foudnersClub,
+    reel: foundersReel,
     title: "Founders Club",
     description:
       "The Founders Club is a dynamic space where visionary entrepreneurs, startup founders, and business creators come together to share ideas, collaborate, and inspire one another. This is not just a club; it’s a thriving ecosystem for growth, innovation, and success",
@@ -95,6 +101,7 @@ const clubData = [
   },
   {
     thumbnail: fitnessClub,
+    reel: fitnessReel,
     title: "Fitness Club",
     description:
       "Get ready to elevate your fitness journey with our Fitness Club, where we focus on holistic well-being body, mind and soul. Our exclusive offerings are tailored to help you achieve your fitness goals while enjoying a supportive and fun community.",
@@ -126,6 +133,7 @@ const clubData = [
   },
   {
     thumbnail: supperClub,
+    reel: supperReel,
     title: "Supper Club",
     description:
       "The Supper Club is where food, conversation, and fun activities collide. Every event is a curated dining experience, designed not only to satisfy your palate but also to offer you the chance to mingle, have fun, and create lasting memories",
@@ -218,7 +226,7 @@ const ClubsInternal = () => {
         gap={isMobile ? 0 : 2}
       >
         <Box height="100%" width={isMobile ? "100%" : 500}>
-          <Box component="video" src={reel} autoPlay muted loop playsInline />
+          <Box component="video" src={club.reel} autoPlay muted loop playsInline />
         </Box>
         <Stack
           justifyContent="space-between"

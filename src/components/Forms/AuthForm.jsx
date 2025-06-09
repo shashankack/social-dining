@@ -177,7 +177,7 @@ const AuthForm = ({ onSuccess }) => {
               helperText={errors.name}
               sx={textFieldSx}
               InputLabelProps={{ sx: { color: "#fff" } }}
-              autoComplete="name"
+              autoComplete="off"
             />
             <TextField
               variant="standard"
@@ -190,7 +190,7 @@ const AuthForm = ({ onSuccess }) => {
               helperText={errors.phone}
               sx={textFieldSx}
               InputLabelProps={{ sx: { color: "#fff" } }}
-              autoComplete="tel"
+              autoComplete="off"
             />
           </>
         )}
@@ -206,7 +206,7 @@ const AuthForm = ({ onSuccess }) => {
           helperText={errors.email}
           sx={textFieldSx}
           InputLabelProps={{ sx: { color: "#fff" } }}
-          autoComplete="email"
+          autoComplete="off"
         />
 
         <TextField

@@ -6,18 +6,15 @@ import {
   useTheme,
   Grid,
   useMediaQuery,
-  Snackbar,
-  Alert,
-  CircularProgress,
 } from "@mui/material";
 import dot from "../assets/images/dot.svg";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
-import morningClub from "../assets/images/clubs/morning.png";
+import hotMomClub from "../assets/images/clubs/hotMom.png";
 import foudnersClub from "../assets/images/clubs/founders.png";
 import fitnessClub from "../assets/images/clubs/fitness.png";
 import supperClub from "../assets/images/clubs/supper.png";
@@ -29,10 +26,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const clubData = [
   {
-    thumbnail: morningClub,
-    title: "Morning Club",
+    thumbnail: hotMomClub,
+    title: "Hot Mom Club",
     description:
-      "A space for early risers to connect over breakfast and meaningful conversation calm, bright, and nourishing.",
+      "Welcome to the Hot Moms Club! Kids play, moms unwind. Connect, relax, and enjoy!",
   },
   {
     thumbnail: foudnersClub,
@@ -105,14 +102,14 @@ const ClubSection = () => {
         </Typography>
         {clubList.map((club, index) => (
           <Stack direction="row" gap={2} height={140} key={index}>
-            <Box component="img" src={club.thumbnail} width={120} />
+            <Box component="img" src={club.thumbnail} width={140} />
             <Stack
               alignItems="start"
               height="100%"
               justifyContent="space-between"
             >
               <Typography fontWeight={800}>{club.title}</Typography>
-              <Typography fontSize="4vw" lineHeight={1.2}>
+              <Typography fontSize="3.4vw" lineHeight={1.2}>
                 {club.description}
               </Typography>
               <Button

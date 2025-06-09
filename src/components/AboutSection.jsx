@@ -112,48 +112,49 @@ const AboutSection = () => {
   return (
     <Box overflow="hidden">
       {isMobile || isTablet ? (
-        <Box
-          height="70vh"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Stack width="100%" direction="row" p={2} gap={2}>
-            <Stack direction="column" width="45%">
-              <Typography
-                variant="h3"
-                fontWeight={700}
-                fontSize={isMobile ? 20 : isTablet ? 30 : 50}
-              >
-                About Us
-                <span>
-                  <img
-                    src={dot}
-                    style={{
-                      objectFit: "contain",
-                      width: "4px",
-                      height: "4px",
-                      marginLeft: "2px",
-                    }}
-                  />
-                </span>
-              </Typography>
-              <Typography
-                mt={2}
-                variant="body2"
-                fontSize={isMobile ? "12px" : "20px"}
-              >
-                A premium social club curating unique experiences for a
-                carefully selected circle. <br />
-                <br /> Bringing together like-minded individuals from diverse
-                industries for networking, fun, and indulgence.
-              </Typography>
-            </Stack>
-            <Box flex={1}>
-              <ImageSlider images={slides} direction="" />
-            </Box>
+        <Stack width="100%" direction="column-reverse" p={1} gap={2}>
+          <Stack direction="column" width="100%">
+            <Typography
+              mt={2}
+              variant="body2"
+              fontSize="3.6vw"
+              textAlign="justify"
+            >
+              Welcome to Social Dining, where connections are curated and
+              experiences are unforgettable. We are a premium social club
+              designed for a carefully selected circle of individuals who crave
+              meaningful interactions, indulgent experiences, and a vibrant
+              community. We bring together people from diverse industries and
+              backgrounds, fostering a space for networking, fun, and
+              collaboration. Whether you’re an entrepreneur, fitness enthusiast,
+              foodie, or someone who enjoys lively conversation, our exclusive
+              clubs offer something for everyone.
+            </Typography>
           </Stack>
-        </Box>
+          <Box width="100%" height={300}>
+            <ImageSlider images={slides} direction="" />
+          </Box>
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            fontSize="10vw"
+            textAlign="center"
+            mt={2}
+          >
+            About Us
+            <span>
+              <img
+                src={dot}
+                style={{
+                  objectFit: "contain",
+                  width: " 2vw",
+                  height: "2vw",
+                  marginLeft: "2px",
+                }}
+              />
+            </span>
+          </Typography>
+        </Stack>
       ) : (
         <Box height="100vh" position="relative">
           <Box

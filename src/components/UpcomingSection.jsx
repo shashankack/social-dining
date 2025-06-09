@@ -7,6 +7,12 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/effect-cards";
+import { EffectCards } from "swiper/modules";
+
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import dot from "../assets/images/dot.svg";
@@ -60,7 +66,7 @@ const UpcomingSection = () => {
   return (
     <Box
       overflow="hidden"
-      height="100vh"
+      minHeight="100vh"
       sx={{ position: "relative", bgcolor: "#000" }}
       display="flex"
       alignItems={isMobile ? "start" : "center"}
@@ -87,18 +93,26 @@ const UpcomingSection = () => {
       </Typography>
 
       {isMobile ? (
-        <Grid container spacing={2} width="100%" alignItems="center">
-          {upcomingEvents.map((event) => (
-            <Grid item xs={6} key={event.id}>
-              <Box
-                component="img"
-                src={event.thumbnail}
-                sx={{ objectFit: "contain", width: "100%" }}
-                onClick={() => handleEventClick(event.id)}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        <Box width="100%">
+          <Swiper effect="cards" grabCursor={true} modules={[EffectCards]}>
+            {upcomingEvents.map((event) => (
+              <SwiperSlide key={event.id}>
+                <Box
+                  component="img"
+                  src={event.thumbnail}
+                  onClick={() => handleEventClick(event.id)}
+                  sx={{
+                    width: "100%",
+                    height: "50vh",
+                    objectFit: "contain",
+                    borderRadius: 2,
+                    boxShadow: 3,
+                  }}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
       ) : (
         <Box
           display="flex"
