@@ -28,11 +28,27 @@ import fitnessReel from "../assets/videos/clubs/fitness.mp4";
 import foundersReel from "../assets/videos/clubs/founders.mp4";
 import supperReel from "../assets/videos/clubs/supper.mp4";
 
-import reel from "../assets/images/clubs/internal/reel.mp4";
-import sd1 from "../assets/images/clubs/internal/sd-1.jpg";
-import sd2 from "../assets/images/clubs/internal/sd-2.jpg";
-import sd3 from "../assets/images/clubs/internal/sd-3.jpg";
-import sd4 from "../assets/images/clubs/internal/sd-4.jpg";
+import hotMom1 from "../assets/images/clubs/hotMom/hotMom1.png";
+import hotMom2 from "../assets/images/clubs/hotMom/hotMom2.png";
+import hotMom3 from "../assets/images/clubs/hotMom/hotMom3.jpg";
+import hotMom4 from "../assets/images/clubs/hotMom/hotMom4.png";
+import hotMom5 from "../assets/images/clubs/hotMom/hotMom5.png";
+import hotMom6 from "../assets/images/clubs/hotMom/hotMom6.png";
+
+import founder1 from "../assets/images/clubs/founders/founder1.png";
+import founder2 from "../assets/images/clubs/founders/founder2.png";
+import founder3 from "../assets/images/clubs/founders/founder3.png";
+import founder4 from "../assets/images/clubs/founders/founder4.png";
+
+import fitness1 from "../assets/images/clubs/fitness/fitness1.png";
+import fitness2 from "../assets/images/clubs/fitness/fitness2.png";
+import fitness3 from "../assets/images/clubs/fitness/fitness3.png";
+import fitness4 from "../assets/images/clubs/fitness/fitness4.png";
+
+import supper1 from "../assets/images/clubs/supper/supper1.png";
+import supper2 from "../assets/images/clubs/supper/supper2.png";
+import supper3 from "../assets/images/clubs/supper/supper3.png";
+import supper4 from "../assets/images/clubs/supper/supper4.png";
 
 import { getClubs, registerForClub } from "../services/clubService";
 import Loader from "./Loader";
@@ -71,7 +87,7 @@ const clubData = [
         The Hot Moms Club is all about celebrating you connecting with other
         amazing moms, having fun with your kids, and taking some time for
         yourself`,
-    images: [sd1, sd2, sd3, sd4],
+    images: [hotMom1, hotMom2, hotMom3, hotMom4, hotMom5, hotMom6],
   },
   {
     thumbnail: foudnersClub,
@@ -97,7 +113,7 @@ const clubData = [
       </ul>
       The Founders Club is more than just a space; it’s an opportunity to build,
       connect, and grow with the leaders of tomorrow`,
-    images: [sd1, sd2, sd3, sd4],
+    images: [founder1, founder2, founder3, founder4],
   },
   {
     thumbnail: fitnessClub,
@@ -129,7 +145,7 @@ const clubData = [
       </ul>
       In the Fitness Club, we focus on fun, fitness, and well-being, making
       every session enjoyable and every achievement worth celebrating`,
-    images: [sd1, sd2, sd3, sd4],
+    images: [fitness1, fitness2, fitness3, fitness4],
   },
   {
     thumbnail: supperClub,
@@ -155,7 +171,7 @@ const clubData = [
       </ul>
       The Supper Club is your go-to for delightful conversations, memorable
       moments, and a great time with great food.`,
-    images: [sd1, sd2, sd3, sd4],
+    images: [supper1, supper2, supper3, supper4],
   },
 ];
 
@@ -226,7 +242,14 @@ const ClubsInternal = () => {
         gap={isMobile ? 0 : 2}
       >
         <Box height="100%" width={isMobile ? "100%" : 500}>
-          <Box component="video" src={club.reel} autoPlay muted loop playsInline />
+          <Box
+            component="video"
+            src={club.reel}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
         </Box>
         <Stack
           justifyContent="space-between"
@@ -356,7 +379,7 @@ const ClubsInternal = () => {
         {club.images.map((image, index) => (
           <Grid
             key={index}
-            size={index === 0 || index === 3 ? 7 : 5}
+            size={index === 0 || index === 3 || index === 4 ? 7 : 5}
             sx={{
               height: isMobile ? 200 : 500,
               transition: "all 0.3s ease",
