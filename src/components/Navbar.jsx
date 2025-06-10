@@ -9,6 +9,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Snackbar,
+  Alert as MuiAlert,
   Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -16,6 +18,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { signOut } from "../services/authService";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ const Navbar = () => {
   const currentPath = location.pathname;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -42,17 +46,9 @@ const Navbar = () => {
     cursor: "pointer",
   };
 
-  const handleNavigate = (path) => {
-    setDrawerOpen(false);
-    navigate(path);
-  };
-
   const logoutButton = (
     <Typography
-      onClick={() => {
-        localStorage.removeItem("authToken");
-        navigate("/login");
-      }}
+      onClick={() => handleLogout()}
       sx={{
         ...navLinkStyles,
         display: "flex",
@@ -76,6 +72,20 @@ const Navbar = () => {
       Logout
     </Typography>
   );
+
+  const handleNavigate = (path) => {
+    setDrawerOpen(false);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    signOut();
+    setSnackbarOpen(true);
+
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  };
 
   return (
     <>
@@ -206,10 +216,7 @@ const Navbar = () => {
             <Button
               variant="outlined"
               fullWidth
-              onClick={() => {
-                localStorage.removeItem("authToken");
-                navigate("/login");
-              }}
+              onClick={() => handleLogout()}
               sx={{
                 borderColor: "#B55725",
                 color: "#B55725",
@@ -228,6 +235,36 @@ const Navbar = () => {
           </Box>
         </Box>
       </Drawer>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <MuiAlert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          variant="filled"
+          sx={{
+            backgroundColor: "#B55725",
+            color: "#fff",
+            fontWeight: 600,
+            borderRadius: 2,
+            px: 2,
+            py: 1.5,
+            fontSize: isMobile ? "3.5vw" : "1rem",
+            fontFamily: "League Spartan",
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+          }}
+          icon={false}
+        >
+          Logout successful, redirecting to home
+        </MuiAlert>
+      </Snackbar>
     </>
   );
 };

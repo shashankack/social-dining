@@ -6,12 +6,6 @@ const storeAuthData = (token, user) => {
   localStorage.setItem("currentUser", JSON.stringify(user));
 };
 
-// Clear auth data from localStorage
-const clearAuthData = () => {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("currentUser");
-};
-
 export const signIn = async (email, password) => {
   try {
     const res = await api.post("/user/signin", { email, password });
@@ -55,8 +49,8 @@ export const getCurrentUser = async () => {
 };
 
 export const signOut = () => {
-  clearAuthData();
-  window.location.href = "/login";
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("currentUser");
 };
 
 export const isAuthenticated = () => {

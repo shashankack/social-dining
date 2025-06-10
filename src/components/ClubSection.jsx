@@ -171,7 +171,7 @@ const ClubSection = () => {
           alignItems="center"
         >
           {clubList.map((club, index) => (
-            <Grid item xs={6} key={index}>
+            <Grid size={6} key={index}>
               <Box
                 position="relative"
                 height={450}

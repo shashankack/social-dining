@@ -13,7 +13,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
@@ -34,6 +34,8 @@ import hotMom3 from "../assets/images/clubs/hotMom/hotMom3.jpg";
 import hotMom4 from "../assets/images/clubs/hotMom/hotMom4.png";
 import hotMom5 from "../assets/images/clubs/hotMom/hotMom5.png";
 import hotMom6 from "../assets/images/clubs/hotMom/hotMom6.png";
+import hotMom7 from "../assets/images/clubs/hotMom/hotMom7.png";
+import hotMom8 from "../assets/images/clubs/hotMom/hotMom8.png";
 
 import founder1 from "../assets/images/clubs/founders/founder1.png";
 import founder2 from "../assets/images/clubs/founders/founder2.png";
@@ -51,6 +53,7 @@ import supper3 from "../assets/images/clubs/supper/supper3.png";
 import supper4 from "../assets/images/clubs/supper/supper4.png";
 
 import { getClubs, registerForClub } from "../services/clubService";
+import { getCurrentUser, isAuthenticated } from "../services/authService";
 import Loader from "./Loader";
 
 const clubData = [
@@ -87,7 +90,16 @@ const clubData = [
         The Hot Moms Club is all about celebrating you connecting with other
         amazing moms, having fun with your kids, and taking some time for
         yourself`,
-    images: [hotMom1, hotMom2, hotMom3, hotMom4, hotMom5, hotMom6],
+    images: [
+      hotMom1,
+      hotMom2,
+      hotMom3,
+      hotMom4,
+      hotMom5,
+      hotMom6,
+      hotMom7,
+      hotMom8,
+    ],
   },
   {
     thumbnail: foudnersClub,
@@ -179,8 +191,10 @@ const ClubsInternal = () => {
   const { id } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
   const [club, setClub] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -199,16 +213,26 @@ const ClubsInternal = () => {
         }));
         const selected = clubDetails.find((c) => c.id === id);
         setClub(selected);
+        const user = await getCurrentUser();
+        setCurrentUser(user);
       } catch (err) {
         console.error("Failed to load club:", err);
       }
     };
 
     fetchClub();
-    console.log(id);
+    console.log("Club ID:", id);
   }, [id]);
 
   const handleClick = async (clubId) => {
+    if (!isAuthenticated()) {
+      navigate("/login", {
+        state: { from: `/club/${clubId}` }, // use your route structure
+      });
+      window.scrollTo(0, 0);
+      return;
+    }
+
     try {
       setLoading(true);
       await registerForClub(clubId);
@@ -230,6 +254,9 @@ const ClubsInternal = () => {
   };
 
   if (!club) return <Loader />;
+  const isMember = currentUser?.clubId === club.id;
+  console.log("User club ID:", currentUser?.clubId);
+  console.log(isMember);
 
   return (
     <Stack px={isMobile ? 0 : 10} py={10} flexDirection="column">
@@ -277,9 +304,10 @@ const ClubsInternal = () => {
           <Button
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={loading || isMember}
             endIcon={
-              !loading && (
+              !loading &&
+              !isMember && (
                 <ArrowOutwardIcon
                   sx={{
                     scale: isMobile ? "1.5" : "2",
@@ -288,20 +316,19 @@ const ClubsInternal = () => {
               )
             }
             sx={{
-              color: "#B55725",
-              bgcolor: "#fff",
+              color: isMember ? "#fff" : "#B55725",
+              bgcolor: isMember ? "#333" : "#fff",
               boxShadow: "none",
               justifyContent: "space-between",
               fontWeight: 700,
-              fontSize: 20,
+              fontSize: 16,
               transition: "all 0.3s ease",
-
               "&:hover": {
-                transform: "scaleX(.99)",
+                transform: isMember ? "none" : "scaleX(.99)",
                 boxShadow: "none",
               },
             }}
-            onClick={() => handleClick(club.id)}
+            onClick={() => !isMember && handleClick(club.id)}
           >
             {loading ? (
               <CircularProgress
@@ -309,6 +336,8 @@ const ClubsInternal = () => {
                 thickness={5}
                 sx={{ color: "#fff", margin: "0 auto" }}
               />
+            ) : isMember ? (
+              "Already a Member"
             ) : (
               "Join Now"
             )}
@@ -376,36 +405,52 @@ const ClubsInternal = () => {
           margin: "0 auto",
         }}
       >
-        {club.images.map((image, index) => (
-          <Grid
-            key={index}
-            size={index === 0 || index === 3 || index === 4 ? 7 : 5}
-            sx={{
-              height: isMobile ? 200 : 500,
-              transition: "all 0.3s ease",
-              overflow: "hidden",
-              "&:hover": {
-                transform: "scale(.97)",
+        {club.images.map((image, index) => {
+          const row = Math.floor(index / 2);
+          const position = index % 2;
 
-                "& img": {
-                  transform: "scale(1.03)",
-                },
-              },
-            }}
-          >
-            <Box
-              component="img"
-              src={image}
+          const isEvenRow = row % 2 === 1;
+
+          // Determine size: alternate pattern
+          const size = isEvenRow
+            ? position === 0
+              ? 5
+              : 7 // Even row: image1 small, image2 big
+            : position === 0
+            ? 7
+            : 5; // Odd row: image1 big, image2 small
+
+          return (
+            <Grid
+              key={index}
+              size={size}
               sx={{
+                height: isMobile ? 200 : 500,
                 transition: "all 0.3s ease",
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                overflow: "hidden",
+                "&:hover": {
+                  transform: "scale(.97)",
+                  "& img": {
+                    transform: "scale(1.03)",
+                  },
+                },
               }}
-            />
-          </Grid>
-        ))}
+            >
+              <Box
+                component="img"
+                src={image}
+                sx={{
+                  transition: "all 0.3s ease",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Grid>
+          );
+        })}
       </Grid>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}

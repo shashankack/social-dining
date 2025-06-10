@@ -22,7 +22,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
-import { registerForEvent } from "../services/eventService";
 import { getCurrentUser } from "../services/authService";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -48,7 +47,6 @@ const EventsInternal = () => {
   const imageRef = useRef(null);
 
   useEffect(() => {
-    // Fetch "other events"
     const loadOtherEvents = async () => {
       try {
         const events = await fetchEvents();

@@ -19,7 +19,7 @@ const Events = () => {
   const rowRefs = useRef([]);
 
   const handleEventClick = (eventId) => {
-    if (isAuthenticated) {
+    if (isAuthenticated()) {
       navigate(`/events/${eventId}`);
       window.scrollTo(0, 0);
     } else {
