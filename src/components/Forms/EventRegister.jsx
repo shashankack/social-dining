@@ -93,36 +93,90 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
     try {
       const payload = {
         eventId: event.id,
-        userId,
+        instagram: form.Instagram,
+        linkedIn: form.Locality, // assuming you're using this for LinkedIn
       };
+
+      // Step 1: Create booking and get Razorpay order
       const res = await api.post("/booking/protected/book", payload, {
         withCredentials: true,
       });
-      setSuccessMsg(res.data.message || "Booked successfully!");
-      if (setSnackbar) {
-        setSnackbar({
-          open: true,
-          message: res.data.message || "Event booked successfully!",
-          severity: "success",
-        });
-      }
+
+      console.log("Booking response:", res.data);
+
+      const { bookingId, razorpayOrderId, amount, currency, eventTitle } =
+        res.data;
+
+      // Step 2: Open Razorpay Checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: amount * 100,
+        currency,
+        name: "Social Dining",
+        description: eventTitle,
+        order_id: razorpayOrderId,
+        bookingId: bookingId,
+        
+        handler: async (paymentRes) => {
+          try {
+            // Step 3: Verify payment with backend
+            const verifyRes = await api.put(
+              "/booking/protected/book",
+              {
+                razorpay_order_id: paymentRes.razorpay_order_id,
+                razorpay_payment_id: paymentRes.razorpay_payment_id,
+                razorpay_signature: paymentRes.razorpay_signature,
+                bookingId: bookingId,
+              },
+              { withCredentials: true }
+            );
+
+            if (verifyRes.data.success) {
+              setSuccessMsg("Payment successful!");
+              setSnackbar?.({
+                open: true,
+                message: "Payment successful!",
+                severity: "success",
+              });
+              handleClose();
+            } else {
+              setErrorMsg("Payment verification failed.");
+              setSnackbar?.({
+                open: true,
+                message: "Invalid payment signature",
+                severity: "error",
+              });
+            }
+          } catch (err) {
+            setSnackbar?.({
+              open: true,
+              message: "Payment verification failed",
+              severity: "error",
+            });
+          }
+        },
+        prefill: {
+          name: form.Name,
+          email: form.Email,
+          contact: form.Contact,
+        },
+        theme: {
+          color: "#B55725",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
     } catch (error) {
-      if (setSnackbar) {
-        setSnackbar({
-          open: true,
-          message:
-            error.response?.data?.message ||
-            "Failed to book the event. Please try again.",
-          severity: "error",
-        });
-      }
+      setSnackbar?.({
+        open: true,
+        message:
+          error.response?.data?.message ||
+          "Failed to book the event. Please try again.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
-      setTimeout(() => {
-        setSuccessMsg("");
-        setErrorMsg("");
-        handleClose();
-      }, 4000);
     }
   };
 

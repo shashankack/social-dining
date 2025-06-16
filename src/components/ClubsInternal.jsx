@@ -348,12 +348,11 @@ const ClubsInternal = () => {
       <Accordion
         sx={{
           width: "100%",
-          mt: 4,
+          my: 4,
           background: "linear-gradient(200deg, #000 0%, #222 100%)",
 
           color: "#fff",
           boxShadow: "none",
-          mb: 10,
         }}
       >
         <AccordionSummary
@@ -396,29 +395,20 @@ const ClubsInternal = () => {
           />
         </AccordionDetails>
       </Accordion>
-      <Grid
-        container
-        p={isMobile ? 0.5 : 0}
-        spacing={isMobile ? 0.5 : 2}
-        sx={{
-          width: isMobile ? "100%" : "90%",
-          margin: "0 auto",
-        }}
-      >
+      <Grid container p={isMobile ? 0.5 : 0} spacing={isMobile ? 0.5 : 2}>
         {club.images.map((image, index) => {
           const row = Math.floor(index / 2);
           const position = index % 2;
 
           const isEvenRow = row % 2 === 1;
 
-          // Determine size: alternate pattern
           const size = isEvenRow
             ? position === 0
               ? 5
-              : 7 // Even row: image1 small, image2 big
+              : 7
             : position === 0
             ? 7
-            : 5; // Odd row: image1 big, image2 small
+            : 5;
 
           return (
             <Grid
