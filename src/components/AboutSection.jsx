@@ -8,11 +8,11 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 import slide1 from "../assets/images/about_slide/slide_1.png";
-import slide2 from "../assets/images/about_slide/slide_2.png";
+import slide2 from "../assets/images/about_slide/about_new.jpg";
 import slide3 from "../assets/images/about_slide/slide_3.png";
 import slide4 from "../assets/images/about_slide/slide_4.png";
-import slide5 from "../assets/images/about_slide/slide_5.png";
-import slide6 from "../assets/images/about_slide/slide_6.png";
+import slide5 from "../assets/images/clubs/hotMom/hotMom4.png";
+import slide6 from "../assets/images/clubs/supper.png";
 
 const AboutSection = () => {
   const theme = useTheme();
@@ -183,18 +183,18 @@ const AboutSection = () => {
           >
             <Box ref={sliderRef} display="flex" flexDirection="column">
               {[...slides, ...slides].map((img, i) => (
-                <Box
-                  mb={2}
-                  key={i}
-                  component="img"
-                  src={img}
-                  alt={`slide-${i}`}
-                  sx={{
-                    width: "100%",
-                    height: "auto",
-                    boxShadow: "6px 6px 10px 1px rgba(0,0,0,0.4)",
-                  }}
-                />
+                <Box key={i} mb={2} height={260}>
+                  <Box
+                    component="img"
+                    src={img}
+                    alt={`slide-${i}`}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      boxShadow: "6px 6px 10px 1px rgba(0,0,0,0.4)",
+                    }}
+                  />
+                </Box>
               ))}
             </Box>
           </Box>

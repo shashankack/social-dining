@@ -15,7 +15,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
 import hotMomClub from "../assets/images/clubs/hotMom.png";
-import foudnersClub from "../assets/images/clubs/founders.png";
+import foudnersClub from "../assets/images/clubs/founders/thumbnail.png";
 import fitnessClub from "../assets/images/clubs/fitness.png";
 import supperClub from "../assets/images/clubs/supper.png";
 
