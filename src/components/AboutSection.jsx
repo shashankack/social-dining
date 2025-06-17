@@ -112,44 +112,68 @@ const AboutSection = () => {
   return (
     <Box overflow="hidden">
       {isMobile || isTablet ? (
-        <Stack width="100%" direction="column-reverse" p={1} gap={2}>
+        <Stack width="100%" direction="column-reverse" p={2} spacing={4}>
+          {/* Description Section */}
           <Stack direction="column" width="100%">
             <Typography
-              mt={2}
               variant="body2"
-              fontSize="3.6vw"
+              fontSize="4vw"
               textAlign="justify"
+              color="#fff"
+              lineHeight={1.6}
+              sx={{
+                letterSpacing: "0.02em",
+
+                "& strong": { color: "#B55725" },
+              }}
             >
-              Welcome to Social Dining, where connections are curated and
-              experiences are unforgettable. We are a premium social club
-              designed for a carefully selected circle of individuals who crave
-              meaningful interactions, indulgent experiences, and a vibrant
-              community. We bring together people from diverse industries and
-              backgrounds, fostering a space for networking, fun, and
-              collaboration. Whether you’re an entrepreneur, fitness enthusiast,
-              foodie, or someone who enjoys lively conversation, our exclusive
-              clubs offer something for everyone.
+              Welcome to <strong>Social Dining</strong>, where connections are
+              curated and experiences are unforgettable. We are a premium social
+              club designed for a carefully selected circle of individuals who
+              crave meaningful interactions, indulgent experiences, and a
+              vibrant community.
+              <br />
+              <br />
+              We bring together people from diverse industries and backgrounds,
+              fostering a space for networking, fun, and collaboration. Whether
+              you’re an entrepreneur, fitness enthusiast, foodie, or someone who
+              enjoys lively conversation, our exclusive clubs offer something
+              for everyone.
             </Typography>
           </Stack>
-          <Box width="100%" height={300}>
+
+          {/* Slider Section */}
+          <Box
+            width="100%"
+            height={300}
+            sx={{
+              borderRadius: 2,
+              overflow: "hidden",
+              border: "2px solid #B55725",
+              boxShadow: 3,
+            }}
+          >
             <ImageSlider images={slides} direction="" />
           </Box>
+
+          {/* Title */}
           <Typography
             variant="h3"
-            fontWeight={700}
+            fontWeight={800}
             fontSize="10vw"
             textAlign="center"
-            mt={2}
+            color="#fff"
           >
             About Us
             <span>
               <img
                 src={dot}
+                alt="dot"
                 style={{
                   objectFit: "contain",
-                  width: " 2vw",
+                  width: "2vw",
                   height: "2vw",
-                  marginLeft: "2px",
+                  marginLeft: "1vw",
                 }}
               />
             </span>

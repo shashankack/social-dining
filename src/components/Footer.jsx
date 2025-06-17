@@ -17,67 +17,82 @@ const Footer = () => {
 
   return (
     <Stack
-      height={isMobile ? "auto" : "40vh"}
       width="100%"
-      direction="row"
+      bgcolor="#000"
+      px={isMobile ? 2 : 14}
+      py={isMobile ? 6 : 8}
+      direction={isMobile ? "column" : "row"}
       justifyContent="space-between"
       alignItems="center"
-      px={isMobile ? 2 : 14}
+      spacing={isMobile ? 4 : 0}
       position="relative"
-      py={isMobile ? 4 : 0}
+      overflow="hidden"
     >
-      <Box width={isMobile ? "40vw" : "20vw"}>
+      {/* Logo Section */}
+      <Box width={isMobile ? "60vw" : "20vw"}>
         <Box
           component="img"
           src={logo}
+          alt="Social Dining Logo"
           sx={{
             width: "100%",
-            height: "100%",
+            height: "auto",
             objectFit: "contain",
           }}
         />
       </Box>
-      <Stack direction="column" gap={isMobile ? 3 : 4} alignItems="flex-start">
+
+      {/* Text + Contact Section */}
+      <Stack spacing={3}>
         <Typography
           color="#B55725"
-          fontSize={isMobile ? "3vw" : "2vw"}
-          fontWeight={400}
-          sx={{
-            lineHeight: 1,
-          }}
+          fontSize={isMobile ? "4vw" : "1.5vw"}
+          fontWeight={500}
+          lineHeight={1.4}
         >
-          Lets create unforgettable <br />
+          Let’s create unforgettable <br />
           experiences together.
         </Typography>
-        <Stack gap={isMobile ? 0 : 1}>
+
+        <Stack spacing={1}>
           <Link
-            color="#fff"
-            fontSize={isMobile ? "3vw" : "2vw"}
-            underline="none"
-            fontWeight={800}
             href="tel:7760618621"
+            underline="none"
+            color="#fff"
+            fontSize={isMobile ? "4vw" : "1.3vw"}
+            fontWeight={700}
+            sx={{
+              transition: "color 0.3s ease",
+              "&:hover": { color: "#B55725" },
+            }}
           >
             +91 77606 18621
           </Link>
           <Link
-            color="#fff"
-            fontSize={isMobile ? "3vw" : "2vw"}
-            underline="none"
             href="mailto:socialdining.office@gmail.com"
+            underline="none"
+            color="#fff"
+            fontSize={isMobile ? "3.5vw" : "1.2vw"}
+            sx={{
+              transition: "color 0.3s ease",
+              "&:hover": { color: "#B55725" },
+            }}
           >
             socialdining.office@gmail.com
           </Link>
         </Stack>
       </Stack>
+
+      {/* Scroll to Top Button */}
       <Box
         sx={{
           position: "absolute",
-          top: isMobile ? 0 : -40,
-          right: isMobile ? 0 : 20,
-          backgroundColor: "#B55725",
+          bottom: isMobile ? 12 : 24,
+          right: isMobile ? 12 : 24,
+          width: isMobile ? 48 : 52,
+          height: isMobile ? 48 : 52,
           borderRadius: "50%",
-          width: isMobile ? "7vw" : " 3vw",
-          height: isMobile ? "7vw" : "3vw",
+          backgroundColor: "#B55725",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -92,7 +107,8 @@ const Footer = () => {
       >
         <KeyboardArrowUpIcon
           sx={{
-            fontSize: isMobile ? "5vw" : "2vw",
+            fontSize: isMobile ? 24 : 28,
+            color: "#fff",
           }}
         />
       </Box>

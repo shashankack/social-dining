@@ -14,6 +14,7 @@ import SplitType from "split-type";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
+import arrow from "../assets/images/arrow.gif";
 import logo from "../assets/images/logo_no_dot.png";
 import desktopVideo from "../assets/videos/hero_desktop.mp4";
 import mobileVideo from "../assets/videos/hero_mobile.mp4";
@@ -30,7 +31,6 @@ const HeroSection = () => {
   });
 
   const location = useLocation();
-  const currentPath = location.pathname;
 
   const dotRef = useRef(null);
   const introTextRef = useRef(null);
@@ -278,42 +278,35 @@ const HeroSection = () => {
           id="book"
           position="absolute"
           bottom={50}
+          onClick={() =>
+            window.scrollTo({
+              top: window.innerHeight,
+              behavior: "smooth",
+            })
+          }
           sx={{
-            "& a": {
-              display: "inline-block",
-              transition: "all 0.3s ease",
-              cursor: "pointer",
-              color: "white",
-              letterSpacing: "0.05em",
-            },
-            "& a:before": {
-              content: '""',
-              position: "absolute",
-              width: "100%",
-              height: "6px",
-              backgroundColor: "#B55725",
-              bottom: 0,
-              transform: "scaleX(1)",
-              transition: "transform 0.3s ease",
-            },
-            "& a:hover:before": {
-              transform: "scaleX(0)",
-            },
-            "& a:hover": {
-              transform: "scale(1.05)",
-              color: "#B55725",
+            width: "auto",
+            height: "auto",
+            cursor: "pointer",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            transition: "transform 0.3s ease",
+            "&:hover": {
+              transform: "translateY(4px)",
             },
           }}
         >
-          <Link
-            underline="none"
-            variant="h4"
-            fontWeight={600}
-            href="/events"
-            textTransform="uppercase"
-          >
-            Book Now
-          </Link>
+          <Box
+            component="img"
+            src={arrow}
+            alt="Scroll Down"
+            sx={{
+              width: isMobile ? "10vw" : "3vw",
+              height: "auto",
+              objectFit: "contain",
+            }}
+          />
         </Box>
 
         <Box

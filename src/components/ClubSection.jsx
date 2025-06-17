@@ -14,6 +14,11 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-creative";
+
 import hotMomClub from "../assets/images/clubs/hotMom.png";
 import foudnersClub from "../assets/images/clubs/founders/thumbnail.png";
 import fitnessClub from "../assets/images/clubs/fitness.png";
@@ -76,61 +81,139 @@ const ClubSection = () => {
   };
 
   return isMobile ? (
-    <Box
-      height="110vh"
-      display="flex"
+    <Stack
+      width="100%"
+      height="100vh"
       justifyContent="center"
       alignItems="center"
-      position="relative"
+      sx={{ position: "relative", backgroundColor: "#000" }}
     >
-      <Box component="video" src={clubVideo} autoPlay muted loop playsInline />
-      <Stack
-        direction="column"
-        gap={2}
-        position="absolute"
-        width="94%"
-        sx={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+      {/* Background Video */}
+      <Box
+        component="video"
+        src={clubVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: 0,
+          filter: "brightness(1)",
+        }}
+      />
+
+      {/* Title */}
+      <Typography
+        fontSize="14vw"
+        fontWeight={800}
+        textAlign="center"
+        color="#fff"
+        mb={4}
+        zIndex={2}
       >
-        <Typography textAlign="center" fontSize="14vw" mb={4}>
-          Clubs
-          <span>
-            <img
-              src={dot}
-              style={{ width: "6px", height: "6px", marginLeft: "3px" }}
-            />
-          </span>
-        </Typography>
+        Clubs
+        <span>
+          <img
+            src={dot}
+            alt="dot"
+            style={{ width: "15px", height: "15px", marginLeft: "6px" }}
+          />
+        </span>
+      </Typography>
+
+      {/* Swiper Carousel */}
+      <Swiper
+        modules={[EffectCoverflow]}
+        effect="coverflow"
+        grabCursor
+        centeredSlides
+        slidesPerView="auto"
+        coverflowEffect={{
+          rotate: 30,
+          stretch: 0,
+          depth: 100,
+          modifier: 1,
+          slideShadows: true,
+        }}
+        style={{
+          width: "90%",
+          height: "480px",
+          zIndex: 2,
+          overflow: "hidden",
+          paddingBottom: "20px",
+        }}
+      >
         {clubList.map((club, index) => (
-          <Stack direction="row" gap={2} height={140} key={index}>
-            <Box component="img" src={club.thumbnail} width={140} />
-            <Stack
-              alignItems="start"
-              height="100%"
-              justifyContent="space-between"
-            >
-              <Typography fontWeight={800}>{club.title}</Typography>
-              <Typography fontSize="3.4vw" lineHeight={1.2}>
+          <SwiperSlide
+            key={index}
+            style={{
+              background: "#000",
+              border: "2px solid #B55725",
+              borderRadius: "12px",
+              padding: "16px",
+              width: "80%", // important for coverflow to work well
+              boxSizing: "border-box",
+            }}
+          >
+            <Stack height="100%" spacing={2} overflow="hidden">
+              <Box
+                component="img"
+                src={club.thumbnail}
+                alt={club.title}
+                sx={{
+                  width: "100%",
+                  height: 200,
+                  objectFit: "cover",
+                  borderRadius: 1,
+                }}
+              />
+
+              <Typography fontWeight={700} fontSize="5vw" color="#fff" noWrap>
+                {club.title}
+              </Typography>
+
+              <Typography
+                fontSize="4vw"
+                color="#ccc"
+                lineHeight={1.4}
+                sx={{
+                  flexGrow: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {club.description}
               </Typography>
+
               <Button
                 variant="contained"
-                fullWidth
                 onClick={() => handleNavigate(club.id)}
+                fullWidth
                 sx={{
                   backgroundColor: "#B55725",
                   color: "#fff",
                   fontWeight: 600,
+                  fontSize: "4vw",
                   textTransform: "none",
-                  "&:hover": { backgroundColor: "#a7491c" },
+                  borderRadius: "5px",
+                  "&:hover": {
+                    backgroundColor: "#a7491c",
+                  },
                 }}
               >
                 Learn More
               </Button>
             </Stack>
-          </Stack>
+          </SwiperSlide>
         ))}
-      </Stack>
-    </Box>
+      </Swiper>
+    </Stack>
   ) : (
     <Box position="relative">
       <Box
