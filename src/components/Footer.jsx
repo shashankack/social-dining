@@ -10,10 +10,19 @@ import {
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import logo from "../assets/images/sd_logo.svg";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+
+  const navLinks = [
+    { label: "Privacy Policy", path: "/privacy-policy" },
+    { label: "Cancellation & Refunds", path: "/cancellation-policy" },
+    { label: "Terms & Conditions", path: "/terms-and-conditions" },
+    { label: "Shipping Policy", path: "/shipping-policy" },
+  ];
 
   return (
     <Stack
@@ -23,8 +32,8 @@ const Footer = () => {
       py={isMobile ? 6 : 8}
       direction={isMobile ? "column" : "row"}
       justifyContent="space-between"
-      alignItems="center"
-      spacing={isMobile ? 4 : 0}
+      alignItems={"center"}
+      spacing={isMobile ? 6 : 0}
       position="relative"
       overflow="hidden"
     >
@@ -56,6 +65,7 @@ const Footer = () => {
 
         <Stack spacing={1}>
           <Link
+            textAlign={isMobile ? "center" : "left"}
             href="tel:7760618621"
             underline="none"
             color="#fff"
@@ -69,6 +79,7 @@ const Footer = () => {
             +91 77606 18621
           </Link>
           <Link
+            textAlign={isMobile ? "center" : "left"}
             href="mailto:socialdining.office@gmail.com"
             underline="none"
             color="#fff"
@@ -81,6 +92,27 @@ const Footer = () => {
             socialdining.office@gmail.com
           </Link>
         </Stack>
+      </Stack>
+
+      {/* Policy Links */}
+      <Stack spacing={1} mt={isMobile ? 4 : 0}>
+        {navLinks.map((link) => (
+          <Typography
+            key={link.label}
+            onClick={() => navigate(link.path)}
+            textAlign={isMobile ? "center" : "left"}
+            sx={{
+              fontSize: isMobile ? "3.5vw" : "1.1vw",
+              color: "#fff",
+              cursor: "pointer",
+              transition: "color 0.3s ease",
+              "&:hover": { color: "#B55725" },
+              fontWeight: 500,
+            }}
+          >
+            {link.label}
+          </Typography>
+        ))}
       </Stack>
 
       {/* Scroll to Top Button */}

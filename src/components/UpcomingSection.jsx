@@ -217,7 +217,6 @@ const UpcomingSection = () => {
                     width: 320,
                     height: 440,
                     objectFit: "cover",
-                    border: "3px solid #B55725",
                     borderRadius: 2,
                     position: "absolute",
                     top: 0,
