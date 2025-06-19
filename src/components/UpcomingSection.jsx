@@ -47,7 +47,7 @@ const UpcomingSection = () => {
 
         const events = await fetchEvents();
         setUpcomingEvents(events);
-        localStorage.setItem("events", JSON.stringify(events));
+        sessionStorage.setItem("events", JSON.stringify(events));
         console.log("Fetched and cached events:", events);
       } catch (error) {
         console.error("Error fetching events:", error);

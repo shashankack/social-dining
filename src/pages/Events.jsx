@@ -33,7 +33,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEventsData = async () => {
       try {
-        const cachedEvents = localStorage.getItem("events");
+        const cachedEvents = sessionStorage.getItem("events");
         if (cachedEvents) {
           const parsedEvents = JSON.parse(cachedEvents);
           setEvents(parsedEvents);
@@ -42,7 +42,7 @@ const Events = () => {
         }
         const eventsData = await fetchEvents();
         setEvents(eventsData);
-        localStorage.setItem("events", JSON.stringify(eventsData));
+        sessionStorage.setItem("events", JSON.stringify(eventsData));
         setLoading(false);
       } catch (error) {
         console.error("Error parsing cached events:", error);
