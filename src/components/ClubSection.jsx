@@ -20,9 +20,9 @@ import "swiper/css";
 import "swiper/css/effect-creative";
 
 import hotMomClub from "../assets/images/clubs/hotMom.png";
-import foudnersClub from "../assets/images/clubs/founders/thumbnail.png";
-import fitnessClub from "../assets/images/clubs/fitness.png";
-import supperClub from "../assets/images/clubs/supper.png";
+import supperClub from "../assets/images/clubs/supper/thumbnail.jpg";
+import fitnessClub from "../assets/images/clubs/fitness/thumbnail.jpg";
+import foudnersClub from "../assets/images/clubs/supper.png";
 
 import clubVideo from "../assets/videos/club.mp4";
 import { getClubs } from "../services/clubService";

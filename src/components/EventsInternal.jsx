@@ -36,6 +36,7 @@ const EventsInternal = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isWomenFounder, setIsWomenFounder] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -62,6 +63,9 @@ const EventsInternal = () => {
       try {
         const event = await fetchEventById(id);
         setData(event);
+        if (id === "cmc2yf9zb00013u0vljst8plq") {
+          setIsWomenFounder(true);
+        }
       } catch (err) {
         console.error("Failed to fetch event:", err);
       }
@@ -298,7 +302,11 @@ const EventsInternal = () => {
 
         <Button
           ref={(el) => (textGroupRef.current[6] = el)}
-          onClick={handleEventRegistration}
+          onClick={() =>
+            isWomenFounder
+              ? (window.location.href = "https://lu.ma/b78th7lb")
+              : handleEventRegistration()
+          }
           variant="contained"
           fullWidth
           disabled={loading}

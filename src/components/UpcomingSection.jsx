@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Grid,
-  Link,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Typography, Link, useTheme, useMediaQuery } from "@mui/material";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";

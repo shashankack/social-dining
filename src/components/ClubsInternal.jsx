@@ -47,10 +47,11 @@ import fitness2 from "../assets/images/clubs/fitness/fitness2.png";
 import fitness3 from "../assets/images/clubs/fitness/fitness3.png";
 import fitness4 from "../assets/images/clubs/fitness/fitness4.png";
 
+// import supper1 from "../assets/images/clubs/supper/supper1.jpg";
 import supper1 from "../assets/images/clubs/supper/supper1.png";
 import supper2 from "../assets/images/clubs/supper/supper2.png";
-import supper3 from "../assets/images/clubs/supper/supper3.png";
-import supper4 from "../assets/images/clubs/supper/supper4.png";
+import supper3 from "../assets/images/clubs/supper/supper3.jpg";
+import supper4 from "../assets/images/clubs/supper/supper4.jpg";
 
 import { getClubs, registerForClub } from "../services/clubService";
 import { getCurrentUser, isAuthenticated } from "../services/authService";
@@ -186,7 +187,6 @@ const clubData = [
     images: [supper1, supper2, supper3, supper4],
   },
 ];
-
 const ClubsInternal = () => {
   const { id } = useParams();
   const theme = useTheme();
