@@ -22,6 +22,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
+import womenFoundersImage from "../assets/images/womenFoundersImage.png";
+
 import { getCurrentUser } from "../services/authService";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -336,13 +338,17 @@ const EventsInternal = () => {
       <Box
         mt={isMobile ? 6 : 0}
         width="100%"
-        height={isMobile ? "50vh" : 500}
+        height={isMobile ? "50vh" : 550}
         overflow="hidden"
       >
         <Box
           ref={imageRef}
           component="img"
-          src={data.thumbnail || "https://placehold.co/600x400"}
+          src={
+            isWomenFounder
+              ? womenFoundersImage
+              : data.thumbnail || "https://placehold.co/600x400"
+          }
           sx={{
             width: "100%",
             height: "100%",

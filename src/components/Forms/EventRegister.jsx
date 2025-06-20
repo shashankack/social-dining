@@ -94,7 +94,7 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
       const payload = {
         eventId: event.id,
         instagram: form.Instagram,
-        linkedIn: form.Locality, // assuming you're using this for LinkedIn
+        linkedIn: form.Locality,
       };
 
       // Step 1: Create booking and get Razorpay order
@@ -116,7 +116,7 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
         description: eventTitle,
         order_id: razorpayOrderId,
         bookingId: bookingId,
-        
+
         handler: async (paymentRes) => {
           try {
             // Step 3: Verify payment with backend
@@ -185,7 +185,7 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
     "Contact",
     "Email",
     "Instagram",
-    "Locality",
+    "What is your business about?",
     "Any questions to ask?",
   ];
 
@@ -233,6 +233,7 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
                     name={key}
                     value={form[key] || ""}
                     onChange={handleChange}
+                    autoComplete="off"
                     InputProps={{ disableUnderline: false }}
                     InputLabelProps={{ style: { color: "#fff" } }}
                     sx={textFieldStyle}
