@@ -129,6 +129,12 @@ const AuthForm = ({ onSuccess }) => {
       onSubmit={handleSubmit}
       noValidate
     >
+      <Typography
+        variant="body1"
+        sx={{ color: "#B55725", textAlign: "center", mb: 2 }}
+      >
+        Secure access starts here, sign in or sign up.
+      </Typography>
       <Tabs
         value={mode}
         onChange={(e, v) => {
@@ -159,8 +165,8 @@ const AuthForm = ({ onSuccess }) => {
           },
         }}
       >
-        <Tab value="signin" label="Sign In" />
         <Tab value="signup" label="Sign Up" />
+        <Tab value="signin" label="Sign In" />
       </Tabs>
 
       <Stack spacing={3}>
