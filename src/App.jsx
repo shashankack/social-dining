@@ -19,6 +19,7 @@ import Policy from "./components/Policy";
 
 import { eventsData } from "./assets/data";
 import Loader from "./components/Loader";
+import { useEffect } from "react";
 
 const AppContent = () => {
   const location = useLocation();
@@ -26,6 +27,10 @@ const AppContent = () => {
   const { loading } = useLoading();
 
   useAttachLoaderInterceptor();
+
+  useEffect(() => {
+    localStorage.removeItem("events");
+  }, []);
 
   return (
     <>
