@@ -302,10 +302,11 @@ const EventsInternal = () => {
 
         <Button
           ref={(el) => (textGroupRef.current[6] = el)}
-          onClick={() =>
-            isWomenFounder
-              ? (window.location.href = "https://lu.ma/b78th7lb")
-              : handleEventRegistration()
+          onClick={
+            () => handleEventRegistration()
+            // isWomenFounder
+            //   ? (window.location.href = "https://lu.ma/b78th7lb")
+            //   :
           }
           variant="contained"
           fullWidth
