@@ -211,7 +211,11 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Typography variant="h6" fontWeight="bold">
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                textTransform="capitalize"
+              >
                 {event.title}
               </Typography>
               <IconButton onClick={handleClose} sx={{ color: "#B55725" }}>
