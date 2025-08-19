@@ -20,7 +20,7 @@ import "swiper/css";
 import "swiper/css/effect-creative";
 
 import hotMomClub from "../assets/images/clubs/hotMom.png";
-import supperClub from "../assets/images/clubs/supper/thumbnail.jpg";
+import supperClub from "../assets/images/clubs/voc.png";
 import fitnessClub from "../assets/images/clubs/fitness.png";
 import foudnersClub from "../assets/images/clubs/founders.png";
 
@@ -50,7 +50,7 @@ const clubData = [
   },
   {
     thumbnail: supperClub,
-    title: "Supper Club",
+    title: "Vegetarian Omakase Club",
     description:
       "Evenings of clinking glasses, shared plates, and effortless connection as the day winds down.",
   },

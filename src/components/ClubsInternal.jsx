@@ -163,9 +163,9 @@ const clubData = [
   {
     thumbnail: supperClub,
     reel: supperReel,
-    title: "Supper Club",
+    title: "Vegetarian Omakase Club",
     description:
-      "The Supper Club is where food, conversation, and fun activities collide. Every event is a curated dining experience, designed not only to satisfy your palate but also to offer you the chance to mingle, have fun, and create lasting memories",
+      "The Vegetarian Omakase Club is where food, conversation, and fun activities collide. Every event is a curated dining experience, designed not only to satisfy your palate but also to offer you the chance to mingle, have fun, and create lasting memories",
     whatWeOffer: `<ul>
         <li>
           <strong>Curated Dinner Experiences:</strong> Thoughtfully prepared
@@ -179,10 +179,10 @@ const clubData = [
         </li>
         <li>
           <strong>Relaxed Vibes:</strong> Set in intimate, cozy spaces, our
-          supper club is the perfect environment to unwind, relax and let loose
+           club is the perfect environment to unwind, relax and let loose
         </li>
       </ul>
-      The Supper Club is your go-to for delightful conversations, memorable
+      The Vegetarian Omakase Club is your go-to for delightful conversations, memorable
       moments, and a great time with great food.`,
     images: [supper1, supper2, supper3, supper4],
   },
@@ -235,6 +235,7 @@ const ClubsInternal = () => {
     try {
       setLoading(true);
       await registerForClub(clubId);
+      F;
       setSnackbar({
         open: true,
         message: "Successfully registered for the club!",
