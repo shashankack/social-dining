@@ -21,8 +21,8 @@ import "swiper/css/effect-creative";
 
 import hotMomClub from "../assets/images/clubs/hotMom.png";
 import supperClub from "../assets/images/clubs/supper/thumbnail.jpg";
-import fitnessClub from "../assets/images/clubs/fitness/thumbnail.jpg";
-import foudnersClub from "../assets/images/clubs/supper.png";
+import fitnessClub from "../assets/images/clubs/fitness.png";
+import foudnersClub from "../assets/images/clubs/founders.png";
 
 import clubVideo from "../assets/videos/club.mp4";
 import { getClubs } from "../services/clubService";
