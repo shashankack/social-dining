@@ -221,7 +221,6 @@ const ClubsInternal = () => {
     };
 
     fetchClub();
-    console.log("Club ID:", id);
   }, [id]);
 
   const handleClick = async (clubId) => {
@@ -255,8 +254,6 @@ const ClubsInternal = () => {
 
   if (!club) return <Loader />;
   const isMember = currentUser?.clubId === club.id;
-  console.log("User club ID:", currentUser?.clubId);
-  console.log(isMember);
 
   return (
     <Stack px={isMobile ? 0 : 10} py={10} flexDirection="column">

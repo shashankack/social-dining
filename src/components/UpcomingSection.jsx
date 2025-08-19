@@ -41,14 +41,13 @@ const UpcomingSection = () => {
         if (cachedEvents) {
           const parsedEvents = JSON.parse(cachedEvents);
           setUpcomingEvents(parsedEvents);
-          console.log("Using cached events:", parsedEvents);
+
           return;
         }
 
         const events = await fetchEvents();
         setUpcomingEvents(events);
         sessionStorage.setItem("events", JSON.stringify(events));
-        console.log("Fetched and cached events:", events);
       } catch (error) {
         console.error("Error fetching events:", error);
       }

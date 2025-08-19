@@ -15,12 +15,10 @@ api.interceptors.request.use(
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log("Request with token:", config.headers.Authorization);
     }
     return config;
   },
   (error) => {
-    console.log("Request error:", error);
     return Promise.reject(error);
   }
 );

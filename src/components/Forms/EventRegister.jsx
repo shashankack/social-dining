@@ -102,8 +102,6 @@ const EventRegister = ({ open, handleClose, event, setSnackbar }) => {
         withCredentials: true,
       });
 
-      console.log("Booking response:", res.data);
-
       const { bookingId, razorpayOrderId, amount, currency, eventTitle } =
         res.data;
 
