@@ -22,9 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
-import womenFoundersImage from "../assets/images/womenFoundersImage.png";
-
-import { getCurrentUser } from "../services/authService";
+import desktopThumbnail from "../assets/images/event_desktop/voc.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +77,7 @@ const EventsInternal = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isWomenFounder, setIsWomenFounder] = useState(false);
+  const [isNew, setIsNew] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -105,8 +103,8 @@ const EventsInternal = () => {
       try {
         const event = await fetchEventById(id);
         setData(event);
-        if (id === "cmc2yf9zb00013u0vljst8plq") {
-          setIsWomenFounder(true);
+        if (id === "123") {
+          setIsNew(true);
         }
       } catch (err) {
         console.error("Failed to fetch event:", err);
@@ -378,16 +376,16 @@ const EventsInternal = () => {
         <Box
           mt={isMobile ? 6 : 0}
           width="100%"
-          height={isMobile ? "50vh" : 550}
+          height={isMobile ? "80vh" : 600}
           overflow="hidden"
         >
           <Box
             ref={imageRef}
             component="img"
             src={
-              isWomenFounder
-                ? womenFoundersImage
-                : data.thumbnail || "https://placehold.co/600x400"
+              isMobile
+                ? data.thumbnail || "https://placehold.co/600x400"
+                : desktopThumbnail
             }
             sx={{
               width: "100%",
