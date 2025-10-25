@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=League+Spartan:wght@100..900&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background-color: #fffff5;
+  font-family: "Darker Grotesque", "League Spartan", "Sink", sans-serif;
+}
+
+@font-face {
+  font-family: "Sink";
+  src: url("/fonts/Sink.otf") format("opentype");
+}
