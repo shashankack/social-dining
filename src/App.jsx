@@ -8,26 +8,28 @@ import Home from "./pages/Home.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
+const EventsPage = lazy(() => import("./pages/EventsPage.jsx"));
+const EventDetailsPage = lazy(() => import("./pages/EventDetailsPage.jsx"));
+const GalleryPage = lazy(() => import("./pages/GalleryPage.jsx"));
+const ClubDetailsPage = lazy(() => import("./pages/ClubDetailsPage.jsx"));
+const EventGalleryPage = lazy(() => import("./pages/EventGalleryPage.jsx"));
+
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/event/:slug" element={<EventDetailsPage />} />
+      <Route path="/gallery" element={<GalleryPage />} />
+      <Route path="/gallery/event/:slug" element={<EventGalleryPage />} />
+      <Route path="/club/:slug" element={<ClubDetailsPage />} />
     </Routes>
   );
 };
 
-const VIDEO_URLS = [
-  "https://res.cloudinary.com/dzc8qttib/video/upload/v1759734369/FITNESSCLUB_jz1emd.mp4",
-  "https://res.cloudinary.com/dzc8qttib/video/upload/v1759734407/FOUNDERS_CLUB_l87wbf.mp4",
-  "https://res.cloudinary.com/dzc8qttib/video/upload/v1757321419/hot_moms_mmkcjx.mp4",
-  "https://res.cloudinary.com/dzc8qttib/video/upload/v1759734491/VEGE_OMAKASE_a0cpvl.mp4",
-  "https://res.cloudinary.com/dzc8qttib/video/upload/v1759734609/WOMENS_CLUB_neoakt.mp4",
-];
-
 const App = () => {
   return (
     <Suspense fallback={<Loader />}>
-      {/* <VideoPreloader urls={VIDEO_URLS} /> */}
       <Navbar />
       <AppRoutes />
       <Footer />

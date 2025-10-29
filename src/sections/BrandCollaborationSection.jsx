@@ -110,6 +110,7 @@ const BrandCollaborationSection = () => {
       <Box display="flex" justifyContent="center" alignItems="center" mt={6}>
         <Button
           variant="text"
+          href="/gallery"
           disableElevation
           disableRipple
           disableFocusRipple

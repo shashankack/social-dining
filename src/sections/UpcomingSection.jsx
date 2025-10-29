@@ -66,7 +66,7 @@ const UpcomingSection = () => {
         >
           {activities.length > 0 ? (
             activities.map((activity) => (
-              <Box key={activity.id} mt={{ xs: 6, md: 10 }}>
+              <Box key={activity.slug} mt={{ xs: 6, md: 10 }}>
                 {activity.imageUrls && activity.imageUrls[0] && (
                   <Box
                     p={{ xs: 2, md: 4 }}

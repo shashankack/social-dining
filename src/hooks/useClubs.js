@@ -25,18 +25,18 @@ export function useClubs() {
   return { clubs, setClubs, loading, error };
 }
 
-// Fetch details for a single club by id
-export function useClubDetails(id) {
+// Fetch details for a single club by slug
+export function useClubDetails(slug) {
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!slug) return;
     setLoading(true);
     setError(null);
     api
-      .get(`/clubs/${id}`)
+      .get(`/clubs/${slug}`)
       .then((res) => {
         setClub(res.data.club || null);
         setLoading(false);
@@ -45,7 +45,7 @@ export function useClubDetails(id) {
         setError(err.message);
         setLoading(false);
       });
-  }, [id]);
+  }, [slug]);
 
   return { club, loading, error };
 }

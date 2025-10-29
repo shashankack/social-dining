@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useClubs } from "../hooks/useClubs";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Skeleton } from "@mui/material";
 import CTAButton from "../components/CTAButton";
 
 const ClubsSection = () => {
@@ -70,8 +70,37 @@ const ClubsSection = () => {
             minWidth: "max-content",
           }}
         >
-          {loading && <Typography>Loading clubs...</Typography>}
-          {error && <Typography color="error">{error}</Typography>}
+          {loading && !error && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              {[...Array(5)].map((_, idx) => (
+                <Skeleton
+                  key={idx}
+                  variant="rectangular"
+                  animation="wave"
+                  sx={{
+                    width: { xs: 200, md: 300 },
+                    height: { xs: 600, md: 800 },
+                    my: 2,
+                    mx: 3,
+                    bgcolor: "grey.300",
+                    borderRadius: 4,
+                  }}
+                />
+              ))}
+            </Box>
+          )}
+          {error && !loading && (
+            <Typography color="error" sx={{ width: 300, my: 2 }}>
+              {typeof error === "string"
+                ? error
+                : "Failed to load clubs. Please try again."}
+            </Typography>
+          )}
           {clubs &&
             clubs.length > 0 &&
             clubs.map((club, idx) => (
@@ -79,7 +108,7 @@ const ClubsSection = () => {
                 key={club.id || idx}
                 className="video-card"
                 component="a"
-                href={club.slug ? `/${club.slug}` : "#"}
+                href={`club/${club.slug}`}
                 sx={{
                   position: "relative",
                   width: { xs: 200, md: 300 },

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from '../lib/api';
+import api from "../lib/api";
 
 // Fetch activities with optional currentStatus and count (limit)
 export function useActivities({ currentStatus, count } = {}) {
@@ -13,11 +13,13 @@ export function useActivities({ currentStatus, count } = {}) {
     const params = {};
     if (count) params.limit = count;
     api
-      .get('/activities', { params })
+      .get("/activities", { params })
       .then((res) => {
         let fetchedActivities = res.data.activities || [];
         if (currentStatus) {
-          fetchedActivities = fetchedActivities.filter(activity => activity.currentStatus === currentStatus);
+          fetchedActivities = fetchedActivities.filter(
+            (activity) => activity.currentStatus === currentStatus
+          );
         }
         setActivities(fetchedActivities);
         setLoading(false);

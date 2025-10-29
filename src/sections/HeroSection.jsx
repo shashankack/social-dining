@@ -80,6 +80,7 @@ const HeroSection = () => {
       )}
       <Stack width="100%" mt={4} p={2} gap={6}>
         <CTAButton
+          href="/events"
           text="Click to book event"
           borderRadius={4}
           fontSize={isMobile ? "20px" : "40px"}
