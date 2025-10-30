@@ -1,11 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClubs } from "../hooks/useClubs";
 import { Box, Stack, Typography, Skeleton } from "@mui/material";
 import CTAButton from "../components/CTAButton";
+import RegisterClubDialog from "../components/RegisterClubDialog";
 
 const ClubsSection = () => {
   const sectionRef = useRef(null);
   const { clubs, loading, error } = useClubs();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // For demo, pick the first club's id if available
+  const firstClubId = clubs && clubs.length > 0 ? clubs[0].id : null;
 
   return (
     <Box ref={sectionRef} overflow="hidden">
@@ -44,7 +49,7 @@ const ClubsSection = () => {
             bgcolor: "secondary.main",
             height: { xs: 3, md: 4 },
             borderRadius: 10,
-            width: { xs: "55%", sm: "65%", md: "80%" },
+            width: { xs: "50%", sm: "65%", md: "70%", lg: "80%" },
             mb: { xs: 4, md: 5 },
           }}
         />
@@ -53,7 +58,7 @@ const ClubsSection = () => {
         sx={{
           overflowX: "auto",
           width: "100%",
-          px: { xs: 2, md: 0 },
+          px: { xs: 2, md: 6 },
           whiteSpace: "nowrap",
           display: "flex",
           "&::-webkit-scrollbar": { display: "none" },
@@ -188,11 +193,17 @@ const ClubsSection = () => {
       </Box>
       <Box px={{ xs: 2, md: 14 }} pb={2}>
         <CTAButton
+          onClick={() => setDialogOpen(true)}
           text="join clubs"
           primaryColor="primary.main"
           secondaryColor="secondary.main"
           borderRadius={{ xs: 6, md: 8 }}
           fontSize={{ xs: 26, md: 46 }}
+        />
+        <RegisterClubDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          clubId={firstClubId}
         />
       </Box>
     </Box>
