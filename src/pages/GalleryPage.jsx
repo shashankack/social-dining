@@ -78,7 +78,7 @@ const GalleryPage = () => {
           borderRadius={4}
         >
           <Typography variant="h6" color="primary.main">
-            Uh-oh something went wrong. Please try again later.
+            There are no events right now☹️. Please check back later!
           </Typography>
         </Box>
       )}

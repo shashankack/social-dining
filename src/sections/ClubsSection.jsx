@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useClubs } from "../hooks/useClubs";
 import { Box, Stack, Typography, Skeleton } from "@mui/material";
 import CTAButton from "../components/CTAButton";
-import RegisterClubDialog from "../components/RegisterClubDialog";
+import RegisterClubDialog from "../components/dialogs/RegisterClubDialog";
 
 const ClubsSection = () => {
   const sectionRef = useRef(null);

@@ -16,8 +16,8 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-import { useRegisterClub } from "../hooks/useRegisterClub";
-import { useClubs } from "../hooks/useClubs";
+import { useRegisterClub } from "../../hooks/useRegisterClub";
+import { useClubs } from "../../hooks/useClubs";
 
 const RegisterClubDialog = ({ open, onClose }) => {
   const [form, setForm] = useState({

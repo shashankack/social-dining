@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   useMediaQuery,
@@ -12,6 +12,7 @@ import CrissCross from "../components/CrissCross";
 import PolaroidFrame from "../components/PolaroidFrame";
 import CTAButton from "../components/CTAButton";
 import ImageMarquee from "../components/ImageMarquee";
+import ContactUsDialog from "../components/dialogs/ContactUsDialog";
 
 const animationType = "scale"; // 'scale' or 'position'
 
@@ -48,6 +49,7 @@ const containerVariants = {
 const BrandCollaborationSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [openContactDialog, setOpenContactDialog] = useState(false);
 
   const images = [
     {
@@ -192,10 +194,15 @@ const BrandCollaborationSection = () => {
             color="primary.main"
             fontSize={{ xs: "2rem", md: "2.4rem" }}
             borderRadius={{ xs: 6, md: 4 }}
-            href="#"
+            onClick={() => setOpenContactDialog(true)}
           />
         </Box>
       </Stack>
+
+      <ContactUsDialog
+        open={openContactDialog}
+        onClose={() => setOpenContactDialog(false)}
+      />
 
       <Box py={{ xs: 2, md: 4 }}>
         <ImageMarquee

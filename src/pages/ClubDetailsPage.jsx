@@ -3,7 +3,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useClubDetails } from "../hooks/useClubs";
 import { useParams } from "react-router-dom";
 import CTAButton from "../components/CTAButton";
-import RegisterClubDialog from "../components/RegisterClubDialog";
+import RegisterClubDialog from "../components/dialogs/RegisterClubDialog";
 import { parseHtml } from "../lib/htmlParser";
 import Gallery from "../components/Gallery";
 
