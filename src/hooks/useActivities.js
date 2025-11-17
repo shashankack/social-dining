@@ -40,17 +40,27 @@ export function useActivityDetails(slug) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
+    // console.log(`Fetching activity details for slug: ${slug}`);
+
     api
       .get(`/activities/${slug}`)
       .then((res) => {
+        // console.log("Activity details API response:", res.data);
         setActivity(res.data.activity || null);
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        console.error("Error fetching activity details:", err);
+        const errorMessage = err.response?.data?.message || err.message || "Failed to fetch activity details";
+        setError(errorMessage);
         setLoading(false);
       });
   }, [slug]);

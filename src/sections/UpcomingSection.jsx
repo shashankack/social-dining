@@ -133,13 +133,16 @@ const UpcomingSection = () => {
             >
               <Typography
                 variant="h6"
-                textAlign="center"
-                fontSize={{ xs: "4vw", md: "1.4vw" }}
-                border={2}
-                p={10}
-                borderRadius={4}
-                borderColor="primary.main"
-                color="#000"
+                sx={{
+                  textAlign: "center",
+                  p: 10,
+                  border: 2,
+                  fontSize: { xs: "4vw", md: "1.4vw" },
+                  borderStyle: "dashed",
+                  borderRadius: 4,
+                  borderColor: "primary.main",
+                  color: "#000",
+                }}
               >
                 No upcoming events! <br />
                 Our host is resting. Check back later!😊

@@ -14,7 +14,7 @@ const EventsPage = () => {
         const dateB = new Date(b.date || b.createdAt || 0);
         return dateB - dateA;
       });
-      console.log("Sorted Events:", sorted);
+      // console.log("Sorted Events:", sorted);
     }
   }, [activities, loading]);
 
@@ -45,9 +45,8 @@ const EventsPage = () => {
       {loading && (
         <>
           {[...Array(3)].map((_, idx) => (
-            <Box>
+            <Box key={`skeleton-${idx}`}>
               <Skeleton
-                key={idx}
                 variant="rectangular"
                 width="100%"
                 animation="wave"
@@ -59,7 +58,6 @@ const EventsPage = () => {
                 }}
               />
               <Skeleton
-                key={idx}
                 variant="rectangular"
                 width="100%"
                 animation="wave"
@@ -78,9 +76,8 @@ const EventsPage = () => {
       {!loading && !error && activities.length > 0 && (
         <Box>
           {activities.map((activity) => (
-            <Box sx={{ my: 2 }}>
+            <Box key={activity.slug} sx={{ my: 2 }}>
               <Box
-                key={activity.slug}
                 sx={{
                   overflow: "hidden",
                   borderRadius: { xs: 3, md: 6 },

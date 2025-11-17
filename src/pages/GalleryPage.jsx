@@ -83,6 +83,34 @@ const GalleryPage = () => {
         </Box>
       )}
 
+      {activities.length === 0 && !loading && !error && (
+        <Box
+          sx={{
+            minHeight: "30vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              textAlign: "center",
+              p: 10,
+              border: 2,
+              fontSize: { xs: "4vw", md: "1.4vw" },
+              borderStyle: "dashed",
+              borderRadius: 4,
+              borderColor: "primary.main",
+              color: "#000",
+            }}
+          >
+            There is no event gallery available at the moment. <br /> Please
+            check back later! 😊
+          </Typography>
+        </Box>
+      )}
+
       {!loading && !error && (
         <Box width="100%" px={{ xs: 2, md: 6 }}>
           <Grid container spacing={{ xs: 1, md: 6 }} p={2}>
