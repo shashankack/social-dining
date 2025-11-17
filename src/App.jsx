@@ -14,6 +14,8 @@ const GalleryPage = lazy(() => import("./pages/GalleryPage.jsx"));
 const ClubDetailsPage = lazy(() => import("./pages/ClubDetailsPage.jsx"));
 const EventGalleryPage = lazy(() => import("./pages/EventGalleryPage.jsx"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage.jsx"));
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.jsx"));
+const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage.jsx"));
 
 const AppRoutes = () => {
   return (
@@ -25,6 +27,8 @@ const AppRoutes = () => {
       <Route path="/gallery/event/:slug" element={<EventGalleryPage />} />
       <Route path="/club/:slug" element={<ClubDetailsPage />} />
       <Route path="/payment-success" element={<PaymentSuccessPage />} />
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
     </Routes>
   );
 };
