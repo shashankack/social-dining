@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { httpClient } from '../lib/http';
+import api from '../lib/api';
 
 export const useOrganizerRegistrations = (token) => {
   const [data, setData] = useState(null);
@@ -12,7 +12,7 @@ export const useOrganizerRegistrations = (token) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await httpClient.get('/organizer/registrations', {
+      const response = await api.get('/organizer/registrations', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

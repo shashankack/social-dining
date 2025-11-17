@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { httpClient } from '../lib/http';
+import api from '../lib/api';
 
 export const useOrganizerAuth = () => {
   const [token, setToken] = useState(null);
@@ -17,7 +17,7 @@ export const useOrganizerAuth = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await httpClient.post('/organizer/login', { email, password });
+      const response = await api.post('/organizer/login', { email, password });
       const { token } = response.data;
       localStorage.setItem('organizerToken', token);
       setToken(token);
