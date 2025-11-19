@@ -7,6 +7,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     // Add other default headers here if needed
+    "ngrok-skip-browser-warning": "1",
   },
 });
 

@@ -8,14 +8,15 @@ import Home from "./pages/Home.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
+import EventGalleryPage from "./pages/EventGalleryPage.jsx";
 const EventsPage = lazy(() => import("./pages/EventsPage.jsx"));
 const EventDetailsPage = lazy(() => import("./pages/EventDetailsPage.jsx"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage.jsx"));
 const ClubDetailsPage = lazy(() => import("./pages/ClubDetailsPage.jsx"));
-const EventGalleryPage = lazy(() => import("./pages/EventGalleryPage.jsx"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage.jsx"));
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.jsx"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage.jsx"));
+const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 
 const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
       <Route path="/payment-success" element={<PaymentSuccessPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

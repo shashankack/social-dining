@@ -12,6 +12,10 @@ export function useActivities({ currentStatus, count } = {}) {
     setError(null);
     const params = {};
     if (count) params.limit = count;
+    // Support fields param for filtering fields in API response
+    if (arguments[0] && Array.isArray(arguments[0].fields) && arguments[0].fields.length > 0) {
+      params.fields = arguments[0].fields.join(',');
+    }
     api
       .get("/activities", { params })
       .then((res) => {
@@ -28,13 +32,13 @@ export function useActivities({ currentStatus, count } = {}) {
         setError(err.message);
         setLoading(false);
       });
-  }, [currentStatus, count]);
+  }, [currentStatus, count, arguments[0]?.fields?.join(',')]);
 
   return { activities, setActivities, loading, error };
 }
 
-// Fetch details for a single activity by slug
-export function useActivityDetails(slug) {
+// Fetch details for a single activity by slug, with optional fields param
+export function useActivityDetails(slug, fields) {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,12 +52,14 @@ export function useActivityDetails(slug) {
     setLoading(true);
     setError(null);
 
-    // console.log(`Fetching activity details for slug: ${slug}`);
+    const params = {};
+    if (Array.isArray(fields) && fields.length > 0) {
+      params.fields = fields.join(',');
+    }
 
     api
-      .get(`/activities/${slug}`)
+      .get(`/activities/${slug}`, { params })
       .then((res) => {
-        // console.log("Activity details API response:", res.data);
         setActivity(res.data.activity || null);
         setLoading(false);
       })
@@ -63,7 +69,7 @@ export function useActivityDetails(slug) {
         setError(errorMessage);
         setLoading(false);
       });
-  }, [slug]);
+  }, [slug, Array.isArray(fields) ? fields.join(',') : '']);
 
   return { activity, loading, error };
 }

@@ -11,7 +11,7 @@ import EventRegisterDialog from "../components/dialogs/EventRegisterDialog";
 const EventDetailsPage = () => {
   const { slug } = useParams();
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
-  
+
   const boxStyles = {
     bgcolor: "secondary.main",
     textAlign: "center",
@@ -64,7 +64,7 @@ const EventDetailsPage = () => {
 
   return (
     <Stack
-      py={{ xs: 6, md: 10 }}
+      py={{ xs: 2, md: 10 }}
       px={{ xs: 2, md: 6 }}
       spacing={{ xs: 2, md: 4 }}
     >
@@ -106,21 +106,23 @@ const EventDetailsPage = () => {
             <div className="dot" />
           </span>
         </Typography>
-        <Typography
-          component={"a"}
-          variant="h6"
-          href={activity.club ? `clubs/${activity.club.slug}` : "#"}
-          sx={{
-            color: "primary.main",
-            textTransform: "uppercase",
-            fontSize: { xs: "5vw", sm: "12vw", md: "2vw" },
-            textDecoration: "none",
-            transition: "all 0.3s ease",
-            "&:hover": { color: "secondary.main" },
-          }}
-        >
-          {activity.club?.name || "Club Information"}
-        </Typography>
+        {activity.club && (
+          <Typography
+            component={"a"}
+            variant="h6"
+            href={activity.club ? `clubs/${activity.club.slug}` : "#"}
+            sx={{
+              color: "primary.main",
+              textTransform: "uppercase",
+              fontSize: { xs: "5vw", sm: "12vw", md: "2vw" },
+              textDecoration: "none",
+              transition: "all 0.3s ease",
+              "&:hover": { color: "secondary.main" },
+            }}
+          >
+            {activity.club?.name}
+          </Typography>
+        )}
       </Box>
       <Grid container spacing={2}>
         <Grid size={{ xs: 6, md: 4 }}>

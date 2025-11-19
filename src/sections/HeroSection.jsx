@@ -61,6 +61,7 @@ const HeroSection = () => {
             <PolaroidFrame
               size={isMobile ? 130 : 170}
               boxShadow="-4px 4px 5px #0000006f"
+              cardBorder
             />
           </Box>
         </Stack>

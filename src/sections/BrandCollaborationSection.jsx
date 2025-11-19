@@ -105,7 +105,11 @@ const BrandCollaborationSection = () => {
               ...(animationType === "scale" ? img.positions : {}),
             }}
           >
-            <PolaroidFrame size={isMobile ? 140 : 220} boxShadow={8} />
+            <PolaroidFrame
+              size={isMobile ? 140 : 220}
+              boxShadow={8}
+              cardBorder
+            />
           </motion.div>
         ))}
       </motion.div>

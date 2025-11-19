@@ -19,7 +19,7 @@ const EventsPage = () => {
   }, [activities, loading]);
 
   return (
-    <Box sx={{ px: { xs: 2, sm: 6, md: 10 }, py: { xs: 4, md: 14 } }}>
+    <Box sx={{ px: { xs: 2, sm: 6, md: 10 }, py: { xs: 2, md: 14 } }}>
       <Typography
         variant="h1"
         sx={{

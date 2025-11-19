@@ -112,7 +112,7 @@ const UpcomingSection = () => {
 
                 <Box mt={{ xs: 3, md: 6 }}>
                   <CTAButton
-                    href={`/activities/${activity.slug}`}
+                    href={`/event/${activity.slug}`}
                     text="know more"
                     primaryColor="secondary.main"
                     secondaryColor="primary.main"
