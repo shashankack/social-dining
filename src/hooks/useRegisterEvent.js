@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../lib/api";
+import { apiCache } from "../lib/apiCache";
 
 export function useRegisterEvent() {
   const [loading, setLoading] = useState(false);
@@ -19,6 +20,10 @@ export function useRegisterEvent() {
         phone: formData.phone,
         ticketCount: formData.ticketCount || 1,
       });
+
+      // Clear activities cache after successful registration
+      // This ensures fresh data is fetched on next request
+      apiCache.clearPattern('/activities');
 
       setResult(response.data);
       setLoading(false);

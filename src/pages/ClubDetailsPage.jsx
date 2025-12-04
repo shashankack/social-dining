@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import CTAButton from "../components/CTAButton";
 import RegisterClubDialog from "../components/dialogs/RegisterClubDialog";
 import { parseHtml } from "../lib/htmlParser";
-import Gallery from "../components/Gallery";
+import NewGallery from "../components/NewGallery";
 
 const ClubDetailsPage = () => {
+  const [fadeIn, setFadeIn] = useState(false);
   const { slug } = useParams();
+
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
   // const { club, loading, error } = useClubDetails(slug);
 
   const loading = false;
@@ -35,6 +40,7 @@ const ClubDetailsPage = () => {
 
   return (
     <>
+      <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
       <Box py={{ xs: 6, md: 10 }} px={{ xs: 2, md: 6 }}>
         {loading && <Typography>Loading...</Typography>}
         {error && <Typography color="error">{error}</Typography>}
@@ -124,10 +130,11 @@ const ClubDetailsPage = () => {
               </Typography>
             </Box>
 
-            <Gallery />
+            <NewGallery />
           </Stack>
         )}
       </Box>
+      </div>
       <RegisterClubDialog
         open={registerDialogOpen}
         onClose={() => setRegisterDialogOpen(false)}

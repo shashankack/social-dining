@@ -70,7 +70,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
     try {
       const response = await registerEvent(activity.slug, form);
-      
+
       // Check if payment is required
       if (response && response.paymentInfo) {
         const { paymentInfo } = response;
@@ -82,7 +82,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
             severity: "success",
           });
           setOpenSnackbar(true);
-          
+
           setTimeout(() => {
             onClose();
             setForm({
@@ -117,17 +117,20 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
             paymentData,
             (razorpayResponse) => {
               // Payment successful - redirect to success page
-              console.log("Payment successful:", razorpayResponse);
-              
+              // console.log("Payment successful:", razorpayResponse);
+
               // Reset payment progress state
               setIsPaymentInProgress(false);
-              
+
               // Close the dialog immediately
               onClose();
-              
+
               // Navigate to success page with payment details
-              navigate(`/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`);
-              
+              navigate(
+                `/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`
+              );
+              window.scrollTo(0, 0);
+
               // Reset form
               setForm({
                 firstName: "",
@@ -156,7 +159,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
             severity: "info",
           });
           setOpenSnackbar(true);
-          
+
           // Optionally redirect to payment page
           // window.location.href = paymentInfo.paymentPage;
         }
@@ -167,7 +170,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
           severity: "success",
         });
         setOpenSnackbar(true);
-        
+
         setTimeout(() => {
           onClose();
           setForm({
@@ -526,7 +529,8 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                         }}
                       />
                     </Box>
-                  ) : activity?.registrationFee && activity.registrationFee > 0 ? (
+                  ) : activity?.registrationFee &&
+                    activity.registrationFee > 0 ? (
                     `Pay ₹${totalAmount.toFixed(2)}`
                   ) : (
                     "Register Now"

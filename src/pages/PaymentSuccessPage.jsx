@@ -1,10 +1,16 @@
 import { Box, Typography, Container, Button, Stack } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useState, useEffect } from "react";
 
 const PaymentSuccessPage = () => {
+  const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
 
   // Get payment details from URL params
   const paymentId = searchParams.get("payment_id");
@@ -12,6 +18,7 @@ const PaymentSuccessPage = () => {
   const signature = searchParams.get("signature");
 
   return (
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
     <Box
       sx={{
         minHeight: "100vh",
@@ -19,7 +26,7 @@ const PaymentSuccessPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        py: 8,
+        py: 4,
       }}
     >
       <Container maxWidth="md">
@@ -98,7 +105,7 @@ const PaymentSuccessPage = () => {
           >
             Your registration has been confirmed! 🎉
             <br />
-            A confirmation email has been sent to your inbox.
+            Thank you for registering, we look forward to seeing you at the venue 😊.
           </Typography>
 
           {/* Payment Details */}
@@ -226,6 +233,7 @@ const PaymentSuccessPage = () => {
         </Box>
       </Container>
     </Box>
+    </div>
   );
 };
 

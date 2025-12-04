@@ -10,6 +10,7 @@ import EventRegisterDialog from "../components/dialogs/EventRegisterDialog";
 
 const EventDetailsPage = () => {
   const { slug } = useParams();
+  const [fadeIn, setFadeIn] = useState(false);
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
 
   const boxStyles = {
@@ -29,6 +30,12 @@ const EventDetailsPage = () => {
       console.error("Error fetching activity details:", error);
     }
   }, [activity, detailsLoading, error]);
+
+  useEffect(() => {
+    if (!detailsLoading) {
+      setFadeIn(true);
+    }
+  }, [detailsLoading]);
 
   if (detailsLoading) {
     return <Loader />;
@@ -63,6 +70,7 @@ const EventDetailsPage = () => {
   }
 
   return (
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
     <Stack
       py={{ xs: 2, md: 10 }}
       px={{ xs: 2, md: 6 }}
@@ -188,16 +196,36 @@ const EventDetailsPage = () => {
           </Button>
         </Grid>
       </Grid>
-      <Box>
-        <CTAButton
-          text="register"
-          primaryColor="primary.main"
-          secondaryColor="secondary.main"
-          borderRadius={{ xs: 4, md: 4 }}
-          fontSize={{ xs: 20, md: 36 }}
-          onClick={() => setOpenRegisterDialog(true)}
-        />
-      </Box>
+      
+      {/* Show registration button only if event is available for booking */}
+      {activity.isActive && 
+       activity.isRegistrationOpen && 
+       activity.currentStatus !== 'completed' && (
+        <Box>
+          <CTAButton
+            text="register"
+            primaryColor="primary.main"
+            secondaryColor="secondary.main"
+            borderRadius={{ xs: 4, md: 4 }}
+            fontSize={{ xs: 20, md: 36 }}
+            onClick={() => setOpenRegisterDialog(true)}
+          />
+        </Box>
+      )}
+
+      {/* Show gallery button for completed events */}
+      {activity.currentStatus === 'completed' && (
+        <Box>
+          <CTAButton
+            text="View Event Gallery"
+            primaryColor="secondary.main"
+            secondaryColor="primary.main"
+            borderRadius={{ xs: 4, md: 4 }}
+            fontSize={{ xs: 20, md: 36 }}
+            href={`/gallery/event/${activity.slug}`}
+          />
+        </Box>
+      )}
 
       <EventRegisterDialog
         open={openRegisterDialog}
@@ -260,6 +288,7 @@ const EventDetailsPage = () => {
         </Typography>
       </Box>
     </Stack>
+    </div>
   );
 };
 

@@ -1,13 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, TextField, Button, Typography, Alert } from '@mui/material';
 import { useOrganizerAuth } from '../hooks/useOrganizerAuth';
 
 const AdminLoginPage = () => {
+  const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const { login, loading, error, isAuthenticated } = useOrganizerAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
 
   if (isAuthenticated) {
     navigate('/admin/dashboard');
@@ -23,6 +28,7 @@ const AdminLoginPage = () => {
   };
 
   return (
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
     <Box
       sx={{
         minHeight: '100vh',
@@ -151,6 +157,7 @@ const AdminLoginPage = () => {
         </Box>
       </Container>
     </Box>
+    </div>
   );
 };
 

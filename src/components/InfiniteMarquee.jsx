@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import gsap from "gsap";
 
 const InfiniteMarquee = ({
-  text = "Welcome to NSS Portal",
+  text = "Social Dining",
   separator = "•",
   color = "#fff",
   bgcolor = "#121212",

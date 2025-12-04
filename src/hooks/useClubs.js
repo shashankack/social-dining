@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import api from '../lib/api';
+import api from "../lib/api";
+import { cachedApiCall, apiCache } from "../lib/apiCache";
 
 // Fetch clubs (optionally by organizer, or add params if needed)
 export function useClubs() {
@@ -10,8 +11,14 @@ export function useClubs() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    api
-      .get('/clubs')
+
+    const cacheKey = apiCache.generateKey("/clubs");
+
+    cachedApiCall(
+      () => api.get("/clubs"),
+      cacheKey,
+      { ttl: 10 * 60 * 1000 } // 10 minutes cache for clubs
+    )
       .then((res) => {
         setClubs(res.data.clubs || []);
         setLoading(false);
@@ -35,8 +42,14 @@ export function useClubDetails(slug) {
     if (!slug) return;
     setLoading(true);
     setError(null);
-    api
-      .get(`/clubs/${slug}`)
+
+    const cacheKey = apiCache.generateKey(`/clubs/${slug}`);
+
+    cachedApiCall(
+      () => api.get(`/clubs/${slug}`),
+      cacheKey,
+      { ttl: 10 * 60 * 1000 } // 10 minutes cache for club details
+    )
       .then((res) => {
         setClub(res.data.club || null);
         setLoading(false);

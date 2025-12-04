@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -21,9 +22,16 @@ import { useOrganizerAuth } from '../hooks/useOrganizerAuth';
 import { useOrganizerRegistrations } from '../hooks/useOrganizerRegistrations';
 
 const AdminDashboardPage = () => {
+  const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const { token, logout, isAuthenticated } = useOrganizerAuth();
   const { data, loading, error } = useOrganizerRegistrations(token);
+
+  useEffect(() => {
+    if (!loading) {
+      setFadeIn(true);
+    }
+  }, [loading]);
 
   if (!isAuthenticated) {
     navigate('/admin/login');
@@ -36,6 +44,7 @@ const AdminDashboardPage = () => {
   };
 
   return (
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
     <Box
       sx={{
         minHeight: '100vh',
@@ -287,6 +296,7 @@ const AdminDashboardPage = () => {
         )}
       </Container>
     </Box>
+    </div>
   );
 };
 

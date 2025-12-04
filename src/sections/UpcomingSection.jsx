@@ -18,6 +18,8 @@ const UpcomingSection = () => {
   const { activities, loading } = useActivities({
     currentStatus: "upcoming",
     count: 1,
+    sortBy: "startDateTime",
+    order: "asc", // Ascending order to get the closest upcoming event
   });
 
   return (

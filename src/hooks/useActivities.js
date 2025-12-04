@@ -1,30 +1,40 @@
 import { useState, useEffect } from "react";
 import api from "../lib/api";
+import { cachedApiCall, apiCache } from "../lib/apiCache";
 
 // Fetch activities with optional currentStatus and count (limit)
-export function useActivities({ currentStatus, count } = {}) {
+export function useActivities({ currentStatus, count, sortBy, order, fields } = {}) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Create stable reference for fields
+  const fieldsKey = Array.isArray(fields) ? fields.join(',') : '';
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     const params = {};
     if (count) params.limit = count;
+    if (currentStatus) params.status = currentStatus;
+    if (sortBy) params.sortBy = sortBy;
+    if (order) params.order = order;
+    
     // Support fields param for filtering fields in API response
-    if (arguments[0] && Array.isArray(arguments[0].fields) && arguments[0].fields.length > 0) {
-      params.fields = arguments[0].fields.join(',');
+    if (fieldsKey) {
+      params.fields = fieldsKey;
     }
-    api
-      .get("/activities", { params })
+
+    // Include all params in cache key to prevent incorrect cached results
+    const cacheKey = apiCache.generateKey("/activities", params);
+
+    cachedApiCall(
+      () => api.get("/activities", { params }),
+      cacheKey,
+      { ttl: 5 * 60 * 1000 } // 5 minutes cache
+    )
       .then((res) => {
         let fetchedActivities = res.data.activities || [];
-        if (currentStatus) {
-          fetchedActivities = fetchedActivities.filter(
-            (activity) => activity.currentStatus === currentStatus
-          );
-        }
         setActivities(fetchedActivities);
         setLoading(false);
       })
@@ -32,16 +42,20 @@ export function useActivities({ currentStatus, count } = {}) {
         setError(err.message);
         setLoading(false);
       });
-  }, [currentStatus, count, arguments[0]?.fields?.join(',')]);
+  }, [currentStatus, count, sortBy, order, fieldsKey]);
 
   return { activities, setActivities, loading, error };
 }
 
 // Fetch details for a single activity by slug, with optional fields param
+// NO CACHING for individual event details - always fetch fresh data
 export function useActivityDetails(slug, fields) {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Create stable reference for fields
+  const fieldsKey = Array.isArray(fields) ? fields.join(',') : '';
 
   useEffect(() => {
     if (!slug) {
@@ -53,10 +67,11 @@ export function useActivityDetails(slug, fields) {
     setError(null);
 
     const params = {};
-    if (Array.isArray(fields) && fields.length > 0) {
-      params.fields = fields.join(',');
+    if (fieldsKey) {
+      params.fields = fieldsKey;
     }
 
+    // Always fetch fresh data for individual event details (no caching)
     api
       .get(`/activities/${slug}`, { params })
       .then((res) => {
@@ -69,7 +84,7 @@ export function useActivityDetails(slug, fields) {
         setError(errorMessage);
         setLoading(false);
       });
-  }, [slug, Array.isArray(fields) ? fields.join(',') : '']);
+  }, [slug, fieldsKey]);
 
   return { activity, loading, error };
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../lib/api";
+import { apiCache } from "../lib/apiCache";
 
 // Hook to register a user as a club member
 export function useRegisterClub() {
@@ -13,6 +14,10 @@ export function useRegisterClub() {
     setResult(null);
     try {
       const res = await api.post(`/clubs/${clubId}/register`, data);
+      
+      // Clear clubs cache after successful registration
+      apiCache.clearPattern('/clubs');
+      
       setResult(res.data);
       return res.data;
     } catch (err) {

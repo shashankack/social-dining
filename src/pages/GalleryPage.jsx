@@ -9,13 +9,20 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useActivities } from "../hooks/useActivities";
+import { useState, useEffect } from "react";
 
 const GalleryPage = () => {
+  const [fadeIn, setFadeIn] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { activities, loading, error } = useActivities();
 
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
+
   return (
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
     <Stack
       justifyContent="center"
       alignItems="center"
@@ -128,7 +135,7 @@ const GalleryPage = () => {
                   <GalleryCard
                     size={isMobile ? "40vw" : 350}
                     strokeWidth={5}
-                    href
+                    img={activity.imageUrls[1][0]}
                   />
                 </Box>
                 <Typography
@@ -150,6 +157,7 @@ const GalleryPage = () => {
         </Box>
       )}
     </Stack>
+    </div>
   );
 };
 
