@@ -70,224 +70,227 @@ const EventDetailsPage = () => {
   }
 
   return (
-    <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
-    <Stack
-      py={{ xs: 2, md: 10 }}
-      px={{ xs: 2, md: 6 }}
-      spacing={{ xs: 2, md: 4 }}
-    >
-      <Box
-        overflow="hidden"
-        borderRadius={{ xs: 4, md: 6 }}
-        height={{ xs: 180, sm: 200, md: 300, lg: 400, xl: 600 }}
+    <div style={{ opacity: fadeIn ? 1 : 0, transition: "opacity 0.5s ease" }}>
+      <Stack
+        py={{ xs: 2, md: 10 }}
+        px={{ xs: 2, md: 6 }}
+        spacing={{ xs: 2, md: 4 }}
       >
         <Box
-          component="img"
-          src={activity.imageUrls?.[0]?.[0] || ""}
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      </Box>
-
-      <Box>
-        <Typography
-          variant="h1"
-          sx={{
-            textTransform: "uppercase",
-            fontSize: { xs: "10vw", sm: "12vw", md: "7vw" },
-            lineHeight: 1,
-            "& .dot": {
-              display: "inline-block",
-              width: { xs: 12, md: "1.4vw" },
-              height: { xs: 12, md: "1.4vw" },
-              borderRadius: "50%",
-              backgroundColor: "primary.main",
-              marginLeft: { xs: 0.5, md: 1 },
-            },
-          }}
+          overflow="hidden"
+          borderRadius={{ xs: 4, md: 6 }}
+          height={{ xs: 180, sm: 200, md: 300, lg: 400, xl: 600 }}
         >
-          {activity.name || "Event Title"}
-          <span>
-            <div className="dot" />
-          </span>
-        </Typography>
-        {activity.club && (
+          <Box
+            component="img"
+            src={activity.imageUrls?.[0]?.[0] || ""}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
+
+        <Box>
           <Typography
-            component={"a"}
-            variant="h6"
-            href={activity.club ? `clubs/${activity.club.slug}` : "#"}
+            variant="h1"
             sx={{
-              color: "primary.main",
               textTransform: "uppercase",
-              fontSize: { xs: "5vw", sm: "12vw", md: "2vw" },
-              textDecoration: "none",
-              transition: "all 0.3s ease",
-              "&:hover": { color: "secondary.main" },
+              fontSize: { xs: "10vw", sm: "12vw", md: "7vw" },
+              lineHeight: 1,
+              "& .dot": {
+                display: "inline-block",
+                width: { xs: 12, md: "1.4vw" },
+                height: { xs: 12, md: "1.4vw" },
+                borderRadius: "50%",
+                backgroundColor: "primary.main",
+                marginLeft: { xs: 0.5, md: 1 },
+              },
             }}
           >
-            {activity.club?.name}
+            {activity.name || "Event Title"}
+            <span>
+              <div className="dot" />
+            </span>
           </Typography>
+          {activity.club && (
+            <Typography
+              component={"a"}
+              variant="h6"
+              href={activity.club ? `clubs/${activity.club.slug}` : "#"}
+              sx={{
+                color: "primary.main",
+                textTransform: "uppercase",
+                fontSize: { xs: "5vw", sm: "12vw", md: "2vw" },
+                textDecoration: "none",
+                transition: "all 0.3s ease",
+                "&:hover": { color: "secondary.main" },
+              }}
+            >
+              {activity.club?.name}
+            </Typography>
+          )}
+        </Box>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 6, md: 4 }}>
+            <Typography sx={boxStyles}>
+              Entry Fee{" "}
+              {activity.registrationFee
+                ? Math.round(activity.registrationFee / 100)
+                : "N/A"}
+              /-
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 6, md: 4 }}>
+            <Typography sx={boxStyles}>
+              {activity.startDateTime
+                ? formatToIST(activity.startDateTime)
+                : "Date TBA"}
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 6, md: 4 }}>
+            <Typography sx={boxStyles}>
+              {activity.venueName || "Venue TBA"}
+            </Typography>
+          </Grid>
+          <Grid
+            size={{ xs: 6, md: 4 }}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Button
+              variant="text"
+              disableElevation
+              disableRipple
+              disableFocusRipple
+              sx={{
+                position: "relative",
+                fontSize: { xs: "1.1rem", md: "2.6rem" },
+                fontWeight: 800,
+                fontFamily: "League Spartan",
+                bgcolor: "transparent",
+                transition: "all 0.3s ease",
+
+                "&:hover": { transform: "scale(1.03)" },
+
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  bottom: { xs: 12, md: 20 },
+                  width: "100%",
+                  height: { xs: "2px", md: "4px" },
+                  backgroundColor: (theme) => theme.palette.secondary.main,
+                  transform: "scaleX(1)",
+                  transformOrigin: "center center",
+                  transition: "transform 0.3s ease",
+                },
+                "&:hover::after": {
+                  transform: "scaleX(0)",
+                },
+              }}
+            >
+              Open Map
+            </Button>
+          </Grid>
+        </Grid>
+
+        {/* Show registration button only if event is available for booking */}
+        {activity.isActive &&
+          activity.isRegistrationOpen &&
+          activity.currentStatus !== "completed" && (
+            <Box>
+              <CTAButton
+                text="register"
+                primaryColor="primary.main"
+                secondaryColor="secondary.main"
+                borderRadius={{ xs: 4, md: 4 }}
+                fontSize={{ xs: 20, md: 36 }}
+                onClick={() => setOpenRegisterDialog(true)}
+              />
+            </Box>
+          )}
+
+        {/* Show gallery button for completed events */}
+        {activity.currentStatus === "completed" && (
+          <Box>
+            <CTAButton
+              text="View Event Gallery"
+              primaryColor="secondary.main"
+              secondaryColor="primary.main"
+              borderRadius={{ xs: 4, md: 4 }}
+              fontSize={{ xs: 20, md: 36 }}
+              href={`/gallery/event/${activity.slug}`}
+            />
+          </Box>
         )}
-      </Box>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 6, md: 4 }}>
-          <Typography sx={boxStyles}>
-            Entry Fee{" "}
-            {activity.registrationFee
-              ? Math.round(activity.registrationFee / 100)
-              : "N/A"}
-            /-
-          </Typography>
-        </Grid>
-        <Grid size={{ xs: 6, md: 4 }}>
-          <Typography sx={boxStyles}>
-            {activity.startDateTime
-              ? formatToIST(activity.startDateTime)
-              : "Date TBA"}
-          </Typography>
-        </Grid>
-        <Grid size={{ xs: 6, md: 4 }}>
-          <Typography sx={boxStyles}>
-            {activity.venueName || "Venue TBA"}
-          </Typography>
-        </Grid>
-        <Grid
-          size={{ xs: 6, md: 4 }}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+
+        <EventRegisterDialog
+          open={openRegisterDialog}
+          onClose={() => setOpenRegisterDialog(false)}
+          activity={activity}
+        />
+        <Box
+          bgcolor="primary.main"
+          px={{ xs: 2, md: 4 }}
+          py={{ xs: 4, md: 8 }}
+          borderRadius={4}
+          sx={{
+            boxShadow: "6px 6px 0 #90BDF5",
+          }}
         >
-          <Button
-            variant="text"
-            disableElevation
-            disableRipple
-            disableFocusRipple
+          <Typography
+            variant="h6"
             sx={{
-              position: "relative",
-              fontSize: { xs: "1.1rem", md: "2.6rem" },
-              fontWeight: 800,
-              fontFamily: "League Spartan",
-              bgcolor: "transparent",
-              transition: "all 0.3s ease",
+              fontSize: { xs: "6vw", md: 40 },
+              color: "background.default",
+              fontWeight: 600,
 
-              "&:hover": { transform: "scale(1.03)" },
-
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                left: 0,
-                bottom: { xs: 12, md: 20 },
-                width: "100%",
-                height: { xs: "2px", md: "4px" },
-                backgroundColor: (theme) => theme.palette.secondary.main,
-                transform: "scaleX(1)",
-                transformOrigin: "center center",
-                transition: "transform 0.3s ease",
-              },
-              "&:hover::after": {
-                transform: "scaleX(0)",
+              "& span": {
+                fontWeight: 400,
+                textAlign: "justify",
+                fontSize: { xs: 16, md: 20 },
               },
             }}
           >
-            Open Map
-          </Button>
-        </Grid>
-      </Grid>
-      
-      {/* Show registration button only if event is available for booking */}
-      {activity.isActive && 
-       activity.isRegistrationOpen && 
-       activity.currentStatus !== 'completed' && (
-        <Box>
-          <CTAButton
-            text="register"
-            primaryColor="primary.main"
-            secondaryColor="secondary.main"
-            borderRadius={{ xs: 4, md: 4 }}
-            fontSize={{ xs: 20, md: 36 }}
-            onClick={() => setOpenRegisterDialog(true)}
-          />
+            About the event <br />
+            <span>
+              {parseHtml(activity.description, "event-description") ||
+                "No description available."}
+            </span>
+          </Typography>
+          {parseHtml(activity.additionalInfo) && (
+            <>
+              <Box width="100%" height={4} bgcolor="secondary.main" my={4} />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: "6vw", md: 40 },
+                  fontWeight: 600,
+                  color: "background.default",
+
+                  "& span": {
+                    fontWeight: 400,
+                    textAlign: "justify",
+                    fontSize: { xs: 16, md: 20 },
+
+                    "& li": {
+                      ml: 4,
+                    },
+                  },
+                }}
+              >
+                Event Details <br />
+                <span>
+                  {parseHtml(activity.additionalInfo, "activity-instructions")}
+                </span>
+              </Typography>
+            </>
+          )}
         </Box>
-      )}
-
-      {/* Show gallery button for completed events */}
-      {activity.currentStatus === 'completed' && (
-        <Box>
-          <CTAButton
-            text="View Event Gallery"
-            primaryColor="secondary.main"
-            secondaryColor="primary.main"
-            borderRadius={{ xs: 4, md: 4 }}
-            fontSize={{ xs: 20, md: 36 }}
-            href={`/gallery/event/${activity.slug}`}
-          />
-        </Box>
-      )}
-
-      <EventRegisterDialog
-        open={openRegisterDialog}
-        onClose={() => setOpenRegisterDialog(false)}
-        activity={activity}
-      />
-      <Box
-        bgcolor="primary.main"
-        px={{ xs: 2, md: 4 }}
-        py={{ xs: 4, md: 8 }}
-        borderRadius={4}
-        sx={{
-          boxShadow: "6px 6px 0 #90BDF5",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: { xs: "6vw", md: 40 },
-            color: "background.default",
-            fontWeight: 600,
-
-            "& span": {
-              fontWeight: 400,
-              textAlign: "justify",
-              fontSize: { xs: 16, md: 20 },
-            },
-          }}
-        >
-          About the event <br />
-          <span>
-            {parseHtml(activity.description, "event-description") ||
-              "No description available."}
-          </span>
-        </Typography>
-        <Box width="100%" height={4} bgcolor="secondary.main" my={4} />
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: { xs: "6vw", md: 40 },
-            fontWeight: 600,
-            color: "background.default",
-
-            "& span": {
-              fontWeight: 400,
-              textAlign: "justify",
-              fontSize: { xs: 16, md: 20 },
-
-              "& li": {
-                ml: 2,
-              },
-            },
-          }}
-        >
-          Event Details <br />
-          <span>
-            {parseHtml(activity.additionalInfo, "activity-instructions") ||
-              "No additional information available."}
-          </span>
-        </Typography>
-      </Box>
-    </Stack>
+      </Stack>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useActivities } from "../hooks/useActivities";
 
-import { Box, Typography, Skeleton } from "@mui/material";
+import { Box, Typography, Skeleton, Grid } from "@mui/material";
 import CTAButton from "../components/CTAButton";
+import { Link } from "react-router-dom";
 
 const EventsPage = () => {
   const [fadeIn, setFadeIn] = useState(false);
@@ -153,40 +154,64 @@ const EventsPage = () => {
                     <div className="dot" />
                   </span>
                 </Typography>
-                {completedEvents.map((activity) => (
-                  <Box key={activity.slug} sx={{ my: 2 }}>
-                    <Box
-                      sx={{
-                        overflow: "hidden",
-                        borderRadius: { xs: 3, md: 6 },
-                        border: {
-                          xs: "3px solid #E25517",
-                          md: "6px solid #E25517",
-                        },
-                        height: { xs: 180, sm: 200, md: 300, lg: 400, xl: 600 },
-                      }}
+                <Grid container spacing={{ xs: 2, md: 4 }}>
+                  {completedEvents.map((activity) => (
+                    <Grid
+                      size={{ xs: 12, md: 3 }}
+                      key={activity.slug}
+                      sx={{ my: 2 }}
                     >
-                      <Box
-                        component="img"
-                        src={activity.imageUrls[0][0]}
-                        sx={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          filter: "grayscale(20%)",
-                        }}
-                      />
-                    </Box>
-                    <Box sx={{ mt: { xs: 2, md: 4 } }}>
-                      <CTAButton
-                        text={activity.name}
-                        fontSize={{ xs: 20, md: 30 }}
-                        borderRadius={{ xs: 2, md: 4 }}
-                        href={`/event/${activity.slug}`}
-                      />
-                    </Box>
-                  </Box>
-                ))}
+                      <Link to={`/event/${activity.slug}`}>
+                        <Box
+                          sx={{
+                            overflow: "hidden",
+                            borderRadius: { xs: 3, md: 6 },
+                            border: {
+                              xs: "3px solid #E25517",
+                              md: "6px solid #E25517",
+                            },
+                            height: {
+                              xs: 540,
+                              sm: 200,
+                              md: 300,
+                              lg: 400,
+                              xl: 600,
+                            },
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                              transform: "scale(.99)",
+                              cursor: "pointer",
+
+                              "& img": {
+                                transform: "scale(1.02)",
+                                filter: "blur(2px)",
+                              },
+                            },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={activity.imageUrls[0][1]}
+                            sx={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              transition: "all 0.3s ease",
+                            }}
+                          />
+                        </Box>
+                      </Link>
+                      <Box sx={{ mt: { xs: 2, md: 2 } }}>
+                        <CTAButton
+                          text={activity.name}
+                          fontSize={{ xs: 20, md: 26 }}
+                          borderRadius={{ xs: 2, md: 4 }}
+                          href={`/event/${activity.slug}`}
+                        />
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
               </Box>
             )}
           </Box>

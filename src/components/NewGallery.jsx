@@ -11,20 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const NewGallery = () => {
-  const media = [
-    { type: "image", src: "/images/gallery/image1.png" },
-    { type: "image", src: "/images/gallery/image2.png" },
-    { type: "video", src: "/videos/FITNESS.mp4", thumbnail: "/images/gallery/image3.png" },
-    { type: "image", src: "/images/gallery/image3.png" },
-    { type: "image", src: "/images/gallery/image4.png" },
-    { type: "video", src: "/videos/FOUNDERS.mp4", thumbnail: "/images/gallery/image5.png" },
-    { type: "image", src: "/images/gallery/image5.png" },
-    { type: "image", src: "/images/gallery/image6.png" },
-    { type: "image", src: "/images/gallery/image7.png" },
-    { type: "image", src: "/images/gallery/image8.png" },
-  ];
-
+const NewGallery = ({ media }) => {
   const [open, setOpen] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
   const [hoveredIndex, setHoveredIndex] = React.useState(null);

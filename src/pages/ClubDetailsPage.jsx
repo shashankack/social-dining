@@ -38,6 +38,22 @@ const ClubDetailsPage = () => {
 
   const [registerDialogOpen, setRegisterDialogOpen] = React.useState(false);
 
+  // Prepare media for gallery from club's imageUrls[1] only (no videos)
+  const galleryMedia = React.useMemo(() => {
+    if (!club) return [];
+
+    // Only use images from imageUrls[1]
+    const allImages = (Array.isArray(club.imageUrls?.[1]) 
+      ? club.imageUrls[1].filter(Boolean)
+      : []);
+
+    // Map images to media format
+    const imageItems = allImages.map(src => ({ type: "image", src }));
+    
+    // Shuffle to randomize positions
+    return imageItems.sort(() => Math.random() - 0.5);
+  }, [club]);
+
   return (
     <>
       <div style={{ opacity: fadeIn ? 1 : 0, transition: 'opacity 0.5s ease' }}>
@@ -130,7 +146,36 @@ const ClubDetailsPage = () => {
               </Typography>
             </Box>
 
-            <NewGallery />
+            {galleryMedia.length > 0 ? (
+              <NewGallery media={galleryMedia} />
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  minHeight: "40vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    textAlign: "center",
+                    p: 10,
+                    border: 2,
+                    fontSize: { xs: "4vw", md: "1.4vw" },
+                    borderStyle: "dashed",
+                    borderRadius: 4,
+                    borderColor: "primary.main",
+                    color: "#000",
+                  }}
+                >
+                  No gallery media available! <br />
+                  Check back later for photos and videos! 📸
+                </Typography>
+              </Box>
+            )}
           </Stack>
         )}
       </Box>
