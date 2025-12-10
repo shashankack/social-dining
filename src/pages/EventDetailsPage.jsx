@@ -97,7 +97,7 @@ const EventDetailsPage = () => {
             variant="h1"
             sx={{
               textTransform: "uppercase",
-              fontSize: { xs: "10vw", sm: "12vw", md: "7vw" },
+              fontSize: { xs: "9vw", sm: "12vw", md: "7vw" },
               lineHeight: 1,
               "& .dot": {
                 display: "inline-block",

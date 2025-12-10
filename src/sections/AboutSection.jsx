@@ -1,7 +1,15 @@
-import React from "react";
-import { Box, Typography, Stack } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Stack, Button, Collapse, useMediaQuery, useTheme } from "@mui/material";
 
 const AboutSection = () => {
+  const [expanded, setExpanded] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleReadMore = () => {
+    setExpanded(true);
+  };
+
   return (
     <Stack
       spacing={2}
@@ -39,20 +47,50 @@ const AboutSection = () => {
         <br />
         What began as small, intimate dinners has grown into a community built
         on laughter, conversation, and experiences that feel truly special.
-        <br />
-        <br />
-        Each event is thoughtfully designed to feel personal and memorable.
-        Sometimes it’s over a multi-course Vegetarian Omakase, or in a circle of
-        founders sharing ideas. Sometimes it's moms taking a well-deserved night
-        out or women gathering to inspire and uplift each other. We even come
-        together to move, breathe, and celebrate wellness. We offer circles that
-        bring people closer through food, culture and shared interests.
-        <br />
-        <br />
-        At social dining, food is only the beginning. The real magic happens in
-        connections made, the memories shared and the feeling of being part of
-        something close-knit and meaningful.
+        
+        {/* Show collapsed content on desktop, or when expanded on mobile */}
+        {(!isMobile || expanded) && (
+          <>
+            <br />
+            <br />
+            Each event is thoughtfully designed to feel personal and memorable.
+            Sometimes it's over a multi-course Vegetarian Omakase, or in a circle of
+            founders sharing ideas. Sometimes it's moms taking a well-deserved night
+            out or women gathering to inspire and uplift each other. We even come
+            together to move, breathe, and celebrate wellness. We offer circles that
+            bring people closer through food, culture and shared interests.
+            <br />
+            <br />
+            At social dining, food is only the beginning. The real magic happens in
+            connections made, the memories shared and the feeling of being part of
+            something close-knit and meaningful.
+          </>
+        )}
       </Typography>
+      
+      {/* Collapsible Read More button for mobile */}
+      {isMobile && !expanded && (
+        <Collapse in={!expanded} timeout={800}>
+          <Button
+            onClick={handleReadMore}
+            sx={{
+              color: "primary.main",
+              textTransform: "none",
+              fontSize: "4.8vw",
+              fontWeight: 700,
+              padding: 0,
+              minWidth: "auto",
+              mt: 2,
+              "&:hover": {
+                backgroundColor: "transparent",
+                textDecoration: "underline",
+              },
+            }}
+          >
+            Read More →
+          </Button>
+        </Collapse>
+      )}
     </Stack>
   );
 };
