@@ -53,13 +53,13 @@ const BrandCollaborationSection = () => {
 
   const images = [
     {
-      src: "/images/dummy.jpg",
+      src: "https://res.cloudinary.com/dzc8qttib/image/upload/v1764350279/be07d754-a48a-4c6f-8787-a182d60382b2_mmzalz.jpg",
       fromPositions: { right: "-30%", bottom: 0 },
       positions: { top: -50, right: isMobile ? "15%" : "35%" },
       rotation: 10,
     },
     {
-      src: "/images/dummy.jpg",
+      src: "https://res.cloudinary.com/dzc8qttib/image/upload/v1764807611/IMG_5006_lcuouz.jpg",
       fromPositions: { left: "-30%", top: "40%" },
       positions: {
         top: isMobile ? "8%" : "13%",
@@ -68,7 +68,7 @@ const BrandCollaborationSection = () => {
       rotation: -20,
     },
     {
-      src: "/images/dummy.jpg",
+      src: "https://res.cloudinary.com/dzc8qttib/image/upload/v1764807240/compressed_IMG_4577_dtq3nt.jpg",
       fromPositions: { right: "-30%", top: "25%" },
       positions: {
         top: isMobile ? "20%" : "25%",
@@ -77,7 +77,8 @@ const BrandCollaborationSection = () => {
       rotation: 20,
     },
     {
-      src: "/images/dummy.jpg",
+      src: "https://res.cloudinary.com/dzc8qttib/image/upload/v1764807727/d0536325-04b8-460c-bddf-1efebb643023_cq4rvm.jpg",
+      name: "Vision Board",
       fromPositions: { left: "-30%", bottom: "-20%" },
       positions: { bottom: 10, left: isMobile ? "5%" : "35%" },
       rotation: -15,
@@ -106,6 +107,8 @@ const BrandCollaborationSection = () => {
             }}
           >
             <PolaroidFrame
+              img={img.src}
+              text={img.name}
               size={isMobile ? 140 : 220}
               boxShadow={8}
               cardBorder
@@ -208,13 +211,13 @@ const BrandCollaborationSection = () => {
         onClose={() => setOpenContactDialog(false)}
       />
 
-      <Box py={{ xs: 2, md: 4 }}>
+      {/* <Box py={{ xs: 2, md: 4 }}>
         <ImageMarquee
           size={{ xs: 300, md: 450 }}
           gap={{ xs: 2, md: 4 }}
           borderRadius={{ xs: 2, md: 4 }}
         />
-      </Box>
+      </Box> */}
     </Stack>
   );
 };

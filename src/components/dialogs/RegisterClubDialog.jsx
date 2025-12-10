@@ -25,6 +25,7 @@ const RegisterClubDialog = ({ open, onClose }) => {
     email: "",
     phone: "",
   });
+  const [phoneError, setPhoneError] = useState("");
   const { clubs, loading: clubsLoading } = useClubs();
   const [selectedClubs, setSelectedClubs] = useState([]);
   const { registerClub, loading, error, result } = useRegisterClub();
@@ -52,7 +53,27 @@ const RegisterClubDialog = ({ open, onClose }) => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Phone number validation
+    if (name === "phone") {
+      // Only allow digits
+      const digitsOnly = value.replace(/\D/g, "");
+      
+      // Limit to 10 digits
+      const limitedValue = digitsOnly.slice(0, 10);
+      
+      setForm({ ...form, [name]: limitedValue });
+      
+      // Validate length
+      if (limitedValue.length > 0 && limitedValue.length !== 10) {
+        setPhoneError("Phone number must be exactly 10 digits");
+      } else {
+        setPhoneError("");
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleClubChange = (clubId) => {
@@ -65,6 +86,13 @@ const RegisterClubDialog = ({ open, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate phone number before submission
+    if (form.phone && form.phone.length !== 10) {
+      setPhoneError("Phone number must be exactly 10 digits");
+      return;
+    }
+    
     // Map stored keys back to actual club.id when available (fallback to slug or key)
     for (const key of selectedClubs) {
       const match = clubs.find((c, i) => (c.id ?? c.slug ?? String(i)) === key);
@@ -324,7 +352,8 @@ const RegisterClubDialog = ({ open, onClose }) => {
                   onChange={handleChange}
                   fullWidth
                   inputMode="numeric"
-                  pattern="[0-9]*"
+                  error={!!phoneError}
+                  helperText={phoneError}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -366,6 +395,10 @@ const RegisterClubDialog = ({ open, onClose }) => {
                     "& .MuiInputAdornment-root": {
                       color: "#fff",
                       fontWeight: 700,
+                    },
+                    "& .MuiFormHelperText-root": {
+                      color: "#ff1744",
+                      fontWeight: 600,
                     },
                   }}
                 />

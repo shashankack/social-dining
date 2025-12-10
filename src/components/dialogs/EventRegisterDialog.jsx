@@ -30,6 +30,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
     phone: "",
     ticketCount: 1,
   });
+  const [phoneError, setPhoneError] = useState("");
   const [isPaymentInProgress, setIsPaymentInProgress] = useState(false);
 
   const { registerEvent, loading, error, result } = useRegisterEvent();
@@ -53,11 +54,37 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Phone number validation
+    if (name === "phone") {
+      // Only allow digits
+      const digitsOnly = value.replace(/\D/g, "");
+      
+      // Limit to 10 digits
+      const limitedValue = digitsOnly.slice(0, 10);
+      
+      setForm({ ...form, [name]: limitedValue });
+      
+      // Validate length
+      if (limitedValue.length > 0 && limitedValue.length !== 10) {
+        setPhoneError("Phone number must be exactly 10 digits");
+      } else {
+        setPhoneError("");
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate phone number before submission
+    if (form.phone && form.phone.length !== 10) {
+      setPhoneError("Phone number must be exactly 10 digits");
+      return;
+    }
 
     if (!activity || !activity.slug) {
       setSnackbarContent({
@@ -398,6 +425,8 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                     onChange={handleChange}
                     fullWidth
                     inputMode="numeric"
+                    error={!!phoneError}
+                    helperText={phoneError}
                     slotProps={{
                       input: {
                         startAdornment: (
@@ -439,6 +468,10 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                       "& .MuiInputAdornment-root": {
                         color: "#fff",
                         fontWeight: 700,
+                      },
+                      "& .MuiFormHelperText-root": {
+                        color: "#ff1744",
+                        fontWeight: 600,
                       },
                     }}
                   />

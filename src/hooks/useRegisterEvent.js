@@ -29,8 +29,26 @@ export function useRegisterEvent() {
       setLoading(false);
       return response.data;
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.error || err.message || "Registration failed";
+      let errorMessage = "Registration failed";
+      
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.status === 500) {
+        // Check if it's a duplicate key error
+        const errorText = err.response?.data?.message || err.message || "";
+        if (errorText.includes("duplicate key") || errorText.includes("already exists")) {
+          if (errorText.includes("phone")) {
+            errorMessage = "This phone number is already registered. Please use a different number or log in.";
+          } else if (errorText.includes("email")) {
+            errorMessage = "This email is already registered. Please use a different email or log in.";
+          } else {
+            errorMessage = "This account already exists. Please use different details.";
+          }
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       setLoading(false);
       throw err;
