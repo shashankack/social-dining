@@ -142,30 +142,49 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
           openRazorpayCheckout(
             paymentData,
-            (razorpayResponse) => {
-              // Payment successful - redirect to success page
-              // console.log("Payment successful:", razorpayResponse);
+            async (razorpayResponse) => {
+              // Payment successful - verify with backend
+              console.log("Payment successful, verifying with backend...");
 
-              // Reset payment progress state
-              setIsPaymentInProgress(false);
+              try {
+                // Call backend to verify payment
+                const verifyResponse = await http.post("/verify-payment", {
+                  razorpay_order_id: razorpayResponse.razorpay_order_id,
+                  razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                  razorpay_signature: razorpayResponse.razorpay_signature,
+                });
 
-              // Close the dialog immediately
-              onClose();
+                console.log("Payment verified:", verifyResponse.data);
 
-              // Navigate to success page with payment details
-              navigate(
-                `/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`
-              );
-              window.scrollTo(0, 0);
+                // Reset payment progress state
+                setIsPaymentInProgress(false);
 
-              // Reset form
-              setForm({
-                firstName: "",
-                lastName: "",
-                email: "",
-                phone: "",
-                ticketCount: 1,
-              });
+                // Close the dialog immediately
+                onClose();
+
+                // Navigate to success page with payment details
+                navigate(
+                  `/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`
+                );
+                window.scrollTo(0, 0);
+
+                // Reset form
+                setForm({
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  phone: "",
+                  ticketCount: 1,
+                });
+              } catch (error) {
+                console.error("Payment verification failed:", error);
+                setIsPaymentInProgress(false);
+                setSnackbarContent({
+                  message: "Payment verification failed. Please contact support.",
+                  severity: "error",
+                });
+                setOpenSnackbar(true);
+              }
             },
             (errorMessage) => {
               // Payment failed or cancelled
