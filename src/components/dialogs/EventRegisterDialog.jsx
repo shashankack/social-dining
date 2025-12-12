@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { useRegisterEvent } from "../../hooks/useRegisterEvent";
 import { openRazorpayCheckout } from "../../lib/razorpay";
+import api from "../../lib/api";
 
 const EventRegisterDialog = ({ open, onClose, activity }) => {
   const navigate = useNavigate();
@@ -148,7 +149,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
               try {
                 // Call backend to verify payment
-                const verifyResponse = await http.post("/verify-payment", {
+                const verifyResponse = await api.post("/verify-payment", {
                   razorpay_order_id: razorpayResponse.razorpay_order_id,
                   razorpay_payment_id: razorpayResponse.razorpay_payment_id,
                   razorpay_signature: razorpayResponse.razorpay_signature,
