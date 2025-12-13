@@ -204,7 +204,10 @@ const BrandCollaborationSection = () => {
             color="primary.main"
             fontSize={{ xs: "2rem", md: "2.4rem" }}
             borderRadius={{ xs: 6, md: 4 }}
-            onClick={() => setOpenContactDialog(true)}
+            // onClick={() => setOpenContactDialog(true)}
+            onClick={() =>
+              (window.location.href = "https://forms.gle/tC1ZfLejB1TWQWbG8")
+            }
           />
         </Box>
       </Stack>
