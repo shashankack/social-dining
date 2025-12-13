@@ -18,6 +18,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { useOrganizerAuth } from '../hooks/useOrganizerAuth';
 import { useOrganizerRegistrations } from '../hooks/useOrganizerRegistrations';
 
@@ -25,7 +26,7 @@ const AdminDashboardPage = () => {
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const { token, logout, isAuthenticated } = useOrganizerAuth();
-  const { data, loading, error } = useOrganizerRegistrations(token);
+  const { data, loading, error, refetch } = useOrganizerRegistrations(token);
 
   useEffect(() => {
     if (!loading) {
@@ -87,25 +88,49 @@ const AdminDashboardPage = () => {
             />
           </Typography>
 
-          <Button
-            variant="outlined"
-            onClick={handleLogout}
-            sx={{
-              fontSize: { xs: 14, md: 18 },
-              fontWeight: 700,
-              borderColor: 'primary.main',
-              color: '#000',
-              borderWidth: 2,
-              px: 3,
-              '&:hover': {
-                borderWidth: 2,
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={refetch}
+              startIcon={<RefreshIcon />}
+              disabled={loading}
+              sx={{
+                fontSize: { xs: 14, md: 18 },
+                fontWeight: 700,
                 borderColor: 'primary.main',
-                bgcolor: 'rgba(226, 85, 23, 0.1)',
-              },
-            }}
-          >
-            Logout
-          </Button>
+                color: '#000',
+                borderWidth: 2,
+                px: 3,
+                '&:hover': {
+                  borderWidth: 2,
+                  borderColor: 'primary.main',
+                  bgcolor: 'rgba(226, 85, 23, 0.1)',
+                },
+              }}
+            >
+              Refresh
+            </Button>
+
+            <Button
+              variant="outlined"
+              onClick={handleLogout}
+              sx={{
+                fontSize: { xs: 14, md: 18 },
+                fontWeight: 700,
+                borderColor: 'primary.main',
+                color: '#000',
+                borderWidth: 2,
+                px: 3,
+                '&:hover': {
+                  borderWidth: 2,
+                  borderColor: 'primary.main',
+                  bgcolor: 'rgba(226, 85, 23, 0.1)',
+                },
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
         </Box>
 
         {/* Organization Info */}
