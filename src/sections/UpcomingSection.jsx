@@ -15,11 +15,12 @@ import { useActivities } from "../hooks/useActivities";
 const UpcomingSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { activities, loading } = useActivities({
+  const { activities, loading, error } = useActivities({
     currentStatus: "upcoming",
     count: 1,
     sortBy: "startDateTime",
     order: "asc", // Ascending order to get the closest upcoming event
+    skipCache: true,
   });
 
   return (
@@ -66,7 +67,33 @@ const UpcomingSection = () => {
           px={{ xs: 2, md: 10 }}
           pb={{ xs: 4, md: 8 }}
         >
-          {activities.length > 0 ? (
+          {error ? (
+            <Box
+              sx={{
+                minHeight: "60vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  textAlign: "center",
+                  p: 10,
+                  border: 2,
+                  fontSize: { xs: "4vw", md: "1.4vw" },
+                  borderStyle: "dashed",
+                  borderRadius: 4,
+                  borderColor: "error.main",
+                  color: "#000",
+                }}
+              >
+                Could not load the latest upcoming event. <br />
+                {error}
+              </Typography>
+            </Box>
+          ) : activities.length > 0 ? (
             activities.map((activity) => (
               <Box key={activity.slug} mt={{ xs: 6, md: 10 }}>
                 {activity.imageUrls && activity.imageUrls[0] && (

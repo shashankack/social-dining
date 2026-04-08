@@ -3,7 +3,7 @@ import api from "../lib/api";
 import { cachedApiCall, apiCache } from "../lib/apiCache";
 
 // Fetch activities with optional currentStatus and count (limit)
-export function useActivities({ currentStatus, count, sortBy, order, fields } = {}) {
+export function useActivities({ currentStatus, count, sortBy, order, fields, skipCache = false } = {}) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,7 +31,7 @@ export function useActivities({ currentStatus, count, sortBy, order, fields } = 
     cachedApiCall(
       () => api.get("/activities", { params }),
       cacheKey,
-      { ttl: 5 * 60 * 1000 } // 5 minutes cache
+      { ttl: 5 * 60 * 1000, skipCache } // 5 minutes cache unless the caller needs a fresh read
     )
       .then((res) => {
         let fetchedActivities = res.data.activities || [];
