@@ -12,6 +12,7 @@ const EventDetailsPage = () => {
   const { slug } = useParams();
   const [fadeIn, setFadeIn] = useState(false);
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
+  const [imageOrientation, setImageOrientation] = useState("landscape");
 
   const boxStyles = {
     bgcolor: "secondary.main",
@@ -36,6 +37,10 @@ const EventDetailsPage = () => {
       setFadeIn(true);
     }
   }, [detailsLoading]);
+
+  useEffect(() => {
+    setImageOrientation("landscape");
+  }, [activity?.slug]);
 
   if (detailsLoading) {
     return <Loader />;
@@ -79,15 +84,31 @@ const EventDetailsPage = () => {
         <Box
           overflow="hidden"
           borderRadius={{ xs: 4, md: 6 }}
-          height={{ xs: 180, sm: 200, md: 300, lg: 400, xl: 600 }}
+          sx={{
+            width: "100%",
+            aspectRatio: imageOrientation === "portrait" ? "3 / 4" : "16 / 9",
+            maxHeight: { xs: 520, md: 640 },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            bgcolor: "secondary.main",
+          }}
         >
           <Box
             component="img"
             src={activity.imageUrls?.[0]?.[0] || ""}
+            alt={activity.name || "Event image"}
+            onLoad={(event) => {
+              const { naturalWidth, naturalHeight } = event.currentTarget;
+              setImageOrientation(
+                naturalHeight > naturalWidth ? "portrait" : "landscape"
+              );
+            }}
             sx={{
-              width: "100%",
+              width: imageOrientation === "portrait" ? "auto" : "100%",
               height: "100%",
-              objectFit: "cover",
+              maxWidth: "100%",
+              objectFit: imageOrientation === "portrait" ? "contain" : "cover",
             }}
           />
         </Box>
