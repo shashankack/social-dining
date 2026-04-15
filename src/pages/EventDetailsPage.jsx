@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatToIST } from "../lib/dateTimeFormatter";
 import { useParams } from "react-router-dom";
 import { useActivities, useActivityDetails } from "../hooks/useActivities";
@@ -18,7 +18,7 @@ const EventDetailsPage = () => {
     bgcolor: "secondary.main",
     textAlign: "center",
     p: 2,
-    fontSize: { xs: "3.8vw", md: "40px" },
+    fontSize: { xs: "0.95rem", sm: "1.05rem", md: "1.5rem" },
     fontWeight: 900,
     pt: 1,
     borderRadius: 4,
@@ -118,7 +118,7 @@ const EventDetailsPage = () => {
             variant="h1"
             sx={{
               textTransform: "uppercase",
-              fontSize: { xs: "9vw", sm: "12vw", md: "7vw" },
+              fontSize: { xs: "2.35rem", sm: "3.15rem", md: "4.2rem" },
               lineHeight: 1,
               "& .dot": {
                 display: "inline-block",
@@ -139,11 +139,11 @@ const EventDetailsPage = () => {
             <Typography
               component={"a"}
               variant="h6"
-              href={activity.club ? `clubs/${activity.club.slug}` : "#"}
+              href={activity.club ? `/club/${activity.club.slug}` : "#"}
               sx={{
                 color: "primary.main",
                 textTransform: "uppercase",
-                fontSize: { xs: "5vw", sm: "12vw", md: "2vw" },
+                fontSize: { xs: "1.1rem", sm: "1.3rem", md: "1.65rem" },
                 textDecoration: "none",
                 transition: "all 0.3s ease",
                 "&:hover": { color: "secondary.main" },
@@ -188,7 +188,7 @@ const EventDetailsPage = () => {
               disableFocusRipple
               sx={{
                 position: "relative",
-                fontSize: { xs: "1.1rem", md: "2.6rem" },
+                fontSize: { xs: "1rem", md: "1.9rem" },
                 fontWeight: 800,
                 fontFamily: "League Spartan",
                 bgcolor: "transparent",
@@ -228,7 +228,7 @@ const EventDetailsPage = () => {
                 primaryColor="primary.main"
                 secondaryColor="secondary.main"
                 borderRadius={{ xs: 4, md: 4 }}
-                fontSize={{ xs: 20, md: 36 }}
+                fontSize={{ xs: 18, md: 30 }}
                 onClick={() => setOpenRegisterDialog(true)}
               />
             </Box>
@@ -242,8 +242,8 @@ const EventDetailsPage = () => {
               primaryColor="secondary.main"
               secondaryColor="primary.main"
               borderRadius={{ xs: 4, md: 4 }}
-              fontSize={{ xs: 20, md: 36 }}
-              href={`/gallery/event/${activity.slug}`}
+              fontSize={{ xs: 18, md: 30 }}
+              href={`/events/${activity.slug}/gallery`}
             />
           </Box>
         )}
@@ -265,14 +265,14 @@ const EventDetailsPage = () => {
           <Typography
             variant="h6"
             sx={{
-              fontSize: { xs: "6vw", md: 40 },
+              fontSize: { xs: "1.8rem", md: "2.3rem" },
               color: "background.default",
               fontWeight: 600,
 
               "& span": {
                 fontWeight: 400,
                 textAlign: "justify",
-                fontSize: { xs: 16, md: 20 },
+                fontSize: { xs: "0.95rem", md: "1.1rem" },
               },
             }}
           >
@@ -288,14 +288,14 @@ const EventDetailsPage = () => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontSize: { xs: "6vw", md: 40 },
+                  fontSize: { xs: "1.8rem", md: "2.3rem" },
                   fontWeight: 600,
                   color: "background.default",
 
                   "& span": {
                     fontWeight: 400,
                     textAlign: "justify",
-                    fontSize: { xs: 16, md: 20 },
+                    fontSize: { xs: "0.95rem", md: "1.1rem" },
 
                     "& li": {
                       ml: 4,

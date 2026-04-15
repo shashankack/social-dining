@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
 import Loader from "./components/Loader.jsx";
 import VideoPreloader from "./components/VideoPreloader.jsx";
@@ -18,6 +18,11 @@ const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.jsx"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage.jsx"));
 const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 
+const LegacyEventGalleryRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/events/${slug}/gallery`} replace />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -25,7 +30,8 @@ const AppRoutes = () => {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/event/:slug" element={<EventDetailsPage />} />
       <Route path="/gallery" element={<GalleryPage />} />
-      <Route path="/gallery/event/:slug" element={<EventGalleryPage />} />
+      <Route path="/events/:slug/gallery" element={<EventGalleryPage />} />
+      <Route path="/gallery/event/:slug" element={<LegacyEventGalleryRedirect />} />
       <Route path="/club/:slug" element={<ClubDetailsPage />} />
       <Route path="/payment-success" element={<PaymentSuccessPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

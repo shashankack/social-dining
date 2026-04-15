@@ -6,38 +6,14 @@ const GalleryCard = ({
   img = "/images/dummy.jpg",
   strokeWidth = 5,
 }) => {
-  // Helper to get responsive width/height
-  const getResponsive = (val) => {
-    if (typeof val === "object" && val !== null) {
-      // MUI responsive object, e.g. { xs: 200, md: 350, xs: '10vw' }
-      const width = val;
-      const height = {};
-      for (const key in width) {
-        if (typeof width[key] === "string" && width[key].endsWith("vw")) {
-          // Use CSS calc for height with vw units
-          height[key] = `calc(${width[key]} * 210 / 199)`;
-        } else {
-          height[key] = (Number(width[key]) * 210) / 199;
-        }
-      }
-      return { width, height };
-    } else if (typeof val === "string" && val.endsWith("vw")) {
-      // Use CSS calc for height with vw units
-      return { width: val, height: `calc(${val} * 210 / 199)` };
-    } else {
-      // string (px) or number
-      const width = val;
-      const height = (Number(val) * 210) / 199;
-      return { width, height };
-    }
-  };
-  const { width, height } = getResponsive(size);
+  // `size` can be a number, string, or MUI responsive value object/array.
+  // We keep the card ratio stable via aspectRatio instead of manual unit math.
   return (
     <Box
       sx={{
         position: "relative",
-        width,
-        height,
+        width: size,
+        aspectRatio: "1 / 1",
         overflow: "hidden",
         borderRadius: 2,
         cursor: "pointer",

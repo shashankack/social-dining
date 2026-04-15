@@ -1,6 +1,38 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
+const scaleSingleValue = (value, factor) => {
+  if (typeof value === "number") {
+    return value * factor;
+  }
+
+  if (typeof value === "string") {
+    return `calc(${value} * ${factor})`;
+  }
+
+  return value;
+};
+
+const scaleResponsiveValue = (value, factor) => {
+  if (Array.isArray(value)) {
+    return value.map((entry) =>
+      entry === null || entry === undefined
+        ? entry
+        : scaleSingleValue(entry, factor),
+    );
+  }
+
+  if (value && typeof value === "object") {
+    const scaled = {};
+    Object.keys(value).forEach((key) => {
+      scaled[key] = scaleSingleValue(value[key], factor);
+    });
+    return scaled;
+  }
+
+  return scaleSingleValue(value, factor);
+};
+
 const PolaroidFrame = ({
   img = "/images/dummy.jpg",
   size = 300,
@@ -10,17 +42,24 @@ const PolaroidFrame = ({
   boxShadow,
   cardBorder = false,
 }) => {
+  const frameHeight = scaleResponsiveValue(size, 1.7);
+  const frameWidth = scaleResponsiveValue(size, 1.4);
+  const cardPt = scaleResponsiveValue(size, 0.008);
+  const cardPx = scaleResponsiveValue(size, 0.006);
+  const cardPb = scaleResponsiveValue(size, 0.04);
+  const labelFontSize = scaleResponsiveValue(size, 0.12);
+
   return (
     <Box
       mt={10}
       ml={10}
       position="relative"
-      height={size * 1.7}
-      width={size * 1.4}
+      height={frameHeight}
+      width={frameWidth}
       bgcolor={cardBorder ? bgcolor : "transparent"}
-      pt={cardBorder ? size * 0.008 : 0}
-      px={cardBorder ? size * 0.006 : 0}
-      pb={cardBorder ? size * 0.04 : 0}
+      pt={cardBorder ? cardPt : 0}
+      px={cardBorder ? cardPx : 0}
+      pb={cardBorder ? cardPb : 0}
       boxShadow={boxShadow}
     >
       <Box
@@ -34,7 +73,7 @@ const PolaroidFrame = ({
           width="100%"
           color={color}
           textAlign="center"
-          fontSize={{ xs: size * 0.15, md: size * 0.12 }}
+          fontSize={labelFontSize}
           sx={{
             position: "absolute",
             bottom: { xs: "4%", md: "6%" },

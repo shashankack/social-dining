@@ -19,15 +19,15 @@ const ClubsSection = () => {
         justifyContent="space-between"
         alignItems="end"
         width="100%"
-        mx={{ xs: 2, md: 14 }}
-        mt={6}
+        mx={{ xs: 2, md: 10 }}
+        mt={5}
       >
         <Typography
           variant="h6"
           sx={{
             color: "#000",
             fontWeight: 800,
-            fontSize: { xs: 60, md: 70 },
+            fontSize: { xs: "2.6rem", md: "3.5rem" },
 
             "& .dot": {
               display: "inline-block",
@@ -89,7 +89,7 @@ const ClubsSection = () => {
                   animation="wave"
                   sx={{
                     width: { xs: 200, md: 300 },
-                    height: { xs: 600, md: 800 },
+                    height: { xs: 420, md: 640 },
                     my: 2,
                     mx: 3,
                     bgcolor: "grey.300",
@@ -117,7 +117,7 @@ const ClubsSection = () => {
                 sx={{
                   position: "relative",
                   width: { xs: 200, md: 300 },
-                  height: { xs: 600, md: 800 },
+                  height: { xs: 420, md: 640 },
                   overflow: "hidden",
                   transition: "all 0.3s ease",
                   cursor: "pointer",
@@ -158,7 +158,7 @@ const ClubsSection = () => {
                     sx={{
                       textAlign: "start",
                       fontWeight: 800,
-                      fontSize: { xs: 30, md: 44 },
+                      fontSize: { xs: "1.35rem", md: "2rem" },
                       color: "background.default",
                     }}
                   >
@@ -197,8 +197,8 @@ const ClubsSection = () => {
           text="join clubs"
           primaryColor="primary.main"
           secondaryColor="secondary.main"
-          borderRadius={{ xs: 6, md: 8 }}
-          fontSize={{ xs: 26, md: 46 }}
+          borderRadius={{ xs: 2, md: 4 }}
+          fontSize={{ xs: 20, md: 32 }}
         />
         <RegisterClubDialog
           open={dialogOpen}

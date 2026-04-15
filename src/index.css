@@ -13,6 +13,10 @@ body::-webkit-scrollbar {
 body {
   background-color: #fffff5;
   font-family: "Darker Grotesque", "League Spartan", "Sink", sans-serif;
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @font-face {

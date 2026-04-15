@@ -11,8 +11,8 @@ const HeroSection = () => {
   return (
     <Stack
       px={{ xs: 2, md: 6 }}
-      pt={{ xs: 4, md: 8 }}
-      pb={6}
+      pt={{ xs: 2.5, md: 5 }}
+      pb={{ xs: 4, md: 6 }}
       alignItems="center"
     >
       <Box
@@ -44,7 +44,7 @@ const HeroSection = () => {
             variant="h1"
             sx={{
               textTransform: "uppercase",
-              fontSize: { xs: "120px", sm: "150px", md: "2vw" },
+              fontSize: { xs: "28vw", sm: "10vw", md: "2vw" },
               lineHeight: 0.9,
             }}
           >
@@ -79,12 +79,12 @@ const HeroSection = () => {
           </Typography>
         </Stack>
       )}
-      <Stack width="100%" mt={4} p={2} gap={6}>
+      <Stack width="100%" mt={4} px={{ xs: 0, md: 6 }} gap={3}>
         <CTAButton
           href="/events"
           text="Click to book event"
-          borderRadius={4}
-          fontSize={isMobile ? "20px" : "40px"}
+          borderRadius={{ xs: 2, md: 4 }}
+          fontSize={isMobile ? "1.15rem" : "1.95rem"}
         />
 
         <Typography
@@ -92,8 +92,8 @@ const HeroSection = () => {
           sx={{
             color: "primary.main",
             fontSize: {
-              xs: "20px",
-              md: "40px",
+              xs: "1.1rem",
+              md: "2rem",
             },
             fontWeight: 800,
             lineHeight: 1.1,

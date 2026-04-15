@@ -89,7 +89,7 @@ const BrandCollaborationSection = () => {
   ];
 
   return (
-    <Stack mt={{ xs: 10, md: 20 }}>
+    <Stack mt={{ xs: 8, md: 14 }}>
       <motion.div
         style={{ position: "relative" }}
         variants={containerVariants}
@@ -97,7 +97,7 @@ const BrandCollaborationSection = () => {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <CrissCross fontSize={{ xs: "26vw", md: "9vw" }} lineHeight={0.9} />
+        <CrissCross fontSize={{ xs: "20vw", md: "7.5vw" }} lineHeight={0.9} />
         {images.map((img, i) => (
           <motion.div
             key={i}
@@ -112,7 +112,7 @@ const BrandCollaborationSection = () => {
             <PolaroidFrame
               img={img.src}
               text={img.name}
-              size={isMobile ? 140 : 220}
+              size={isMobile ? 120 : 190}
               boxShadow={8}
               cardBorder
             />
@@ -128,7 +128,7 @@ const BrandCollaborationSection = () => {
           disableFocusRipple
           sx={{
             position: "relative",
-            fontSize: { xs: "2rem", md: "4rem" },
+            fontSize: { xs: "1.45rem", md: "2.8rem" },
             fontWeight: 800,
             fontFamily: "League Spartan",
             bgcolor: "transparent",
@@ -158,14 +158,14 @@ const BrandCollaborationSection = () => {
       </Box>
       <Stack
         bgcolor="primary.main"
-        py={{ xs: 4, md: 8 }}
+        py={{ xs: 4, md: 7 }}
         px={{ xs: 2, md: 6 }}
         spacing={6}
       >
         <Typography
           variant="h1"
           sx={{
-            fontSize: { xs: "11vw", md: "6vw" },
+            fontSize: { xs: "2.5rem", md: "4rem" },
             color: "background.default",
             textAlign: "center",
             textTransform: "uppercase",
@@ -176,7 +176,7 @@ const BrandCollaborationSection = () => {
         <Typography
           sx={{
             mt: 2,
-            fontSize: { xs: "4vw", md: "2vw" },
+            fontSize: { xs: "1rem", md: "1.4rem" },
             textAlign: "justify",
             fontWeight: 500,
             lineHeight: 1.2,
@@ -202,8 +202,8 @@ const BrandCollaborationSection = () => {
             primaryColor="background.default"
             secondaryColor="secondary.main"
             color="primary.main"
-            fontSize={{ xs: "2rem", md: "2.4rem" }}
-            borderRadius={{ xs: 6, md: 4 }}
+            fontSize={{ xs: "1.3rem", md: "1.8rem" }}
+            borderRadius={{ xs: 2, md: 4 }}
             // onClick={() => setOpenContactDialog(true)}
             onClick={() =>
               (window.location.href = "https://forms.gle/tC1ZfLejB1TWQWbG8")

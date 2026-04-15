@@ -31,8 +31,8 @@ const UpcomingSection = () => {
           color="background.default"
           bgcolor="secondary.main"
           textShadow="4px 4px 0 #E25517"
-          fontSize={isMobile ? "2.6rem" : "5rem"}
-          height={isMobile ? "70px" : "100px"}
+          fontSize={isMobile ? "2rem" : "3.6rem"}
+          height={isMobile ? "58px" : "84px"}
           speed={50}
           rotate={isMobile ? -4 : -2}
         />
@@ -120,7 +120,7 @@ const UpcomingSection = () => {
                       variant="h6"
                       sx={{
                         mt: 2,
-                        fontSize: { xs: "5vw", md: "4rem" },
+                        fontSize: { xs: "1.8rem", md: "2.8rem" },
                         fontWeight: 800,
                         textTransform: "uppercase",
                       }}
@@ -130,7 +130,7 @@ const UpcomingSection = () => {
                     <Typography
                       variant="body1"
                       sx={{
-                        fontSize: { xs: ".9rem", md: "2rem" },
+                        fontSize: { xs: "0.95rem", md: "1.28rem" },
                         fontWeight: 700,
                         textAlign: "justify",
                       }}
@@ -146,7 +146,7 @@ const UpcomingSection = () => {
                     primaryColor="secondary.main"
                     secondaryColor="primary.main"
                     borderRadius={{ xs: 4, md: 6 }}
-                    fontSize={{ xs: 20, md: 46 }}
+                    fontSize={{ xs: 18, md: 32 }}
                   />
                 </Box>
               </Box>

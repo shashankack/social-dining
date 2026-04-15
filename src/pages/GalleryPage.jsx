@@ -55,7 +55,7 @@ const GalleryPage = () => {
         {loading && (
           <Grid
             container
-            spacing={{ xs: 1, md: 6 }}
+            spacing={{ xs: 1, md: 3 }}
             width="100%"
             px={{ xs: 2, md: 10 }}
           >
@@ -65,7 +65,7 @@ const GalleryPage = () => {
                   animation="wave"
                   variant="rectangular"
                   sx={{
-                    height: { xs: 200, md: 400 },
+                    height: { xs: "40vw", md: "20vw" },
                     bgcolor: "grey.400",
                     borderRadius: 4,
                   }}
@@ -119,8 +119,8 @@ const GalleryPage = () => {
         )}
 
         {!loading && !error && (
-          <Box width="100%" px={{ xs: 2, md: 6 }}>
-            <Grid container spacing={{ xs: 1, md: 6 }} p={2}>
+          <Box width="100%">
+            <Grid container spacing={{ xs: 1, md: 6 }} px={{ xs: 2, md: 10 }}>
               {activities.map((activity, idx) => (
                 <Grid
                   size={{ xs: 6, md: 3 }}
@@ -131,11 +131,15 @@ const GalleryPage = () => {
                   gap={2}
                   alignItems="center"
                 >
-                  <Box component="a" href={`gallery/event/${activity.slug}`}>
+                  <Box component="a" href={`/events/${activity.slug}/gallery`}>
                     <GalleryCard
-                      size={isMobile ? "40vw" : 350}
+                      size={{ xs: "40vw", md: "20vw" }}
                       strokeWidth={5}
-                      img={activity.imageUrls?.[1]?.[0] || activity.imageUrls?.[0]?.[1] || ""}
+                      img={
+                        activity.imageUrls?.[1]?.[0] ||
+                        activity.imageUrls?.[0]?.[1] ||
+                        ""
+                      }
                     />
                   </Box>
                   <Typography
@@ -145,7 +149,7 @@ const GalleryPage = () => {
                       textAlign: "center",
                       textTransform: "uppercase",
                       fontWeight: 800,
-                      fontSize: { xs: "3.6vw", md: "1vw" },
+                      fontSize: { xs: "3vw", md: "1.2vw" },
                       lineHeight: 1.1,
                     }}
                   >

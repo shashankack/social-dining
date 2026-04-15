@@ -62,7 +62,7 @@ const EventGalleryPage = () => {
             variant="h1"
             sx={{
               textTransform: "uppercase",
-              fontSize: { xs: "13vw", sm: "12vw", md: "10vw" },
+              fontSize: { xs: "10vw", sm: "12vw", md: "10vw" },
               lineHeight: 1,
               "& .dot": {
                 display: "inline-block",
@@ -79,14 +79,16 @@ const EventGalleryPage = () => {
               <div className="dot" />
             </span>
           </Typography>
-          <Typography
-            variant="subtitle1"
-            color="text.secondary"
-            fontSize={{ xs: 18, md: 30 }}
-            mt={{ xs: -1, md: -2 }}
-          >
-            Hosted by {activity.club}
-          </Typography>
+          {activity.club && (
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              fontSize={{ xs: 18, md: 30 }}
+              mt={{ xs: -1, md: -2 }}
+            >
+              Hosted by {activity.club}
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{
@@ -101,13 +103,13 @@ const EventGalleryPage = () => {
             <Box
               position="absolute"
               top={{ xs: "-10%", md: "-5%" }}
-              left={{ xs: "-10%", md: 0 }}
+              left={{ xs: "-10%", sm: "7%", md: 0 }}
               zIndex={10}
               sx={{ transform: "rotate(-5deg)" }}
             >
               <PolaroidFrame
                 cardBorder
-                size={isMobile ? 140 : 270}
+                size={{ xs: 140, sm: 180, md: 240, lg: 280 }}
                 img={polaroid1}
                 text={activity.name}
               />
@@ -115,12 +117,15 @@ const EventGalleryPage = () => {
           )}
           {polaroid2 && (
             <Box
-              bottom={"5%"}
-              right={{ xs: "5%", md: "10%" }}
+              bottom={"15%"}
+              right={{ xs: "5%", sm: "15%", md: "10%" }}
               position="absolute"
               sx={{ transform: "rotate(7deg)" }}
             >
-              <PolaroidFrame size={isMobile ? 140 : 280} img={polaroid2} />
+              <PolaroidFrame
+                size={{ xs: 140, sm: 180, md: 240, lg: 280 }}
+                img={polaroid2}
+              />
             </Box>
           )}
         </Box>

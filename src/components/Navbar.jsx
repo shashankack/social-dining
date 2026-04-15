@@ -25,7 +25,7 @@ const Navbar = () => {
     color: "background.default",
     textDecoration: "none",
     textTransform: "none",
-    fontSize: { xs: "36px", md: "40px" },
+    fontSize: { xs: "1.8rem", md: "2.2rem" },
     fontWeight: 500,
     borderBottom: 3,
     width: "100%",
@@ -34,7 +34,7 @@ const Navbar = () => {
   const linkStyles = {
     color: "background.default",
     textTransform: "none",
-    fontSize: { xs: "20px", md: "26px" },
+    fontSize: { xs: "1.05rem", md: "1.35rem" },
     fontWeight: 600,
     p: 0,
     mb: { xs: -1, md: -2 },
@@ -42,8 +42,8 @@ const Navbar = () => {
   return (
     <AppBar position="static" elevation={0}>
       <Stack
-        pt={{ xs: 4, md: 6 }}
-        pb={{ xs: 2, md: 4 }}
+        pt={{ xs: 2.5, md: 4 }}
+        pb={{ xs: 1.5, md: 3 }}
         px={{ xs: 2, md: 6 }}
         width="100%"
         justifyContent="space-between"
@@ -56,7 +56,7 @@ const Navbar = () => {
         <Box
           component="img"
           src="/images/white_logo.png"
-          width={{ xs: 120, md: 150 }}
+          width={{ xs: 98, md: 132 }}
         />
         <Button
           variant="text"

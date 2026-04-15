@@ -15,10 +15,10 @@ const EventsPage = () => {
 
   // Separate active and completed events
   const activeEvents = activities.filter(
-    (activity) => activity.currentStatus !== "completed"
+    (activity) => activity.currentStatus !== "completed",
   );
   const completedEvents = activities.filter(
-    (activity) => activity.currentStatus === "completed"
+    (activity) => activity.currentStatus === "completed",
   );
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const EventsPage = () => {
 
   return (
     <div style={{ opacity: fadeIn ? 1 : 0, transition: "opacity 0.5s ease" }}>
-      <Box sx={{ px: { xs: 2, sm: 6, md: 10 }, py: { xs: 2, md: 14 } }}>
+      <Box sx={{ px: { xs: 2, sm: 4, md: 8 }, py: { xs: 2, md: 9 } }}>
         <Typography
           variant="h1"
           sx={{
@@ -44,8 +44,8 @@ const EventsPage = () => {
 
             "& .dot": {
               display: "inline-block",
-              width: { xs: 12, md: "2vw" },
-              height: { xs: 12, md: "2vw" },
+              width: { xs: 12, md: "1.6vw" },
+              height: { xs: 12, md: "1.6vw" },
               borderRadius: "50%",
               backgroundColor: "primary.main",
               marginLeft: { xs: 0.5, md: 1 },
@@ -119,13 +119,41 @@ const EventsPage = () => {
                     <Box sx={{ mt: { xs: 2, md: 4 } }}>
                       <CTAButton
                         text={activity.name}
-                        fontSize={{ xs: 20, md: 30 }}
+                        fontSize={{ xs: 18, md: 24 }}
                         borderRadius={{ xs: 2, md: 4 }}
                         href={`/event/${activity.slug}`}
                       />
                     </Box>
                   </Box>
                 ))}
+              </Box>
+            )}
+
+            {activeEvents.length === 0 && (
+              <Box
+                sx={{
+                  minHeight: "60vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    textAlign: "center",
+                    p: 10,
+                    border: 2,
+                    fontSize: { xs: "4vw", md: "1.4vw" },
+                    borderStyle: "dashed",
+                    borderRadius: 4,
+                    borderColor: "primary.main",
+                    color: "#000",
+                  }}
+                >
+                  No upcoming events! <br />
+                  Our host is resting. Check back later!😊
+                </Typography>
               </Box>
             )}
 
@@ -141,8 +169,8 @@ const EventsPage = () => {
                     mb: 2,
                     "& .dot": {
                       display: "inline-block",
-                      width: { xs: 12, md: "2vw" },
-                      height: { xs: 12, md: "2vw" },
+                      width: { xs: 12, md: "1.6vw" },
+                      height: { xs: 12, md: "1.6vw" },
                       borderRadius: "50%",
                       backgroundColor: "primary.main",
                       marginLeft: { xs: 0.5, md: 1 },
@@ -171,8 +199,8 @@ const EventsPage = () => {
                               md: "6px solid #E25517",
                             },
                             height: {
-                              xs: 540,
-                              sm: 200,
+                              xs: 600,
+                              sm: 450,
                               md: 300,
                               lg: 400,
                               xl: 600,
@@ -204,7 +232,7 @@ const EventsPage = () => {
                       <Box sx={{ mt: { xs: 2, md: 2 } }}>
                         <CTAButton
                           text={activity.name}
-                          fontSize={{ xs: 20, md: 26 }}
+                          fontSize={{ xs: 18, md: 22 }}
                           borderRadius={{ xs: 2, md: 4 }}
                           href={`/event/${activity.slug}`}
                         />
