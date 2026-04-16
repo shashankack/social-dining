@@ -31,8 +31,8 @@ const EventGalleryPage = () => {
   if (error) return <div>Error: {error}</div>;
   if (!activity) return <div>No event found.</div>;
 
-  const polaroid1 = activity.imageUrls?.[1]?.[0];
-  const polaroid2 = activity.imageUrls?.[1]?.[1];
+  const polaroid1 = activity.imageUrls?.[0]?.[0];
+  const polaroid2 = activity.imageUrls?.[0]?.[1];
 
   // Prepare media for gallery (exclude imageUrls[0] which are used for polaroids)
   const galleryMedia = React.useMemo(() => {
