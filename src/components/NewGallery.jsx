@@ -17,11 +17,31 @@ const srcset = (image, width, height, rows = 1, cols = 1) => ({
   srcSet: `${image}?w=${width * cols}&h=${height * rows}&fit=crop&auto=format&dpr=2 2x`,
 });
 
-const NewGallery = ({ media }) => {
+const masonrySrcset = (image) => ({
+  src: `${image}?w=248&fit=crop&auto=format`,
+  srcSet: `${image}?w=248&fit=crop&auto=format&dpr=2 2x`,
+});
+
+/**
+ * @typedef {"grid" | "masonry"} GalleryLayout
+ */
+
+/**
+ * @typedef {Object} GalleryItem
+ * @property {string} src
+ * @property {"image" | "video"} [type]
+ */
+
+/**
+ * @param {{ media: GalleryItem[]; layout?: GalleryLayout }} props
+ */
+const NewGallery = ({ media, layout = "grid" }) => {
   const [open, setOpen] = React.useState(false);
   const [current, setCurrent] = React.useState(0);
   const [hoveredIndex, setHoveredIndex] = React.useState(null);
   const isMobile = useMediaQuery("(max-width:600px)");
+  const resolvedLayout = layout === "masonry" ? "masonry" : "grid";
+  const isMasonryLayout = resolvedLayout === "masonry";
 
   const handleOpen = (idx) => {
     setCurrent(idx);
@@ -68,21 +88,21 @@ const NewGallery = ({ media }) => {
             width: "100%",
             py: { xs: 0.5, md: 1 },
           }}
-          variant="quilted"
-          cols={isMobile ? 2 : 4}
-          rowHeight={isMobile ? 130 : 180}
+          variant={isMasonryLayout ? "masonry" : "quilted"}
+          cols={isMasonryLayout ? (isMobile ? 2 : 3) : isMobile ? 2 : 4}
+          rowHeight={isMasonryLayout ? undefined : isMobile ? 130 : 180}
           gap={8}
         >
           {media.map((item, index) => {
-            const featured = index % 9 === 0;
+            const featured = !isMasonryLayout && index % 9 === 0;
             const cols = featured ? (isMobile ? 2 : 2) : 1;
             const rows = featured ? 2 : 1;
 
             return (
               <ImageListItem
                 key={index}
-                cols={cols}
-                rows={rows}
+                cols={isMasonryLayout ? 1 : cols}
+                rows={isMasonryLayout ? 1 : rows}
                 onClick={() => handleOpen(index)}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
@@ -97,7 +117,7 @@ const NewGallery = ({ media }) => {
                   transition: "transform 0.22s ease, box-shadow 0.22s ease",
                   "& img, & video": {
                     width: "100%",
-                    height: "100%",
+                    height: isMasonryLayout ? "auto" : "100%",
                     objectFit: "cover",
                     display: "block",
                     transform: "scale(1)",
@@ -153,7 +173,9 @@ const NewGallery = ({ media }) => {
                   </>
                 ) : (
                   <img
-                    {...srcset(item.src, 260, isMobile ? 130 : 180, rows, cols)}
+                    {...(isMasonryLayout
+                      ? masonrySrcset(item.src)
+                      : srcset(item.src, 260, isMobile ? 130 : 180, rows, cols))}
                     alt={`Gallery item ${index + 1}`}
                     loading="lazy"
                   />
