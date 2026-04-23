@@ -19,6 +19,7 @@ export function useRegisterEvent() {
         email: formData.email,
         phone: formData.phone,
         ticketCount: formData.ticketCount || 1,
+        addOns: formData.addOns || [],
       });
 
       // Clear activities cache after successful registration

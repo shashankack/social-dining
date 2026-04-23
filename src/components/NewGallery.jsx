@@ -28,7 +28,7 @@ const masonrySrcset = (image) => ({
 
 /**
  * @typedef {Object} GalleryItem
- * @property {string} src
+ * @property {string} src n
  * @property {"image" | "video"} [type]
  */
 

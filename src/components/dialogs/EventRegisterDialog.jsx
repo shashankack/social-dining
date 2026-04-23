@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Grid,
@@ -22,7 +22,104 @@ import { useRegisterEvent } from "../../hooks/useRegisterEvent";
 import { openRazorpayCheckout } from "../../lib/razorpay";
 import api from "../../lib/api";
 
+function toNumber(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function makeAddOnId(raw, index) {
+  const provided = raw?.id || raw?.code || raw?.key;
+  if (typeof provided === "string" && provided.trim()) {
+    return provided.trim();
+  }
+
+  const label = String(raw?.label || raw?.name || raw?.title || "").trim();
+  if (label) {
+    return label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_|_$/g, "");
+  }
+
+  return `addon_${index + 1}`;
+}
+
+function normalizeAddOns(addOns) {
+  if (!Array.isArray(addOns)) return [];
+
+  return addOns
+    .map((raw, index) => {
+      if (!raw || typeof raw !== "object") return null;
+
+      const label = String(
+        raw.label || raw.name || raw.title || "Add-on",
+      ).trim();
+      const pricePaise = toNumber(
+        raw.pricePaise ??
+          raw.price_paise ??
+          raw.price ??
+          raw.amountPaise ??
+          raw.amount_paise,
+        0,
+      );
+
+      return {
+        id: makeAddOnId(raw, index),
+        label,
+        description: raw.description || raw.desc || "",
+        pricePaise,
+        maxQuantity: Math.max(
+          1,
+          toNumber(raw.maxQuantity ?? raw.max_quantity, 10),
+        ),
+      };
+    })
+    .filter(Boolean);
+}
+
+function getPricingConfig(activity) {
+  const rawConfig =
+    activity?.pricingConfig ||
+    activity?.pricing_config ||
+    activity?.additionalInfo?.pricingConfig ||
+    activity?.additional_info?.pricing_config;
+
+  if (!rawConfig) return {};
+
+  if (typeof rawConfig === "string") {
+    try {
+      return JSON.parse(rawConfig);
+    } catch {
+      return {};
+    }
+  }
+
+  if (typeof rawConfig === "object") {
+    const nested = rawConfig?.pricingConfig || rawConfig?.pricing_config;
+    return typeof nested === "object" && nested ? nested : rawConfig;
+  }
+
+  return {};
+}
+
 const EventRegisterDialog = ({ open, onClose, activity }) => {
+  const pricingConfig = useMemo(
+    () => getPricingConfig(activity),
+    [
+      activity?.pricingConfig,
+      activity?.pricing_config,
+      activity?.additionalInfo,
+      activity?.additional_info,
+    ],
+  );
+  const addOnDefinitions = useMemo(() => {
+    const rawAddOns =
+      pricingConfig?.addOns ||
+      pricingConfig?.addons ||
+      pricingConfig?.add_ons ||
+      [];
+    return normalizeAddOns(rawAddOns);
+  }, [pricingConfig]);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     firstName: "",
@@ -30,6 +127,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
     email: "",
     phone: "",
     ticketCount: 1,
+    addOns: [],
   });
   const [phoneError, setPhoneError] = useState("");
   const [isPaymentInProgress, setIsPaymentInProgress] = useState(false);
@@ -49,6 +147,20 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
     }
   }, [error]);
 
+  React.useEffect(() => {
+    if (!open) return;
+
+    setForm((current) => ({
+      ...current,
+      addOns: addOnDefinitions.map((addon) => ({
+        id: addon.id,
+        quantity:
+          current.addOns?.find((selection) => selection.id === addon.id)
+            ?.quantity || 0,
+      })),
+    }));
+  }, [open, addOnDefinitions]);
+
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") return;
     setOpenSnackbar(false);
@@ -56,17 +168,17 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Phone number validation
     if (name === "phone") {
       // Only allow digits
       const digitsOnly = value.replace(/\D/g, "");
-      
+
       // Limit to 10 digits
       const limitedValue = digitsOnly.slice(0, 10);
-      
+
       setForm({ ...form, [name]: limitedValue });
-      
+
       // Validate length
       if (limitedValue.length > 0 && limitedValue.length !== 10) {
         setPhoneError("Phone number must be exactly 10 digits");
@@ -77,6 +189,44 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
       setForm({ ...form, [name]: value });
     }
   };
+
+  const handleAddOnChange = (addOnId, quantity) => {
+    setForm((current) => ({
+      ...current,
+      addOns: addOnDefinitions.map((addon) =>
+        addon.id === addOnId
+          ? { id: addOnId, quantity }
+          : current.addOns?.find((selection) => selection.id === addon.id) || {
+              id: addon.id,
+              quantity: 0,
+            },
+      ),
+    }));
+  };
+
+  const resetForm = () => {
+    setForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      ticketCount: 1,
+      addOns: addOnDefinitions.map((addon) => ({ id: addon.id, quantity: 0 })),
+    });
+  };
+
+  const selectedAddOns = form.addOns || [];
+  const addonAmountPaise = selectedAddOns.reduce((total, selection) => {
+    const definition = addOnDefinitions.find(
+      (addon) => addon.id === selection.id,
+    );
+    const pricePaise = Number(definition?.pricePaise ?? definition?.price ?? 0);
+    return total + pricePaise * Number(selection.quantity || 0);
+  }, 0);
+  const baseAmountPaise =
+    Number(activity?.registrationFee || 0) * Number(form.ticketCount || 1);
+  const totalAmountPaise = baseAmountPaise + addonAmountPaise;
+  const totalAmount = totalAmountPaise / 100;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +254,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
         const { paymentInfo } = response;
 
         // Handle free events
-        if (activity.registrationFee === 0 || !activity.registrationFee) {
+        if (!response?.feeDetails?.totalAmountPaise) {
           setSnackbarContent({
             message: "Registration successful!",
             severity: "success",
@@ -113,13 +263,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
           setTimeout(() => {
             onClose();
-            setForm({
-              firstName: "",
-              lastName: "",
-              email: "",
-              phone: "",
-              ticketCount: 1,
-            });
+            resetForm();
           }, 2000);
           return;
         }
@@ -165,23 +309,18 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
                 // Navigate to success page with payment details
                 navigate(
-                  `/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`
+                  `/payment-success?payment_id=${razorpayResponse.razorpay_payment_id}&order_id=${razorpayResponse.razorpay_order_id}&signature=${razorpayResponse.razorpay_signature}`,
                 );
                 window.scrollTo(0, 0);
 
                 // Reset form
-                setForm({
-                  firstName: "",
-                  lastName: "",
-                  email: "",
-                  phone: "",
-                  ticketCount: 1,
-                });
+                resetForm();
               } catch (error) {
                 console.error("Payment verification failed:", error);
                 setIsPaymentInProgress(false);
                 setSnackbarContent({
-                  message: "Payment verification failed. Please contact support.",
+                  message:
+                    "Payment verification failed. Please contact support.",
                   severity: "error",
                 });
                 setOpenSnackbar(true);
@@ -196,7 +335,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                 severity: "error",
               });
               setOpenSnackbar(true);
-            }
+            },
           );
         }
         // Handle manual payment (QR code, etc.)
@@ -220,13 +359,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
 
         setTimeout(() => {
           onClose();
-          setForm({
-            firstName: "",
-            lastName: "",
-            email: "",
-            phone: "",
-            ticketCount: 1,
-          });
+          resetForm();
         }, 2000);
       }
     } catch (err) {
@@ -238,10 +371,6 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
       setOpenSnackbar(true);
     }
   };
-
-  const totalAmount = activity?.registrationFee
-    ? (activity.registrationFee / 100) * form.ticketCount
-    : 0;
 
   return (
     <>
@@ -316,10 +445,11 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                   }}
                 >
                   Fee: ₹
-                  {activity?.registrationFee
+                  {(activity?.registrationFee
                     ? activity.registrationFee / 100
-                    : 0}{" "}
-                  per person
+                    : 0
+                  ).toFixed(2)}
+                  {addOnDefinitions.length ? " + add-ons" : " per person"}
                 </Typography>
               </Stack>
 
@@ -537,13 +667,153 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                       }}
                     >
                       {[1, 2, 3, 4].map((num) => (
-                        <MenuItem key={num} value={num}>
+                        <MenuItem
+                          key={num}
+                          value={num}
+                          sx={{ color: "#E25517" }}
+                        >
                           {num} {num === 1 ? "Ticket" : "Tickets"}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </Grid>
+                {addOnDefinitions.length > 0 && (
+                  <Grid size={12}>
+                    <Box
+                      sx={{
+                        bgcolor: "rgba(255,255,255,0.18)",
+                        borderRadius: 3,
+                        p: { xs: 2, md: 3 },
+                        mb: 2,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color: "#fff",
+                          fontWeight: 800,
+                          fontSize: { xs: 14, md: 18 },
+                          textTransform: "uppercase",
+                          mb: 1.5,
+                        }}
+                      >
+                        Add-ons
+                      </Typography>
+                      <Stack spacing={2}>
+                        {addOnDefinitions.map((addon) => {
+                          const selectedQuantity =
+                            form.addOns?.find(
+                              (selection) => selection.id === addon.id,
+                            )?.quantity || 0;
+                          const maxQuantity = Math.max(
+                            1,
+                            Number(addon.maxQuantity || 5),
+                          );
+                          const addonPricePaise = Number(
+                            addon.pricePaise ?? addon.price ?? 0,
+                          );
+
+                          return (
+                            <Box key={addon.id}>
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="baseline"
+                                spacing={2}
+                              >
+                                <Box>
+                                  <Typography
+                                    sx={{
+                                      color: "#fff",
+                                      fontWeight: 700,
+                                      fontSize: { xs: 14, md: 16 },
+                                    }}
+                                  >
+                                    {addon.label}
+                                  </Typography>
+                                  {addon.description ? (
+                                    <Typography
+                                      sx={{
+                                        color: "rgba(255,255,255,0.8)",
+                                        fontSize: { xs: 12, md: 13 },
+                                      }}
+                                    >
+                                      {addon.description}
+                                    </Typography>
+                                  ) : null}
+                                </Box>
+                                <Typography
+                                  sx={{
+                                    color: "#fff",
+                                    fontWeight: 700,
+                                    fontSize: { xs: 12, md: 14 },
+                                  }}
+                                >
+                                  ₹{(addonPricePaise / 100).toFixed(2)} each
+                                </Typography>
+                              </Stack>
+                              <FormControl
+                                variant="standard"
+                                fullWidth
+                                sx={{ mt: 1 }}
+                              >
+                                <InputLabel
+                                  sx={{
+                                    color: "#fff",
+                                    fontWeight: 700,
+                                    fontSize: { xs: 16, md: 18 },
+                                    "&.Mui-focused": {
+                                      color: "#fff",
+                                    },
+                                  }}
+                                >
+                                  Quantity
+                                </InputLabel>
+                                <Select
+                                  value={selectedQuantity}
+                                  onChange={(event) =>
+                                    handleAddOnChange(
+                                      addon.id,
+                                      Number(event.target.value),
+                                    )
+                                  }
+                                  label="Quantity"
+                                  sx={{
+                                    fontSize: { xs: 16, md: 18 },
+                                    color: "#fff",
+                                    fontWeight: 700,
+                                    "& .MuiSelect-icon": {
+                                      color: "#fff",
+                                    },
+                                    "&:before": {
+                                      borderBottom: "2px solid #E25517",
+                                    },
+                                    "&:after": {
+                                      borderColor: "#E25517",
+                                    },
+                                  }}
+                                >
+                                  {Array.from(
+                                    { length: maxQuantity + 1 },
+                                    (_, index) => index,
+                                  ).map((quantity) => (
+                                    <MenuItem
+                                      key={quantity}
+                                      value={quantity}
+                                      sx={{ color: "#E25517" }}
+                                    >
+                                      {quantity}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                            </Box>
+                          );
+                        })}
+                      </Stack>
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
 
               <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
@@ -582,8 +852,7 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                         }}
                       />
                     </Box>
-                  ) : activity?.registrationFee &&
-                    activity.registrationFee > 0 ? (
+                  ) : totalAmountPaise > 0 ? (
                     `Pay ₹${totalAmount.toFixed(2)}`
                   ) : (
                     "Register Now"
