@@ -227,6 +227,9 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
     Number(activity?.registrationFee || 0) * Number(form.ticketCount || 1);
   const totalAmountPaise = baseAmountPaise + addonAmountPaise;
   const totalAmount = totalAmountPaise / 100;
+  const shouldHighlightBasePack = activity?.slug === "mothers-day";
+  const basePackLabel = pricingConfig?.baseLabel || "Mom + Kid";
+  const basePackAmount = Number(activity?.registrationFee || 0) / 100;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -452,6 +455,25 @@ const EventRegisterDialog = ({ open, onClose, activity }) => {
                   {addOnDefinitions.length ? " + add-ons" : " per person"}
                 </Typography>
               </Stack>
+              {shouldHighlightBasePack && (
+                <Typography
+                  sx={{
+                    mt: 1,
+                    mx: { xs: 1, md: 2 },
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: 2,
+                    bgcolor: "#FFE7A3",
+                    color: "#5A260B",
+                    fontWeight: 800,
+                    fontSize: { xs: 12, md: 14 },
+                    textAlign: "center",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {basePackLabel} ₹{basePackAmount.toFixed(0)}
+                </Typography>
+              )}
 
               <Grid container spacing={{ xs: 0, md: 2 }}>
                 <Grid size={{ xs: 12, md: 6 }}>
