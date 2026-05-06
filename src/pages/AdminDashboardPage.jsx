@@ -7,7 +7,7 @@ import {
   Button,
   Stack,
   Chip,
-  CircularProgress,
+  LinearProgress,
   Alert,
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import {
   DialogActions,
   TextField,
   Grid,
+  Link,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -146,7 +147,7 @@ const AdminDashboardPage = () => {
                   },
                 }}
               >
-                Refresh
+                {loading ? "Loading..." : "Refresh Data"}
               </Button>
 
               <Button
@@ -170,45 +171,6 @@ const AdminDashboardPage = () => {
               </Button>
             </Box>
           </Box>
-
-          {/* Organization Info */}
-          {data?.organizer && (
-            <Box
-              sx={{
-                bgcolor: "#90BDF5",
-                borderRadius: 4,
-                p: 3,
-                mb: 4,
-              }}
-            >
-              <Typography
-                sx={{
-                  color: "#000",
-                  fontSize: { xs: 18, md: 24 },
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                }}
-              >
-                {data.organizer.organizationName}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "#000",
-                  fontSize: { xs: 14, md: 16 },
-                  fontWeight: 600,
-                }}
-              >
-                {data.organizer.organizerEmail}
-              </Typography>
-            </Box>
-          )}
-
-          {/* Loading State */}
-          {loading && (
-            <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-              <CircularProgress size={60} sx={{ color: "primary.main" }} />
-            </Box>
-          )}
 
           {/* Error State */}
           {error && (
@@ -238,13 +200,11 @@ const AdminDashboardPage = () => {
                 <Grid container spacing={3}>
                   {data.registrations.map((reg, index) => (
                     <Grid
-                      item
-                      xs={12}
-                      sm={6}
-                      md={4}
+                      size={{ xs: 12, md: 4 }}
                       key={reg.activity.id || index}
                     >
                       <Card
+                        onClick={() => handleOpenModal(reg)}
                         sx={{
                           bgcolor: "secondary.main",
                           borderRadius: "16px",
@@ -257,6 +217,7 @@ const AdminDashboardPage = () => {
                           "&:hover": {
                             transform: "translateY(-4px)",
                             boxShadow: "6px 6px 0 #E25517",
+                            cursor: "pointer",
                           },
                         }}
                       >
@@ -283,26 +244,6 @@ const AdminDashboardPage = () => {
                             }}
                           />
                         </CardContent>
-
-                        <Box sx={{ p: 2, pt: 0 }}>
-                          <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={() => handleOpenModal(reg)}
-                            sx={{
-                              bgcolor: "primary.main",
-                              color: "#fff",
-                              fontWeight: 700,
-                              fontSize: { xs: 14, md: 16 },
-                              borderRadius: 2,
-                              "&:hover": {
-                                bgcolor: "#D64500",
-                              },
-                            }}
-                          >
-                            View Registrants
-                          </Button>
-                        </Box>
                       </Card>
                     </Grid>
                   ))}
@@ -352,6 +293,7 @@ const AdminDashboardPage = () => {
               {/* Search Bar */}
               <Box
                 sx={{
+                  mt: 1,
                   mb: 3,
                   display: "flex",
                   gap: 1,
@@ -408,101 +350,93 @@ const AdminDashboardPage = () => {
                       sx={{
                         bgcolor: "#90BDF5",
                         borderRadius: 2,
-                        p: 2,
                         border: "2px solid #E25517",
+                        pt: 1.5,
+                        pb: { xs: 12, md: 6 },
+                        px: 2,
                       }}
                     >
-                      <Stack spacing={1.5}>
-                        {/* Name */}
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <PersonIcon sx={{ color: "#000", fontSize: 20 }} />
-                          <Typography
-                            sx={{
-                              color: "#000",
-                              fontSize: 16,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {user.firstName} {user.lastName}
-                          </Typography>
-                        </Box>
-
-                        {/* Email */}
-                        {user.email && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <EmailIcon sx={{ color: "#000", fontSize: 20 }} />
-                            <a
-                              href={`mailto:${user.email}`}
-                              style={{
-                                color: "#000",
-                                fontSize: "14px",
-                                fontWeight: 600,
-                                textDecoration: "none",
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                },
-                              }}
-                            >
-                              {user.email}
-                            </a>
-                          </Box>
-                        )}
-
-                        {/* Phone */}
-                        {user.phone && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <PhoneIcon sx={{ color: "#000", fontSize: 20 }} />
-                            <a
-                              href={`tel:${user.phone}`}
-                              style={{
-                                color: "#000",
-                                fontSize: "14px",
-                                fontWeight: 600,
-                                textDecoration: "none",
-                              }}
-                            >
-                              {user.phone}
-                            </a>
-                          </Box>
-                        )}
-
-                        {/* Payment ID */}
-                        {user.paymentId && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <PaymentIcon sx={{ color: "#000", fontSize: 20 }} />
-                            <Typography
+                      <Stack spacing={2}>
+                        <Grid container>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            {/* Name */}
+                            <Box
                               sx={{
-                                color: "#000",
-                                fontSize: "12px",
-                                fontWeight: 600,
-                                fontFamily: "monospace",
-                                wordBreak: "break-all",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
                               }}
                             >
-                              {user.paymentId}
-                            </Typography>
-                          </Box>
-                        )}
+                              <PersonIcon
+                                sx={{ color: "#000", fontSize: 20 }}
+                              />
+                              <Typography
+                                sx={{
+                                  color: "#000",
+                                  fontSize: 16,
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {user.firstName} {user.lastName}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            {/* Email */}
+                            {user.email && (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <EmailIcon
+                                  sx={{ color: "#000", fontSize: 20 }}
+                                />
+                                <a
+                                  href={`mailto:${user.email}`}
+                                  style={{
+                                    color: "#000",
+                                    fontSize: "14px",
+                                    fontWeight: 600,
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  {user.email}
+                                </a>
+                              </Box>
+                            )}
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            {" "}
+                            {/* Phone */}
+                            {user.phone && (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <PhoneIcon
+                                  sx={{ color: "#000", fontSize: 20 }}
+                                />
+                                <a
+                                  href={`tel:${user.phone}`}
+                                  style={{
+                                    color: "#000",
+                                    fontSize: "14px",
+                                    fontWeight: 600,
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  {user.phone}
+                                </a>
+                              </Box>
+                            )}
+                          </Grid>
+                        </Grid>
                       </Stack>
                     </Card>
                   ))
