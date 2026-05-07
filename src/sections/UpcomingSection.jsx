@@ -6,6 +6,10 @@ import {
   Skeleton,
   Typography,
   Stack,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
 } from "@mui/material";
 import InfiniteMarquee from "../components/InfiniteMarquee";
 import CTAButton from "../components/CTAButton";
@@ -15,19 +19,26 @@ import { useActivities } from "../hooks/useActivities";
 const UpcomingSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
   const { activities, loading, error } = useActivities({
     currentStatus: "upcoming",
-    count: 1,
+    count: 4,
     sortBy: "startDateTime",
-    order: "asc", // Ascending order to get the closest upcoming event
+    order: "asc", // Ascending order to get the closest upcoming events
     skipCache: true,
   });
+
+  const getGridColumns = () => {
+    if (isMobile) return 1;
+    if (isTablet) return 2;
+    return 3;
+  };
 
   return (
     <Stack mt={{ xs: 2, md: 10 }} overflow="hidden">
       <Box mt={{ xs: 2, md: 6 }}>
         <InfiniteMarquee
-          text="Upcoming Event"
+          text="Upcoming Events"
           color="background.default"
           bgcolor="secondary.main"
           textShadow="4px 4px 0 #E25517"
@@ -40,24 +51,24 @@ const UpcomingSection = () => {
 
       {loading ? (
         <Box
-          flex={1}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+          display="grid"
+          gridTemplateColumns={`repeat(${getGridColumns()}, 1fr)`}
+          gap={{ xs: 2, md: 4 }}
+          px={{ xs: 2, md: 10 }}
+          py={{ xs: 4, md: 8 }}
         >
-          <Skeleton
-            variant="rectangular"
-            animation="wave"
-            width="80%"
-            height="600px"
-            sx={{
-              width: "100%",
-              height: "60vh",
-              bgcolor: "grey.300",
-              borderRadius: 6,
-              mt: { xs: 2, md: 10 },
-            }}
-          />
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              animation="wave"
+              width="100%"
+              height="400px"
+              sx={{
+                borderRadius: 6,
+              }}
+            />
+          ))}
         </Box>
       ) : (
         <Box
@@ -74,6 +85,7 @@ const UpcomingSection = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                width: "100%",
               }}
             >
               <Typography
@@ -89,68 +101,121 @@ const UpcomingSection = () => {
                   color: "#000",
                 }}
               >
-                Could not load the latest upcoming event. <br />
+                Could not load the upcoming events. <br />
                 {error}
               </Typography>
             </Box>
           ) : activities.length > 0 ? (
-            activities.map((activity) => (
-              <Box key={activity.slug} mt={{ xs: 6, md: 10 }}>
-                {activity.imageUrls && activity.imageUrls[0] && (
-                  <Box
-                    p={{ xs: 2, md: 4 }}
-                    bgcolor="primary.main"
-                    borderRadius={{ xs: 4, md: 6 }}
+            <Box
+              display="grid"
+              gridTemplateColumns={`repeat(${getGridColumns()}, 1fr)`}
+              gap={{ xs: 2, md: 4 }}
+              width="100%"
+              mt={{ xs: 4, md: 8 }}
+            >
+              {activities.map((activity) => (
+                <Box
+                  key={activity.slug}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 12px 24px rgba(0, 0, 0, 0.15)",
+                    },
+                  }}
+                >
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      bgcolor: "primary.main",
+                      borderRadius: { xs: 4, md: 6 },
+                      overflow: "hidden",
+                      border: `3px solid ${theme.palette.secondary.main}`,
+                      position: "relative",
+                    }}
                   >
-                    <Box
-                      component="img"
-                      src={
-                        isMobile
-                          ? activity.imageUrls[0][1]
-                          : activity.imageUrls[0][0]
-                      }
-                      alt={activity.name}
+                    {activity.imageUrls && activity.imageUrls[0] && (
+                      <CardMedia
+                        component="img"
+                        height={isMobile ? "200" : "250"}
+                        image={
+                          isMobile
+                            ? activity.imageUrls[0][1]
+                            : activity.imageUrls[0][0]
+                        }
+                        alt={activity.name}
+                        sx={{
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+
+                    <CardContent
                       sx={{
-                        maxWidth: "100%",
-                        height: "auto",
-                        borderRadius: { xs: 4, md: 6 },
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mt: 2,
-                        fontSize: { xs: "1.8rem", md: "2.8rem" },
-                        fontWeight: 800,
-                        textTransform: "uppercase",
+                        flexGrow: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        p: { xs: 2, md: 3 },
                       }}
                     >
-                      {activity.name}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: { xs: "0.95rem", md: "1.28rem" },
-                        fontWeight: 700,
-                        textAlign: "justify",
-                      }}
-                      dangerouslySetInnerHTML={{ __html: activity.description }}
-                    />
-                  </Box>
-                )}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontSize: { xs: "1.3rem", md: "1.5rem" },
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          mb: 1,
+                          color: "#000",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {activity.name}
+                      </Typography>
 
-                <Box mt={{ xs: 3, md: 6 }}>
-                  <CTAButton
-                    href={`/event/${activity.slug}`}
-                    text="know more"
-                    primaryColor="secondary.main"
-                    secondaryColor="primary.main"
-                    borderRadius={{ xs: 4, md: 6 }}
-                    fontSize={{ xs: 18, md: 32 }}
-                  />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: { xs: "0.85rem", md: "0.95rem" },
+                          fontWeight: 700,
+                          mb: 2,
+                          color: "rgba(0, 0, 0, 0.7)",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textAlign: "justify",
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html: activity.description.substring(0, 150) + "...",
+                        }}
+                      />
+
+                      <Box
+                        sx={{
+                          mt: "auto",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <CTAButton
+                          href={`/event/${activity.slug}`}
+                          text="know more"
+                          primaryColor="secondary.main"
+                          secondaryColor="primary.main"
+                          borderRadius={{ xs: 3, md: 4 }}
+                          fontSize={{ xs: 14, md: 16 }}
+                        />
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Box>
-              </Box>
-            ))
+              ))}
+            </Box>
           ) : (
             <Box
               sx={{
@@ -158,6 +223,7 @@ const UpcomingSection = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                width: "100%",
               }}
             >
               <Typography
