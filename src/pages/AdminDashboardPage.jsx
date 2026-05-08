@@ -18,6 +18,7 @@ import {
   TextField,
   Grid,
   Link,
+  MenuItem,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -28,16 +29,28 @@ import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { useOrganizerAuth } from "../hooks/useOrganizerAuth";
 import { useOrganizerRegistrations } from "../hooks/useOrganizerRegistrations";
+import { useManualOrganizerRegistration } from "../hooks/useManualOrganizerRegistration";
 
 const AdminDashboardPage = () => {
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const { token, logout, isAuthenticated } = useOrganizerAuth();
   const { data, loading, error, refetch } = useOrganizerRegistrations(token);
+  const { createManualRegistration, loading: creatingRegistration } = useManualOrganizerRegistration();
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [manualModalOpen, setManualModalOpen] = useState(false);
+  const [manualError, setManualError] = useState("");
+  const [manualForm, setManualForm] = useState({
+    activityId: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    ticketCount: 1,
+  });
 
   useEffect(() => {
     if (!loading) {
@@ -65,6 +78,55 @@ const AdminDashboardPage = () => {
     setModalOpen(false);
     setSelectedEvent(null);
     setSearchQuery("");
+  };
+
+  const handleOpenManualModal = () => {
+    const firstActivityId = data?.activities?.[0]?.id || "";
+    setManualForm((current) => ({
+      ...current,
+      activityId: current.activityId || firstActivityId,
+    }));
+    setManualError("");
+    setManualModalOpen(true);
+  };
+
+  const handleCloseManualModal = () => {
+    setManualModalOpen(false);
+    setManualError("");
+    setManualForm({
+      activityId: data?.activities?.[0]?.id || "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      ticketCount: 1,
+    });
+  };
+
+  const handleManualFieldChange = (event) => {
+    const { name, value } = event.target;
+    setManualForm((current) => ({
+      ...current,
+      [name]: name === "ticketCount" ? Number(value) : value,
+    }));
+  };
+
+  const handleManualRegistrationSubmit = async () => {
+    try {
+      setManualError("");
+      await createManualRegistration(token, {
+        activityId: manualForm.activityId,
+        firstName: manualForm.firstName,
+        lastName: manualForm.lastName,
+        email: manualForm.email || undefined,
+        phone: manualForm.phone || undefined,
+        ticketCount: Number(manualForm.ticketCount) || 1,
+      });
+      await refetch();
+      handleCloseManualModal();
+    } catch (err) {
+      setManualError(err.response?.data?.error || err.message || "Failed to add registration");
+    }
   };
 
   // Filter users based on search query
@@ -128,6 +190,27 @@ const AdminDashboardPage = () => {
             </Typography>
 
             <Box sx={{ display: "flex", gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={handleOpenManualModal}
+                disabled={loading || creatingRegistration || !data?.activities?.length}
+                sx={{
+                  fontSize: { xs: 14, md: 18 },
+                  fontWeight: 700,
+                  borderColor: "primary.main",
+                  color: "#000",
+                  borderWidth: 2,
+                  px: 3,
+                  "&:hover": {
+                    borderWidth: 2,
+                    borderColor: "primary.main",
+                    bgcolor: "rgba(226, 85, 23, 0.1)",
+                  },
+                }}
+              >
+                {creatingRegistration ? "Adding..." : "Add Offline Registration"}
+              </Button>
+
               <Button
                 variant="outlined"
                 onClick={refetch}
@@ -436,6 +519,18 @@ const AdminDashboardPage = () => {
                               </Box>
                             )}
                           </Grid>
+                          <Grid size={{ xs: 12, md: 6 }}>
+                            <Chip
+                              label={user.paymentMethod === "manual" ? "Offline / Manual" : "Online / Paid"}
+                              size="small"
+                              sx={{
+                                mt: 1,
+                                bgcolor: user.paymentMethod === "manual" ? "#FFE7A3" : "#DFF5E1",
+                                color: "#000",
+                                fontWeight: 700,
+                              }}
+                            />
+                          </Grid>
                         </Grid>
                       </Stack>
                     </Card>
@@ -456,6 +551,139 @@ const AdminDashboardPage = () => {
                 }}
               >
                 Close
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={manualModalOpen}
+            onClose={handleCloseManualModal}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: "16px",
+                boxShadow: "4px 4px 0 #E25517",
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                bgcolor: "secondary.main",
+                color: "#000",
+                fontSize: { xs: 20, md: 24 },
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              Add Offline Registration
+            </DialogTitle>
+
+            <DialogContent sx={{ pt: 2 }}>
+              {manualError && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {manualError}
+                </Alert>
+              )}
+
+              <Stack spacing={2}>
+                <TextField
+                  select
+                  label="Activity"
+                  name="activityId"
+                  value={manualForm.activityId}
+                  onChange={handleManualFieldChange}
+                  fullWidth
+                  required
+                >
+                  {(data?.activities || []).map((activity) => (
+                    <MenuItem key={activity.id} value={activity.id}>
+                      {activity.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      label="First Name"
+                      name="firstName"
+                      value={manualForm.firstName}
+                      onChange={handleManualFieldChange}
+                      fullWidth
+                      required
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      label="Last Name"
+                      name="lastName"
+                      value={manualForm.lastName}
+                      onChange={handleManualFieldChange}
+                      fullWidth
+                      required
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      value={manualForm.email}
+                      onChange={handleManualFieldChange}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      label="Phone"
+                      name="phone"
+                      value={manualForm.phone}
+                      onChange={handleManualFieldChange}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <TextField
+                      type="number"
+                      label="Ticket Count"
+                      name="ticketCount"
+                      value={manualForm.ticketCount}
+                      onChange={handleManualFieldChange}
+                      inputProps={{ min: 1, max: 4 }}
+                      fullWidth
+                      required
+                    />
+                  </Grid>
+                </Grid>
+              </Stack>
+            </DialogContent>
+
+            <DialogActions sx={{ p: 2 }}>
+              <Button
+                onClick={handleCloseManualModal}
+                sx={{
+                  fontWeight: 700,
+                  color: "#000",
+                  "&:hover": {
+                    bgcolor: "rgba(226, 85, 23, 0.1)",
+                  },
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleManualRegistrationSubmit}
+                variant="contained"
+                disabled={creatingRegistration || !manualForm.activityId || !manualForm.firstName || !manualForm.lastName || (!manualForm.email && !manualForm.phone)}
+                sx={{
+                  fontWeight: 800,
+                  bgcolor: "primary.main",
+                  "&:hover": {
+                    bgcolor: "#cc4614",
+                  },
+                }}
+              >
+                {creatingRegistration ? "Saving..." : "Save Registration"}
               </Button>
             </DialogActions>
           </Dialog>
