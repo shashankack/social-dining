@@ -31,12 +31,54 @@ import { useOrganizerAuth } from "../hooks/useOrganizerAuth";
 import { useOrganizerRegistrations } from "../hooks/useOrganizerRegistrations";
 import { useManualOrganizerRegistration } from "../hooks/useManualOrganizerRegistration";
 
+function normalizeAddOns(activity) {
+  const rawConfig = activity?.pricingConfig || activity?.pricing_config || activity?.additionalInfo?.pricingConfig || activity?.additional_info?.pricing_config;
+
+  if (!rawConfig) return [];
+
+  const config = typeof rawConfig === "string" ? (() => {
+    try {
+      return JSON.parse(rawConfig);
+    } catch {
+      return {};
+    }
+  })() : rawConfig;
+
+  const addOns = config?.addOns || config?.addons || config?.add_ons || [];
+
+  if (!Array.isArray(addOns)) return [];
+
+  return addOns
+    .map((addOn) => {
+      if (!addOn || typeof addOn !== "object") return null;
+
+      const id = typeof addOn.id === "string" && addOn.id.trim() ? addOn.id.trim() : typeof addOn.code === "string" && addOn.code.trim() ? addOn.code.trim() : typeof addOn.key === "string" && addOn.key.trim() ? addOn.key.trim() : "";
+      const label = typeof addOn.label === "string" && addOn.label.trim() ? addOn.label.trim() : typeof addOn.name === "string" && addOn.name.trim() ? addOn.name.trim() : typeof addOn.title === "string" && addOn.title.trim() ? addOn.title.trim() : id;
+
+      if (!id || !label) return null;
+
+      const priceSource = addOn.pricePaise ?? addOn.price_paise ?? addOn.price ?? addOn.amountPaise ?? addOn.amount_paise;
+      const pricePaise = Number(priceSource);
+      const maxQuantitySource = addOn.maxQuantity ?? addOn.max_quantity;
+      const maxQuantity = maxQuantitySource !== undefined ? Math.max(1, Number(maxQuantitySource) || 1) : 1;
+
+      return {
+        id,
+        label,
+        pricePaise: Number.isFinite(pricePaise) ? pricePaise : 0,
+        maxQuantity,
+      };
+    })
+    .filter(Boolean);
+}
+
 const AdminDashboardPage = () => {
   const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
   const { token, logout, isAuthenticated } = useOrganizerAuth();
   const { data, loading, error, refetch } = useOrganizerRegistrations(token);
-  const { createManualRegistration, loading: creatingRegistration } = useManualOrganizerRegistration();
+  const { createManualRegistration, loading: creatingRegistration } =
+    useManualOrganizerRegistration();
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,6 +92,7 @@ const AdminDashboardPage = () => {
     email: "",
     phone: "",
     ticketCount: 1,
+    addOns: [],
   });
 
   useEffect(() => {
@@ -58,10 +101,11 @@ const AdminDashboardPage = () => {
     }
   }, [loading]);
 
-  if (!isAuthenticated) {
-    navigate("/admin/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/admin/login", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
@@ -85,6 +129,7 @@ const AdminDashboardPage = () => {
     setManualForm((current) => ({
       ...current,
       activityId: current.activityId || firstActivityId,
+      addOns: current.addOns || [],
     }));
     setManualError("");
     setManualModalOpen(true);
@@ -100,6 +145,7 @@ const AdminDashboardPage = () => {
       email: "",
       phone: "",
       ticketCount: 1,
+      addOns: [],
     });
   };
 
@@ -109,6 +155,21 @@ const AdminDashboardPage = () => {
       ...current,
       [name]: name === "ticketCount" ? Number(value) : value,
     }));
+  };
+
+  const handleManualAddOnChange = (addOnId, quantity) => {
+    setManualForm((current) => {
+      const nextAddOns = current.addOns.filter((item) => item.id !== addOnId);
+
+      if (Number(quantity) > 0) {
+        nextAddOns.push({ id: addOnId, quantity: Number(quantity) });
+      }
+
+      return {
+        ...current,
+        addOns: nextAddOns,
+      };
+    });
   };
 
   const handleManualRegistrationSubmit = async () => {
@@ -121,11 +182,16 @@ const AdminDashboardPage = () => {
         email: manualForm.email || undefined,
         phone: manualForm.phone || undefined,
         ticketCount: Number(manualForm.ticketCount) || 1,
+        addOns: manualForm.addOns,
       });
       await refetch();
       handleCloseManualModal();
     } catch (err) {
-      setManualError(err.response?.data?.error || err.message || "Failed to add registration");
+      setManualError(
+        err.response?.data?.error ||
+          err.message ||
+          "Failed to add registration",
+      );
     }
   };
 
@@ -144,6 +210,24 @@ const AdminDashboardPage = () => {
         user.phone?.includes(query),
     );
   }, [selectedEvent, searchQuery]);
+
+  const selectedActivity = useMemo(
+    () => (data?.activities || []).find((activity) => activity.id === manualForm.activityId) || null,
+    [data?.activities, manualForm.activityId],
+  );
+
+  const selectedActivityAddOns = useMemo(
+    () => normalizeAddOns(selectedActivity),
+    [selectedActivity],
+  );
+
+  const selectedAddOnQuantities = useMemo(() => {
+    return Object.fromEntries(manualForm.addOns.map((addOn) => [addOn.id, addOn.quantity]));
+  }, [manualForm.addOns]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div style={{ opacity: fadeIn ? 1 : 0, transition: "opacity 0.5s ease" }}>
@@ -193,7 +277,9 @@ const AdminDashboardPage = () => {
               <Button
                 variant="outlined"
                 onClick={handleOpenManualModal}
-                disabled={loading || creatingRegistration || !data?.activities?.length}
+                disabled={
+                  loading || creatingRegistration || !data?.activities?.length
+                }
                 sx={{
                   fontSize: { xs: 14, md: 18 },
                   fontWeight: 700,
@@ -208,7 +294,9 @@ const AdminDashboardPage = () => {
                   },
                 }}
               >
-                {creatingRegistration ? "Adding..." : "Add Offline Registration"}
+                {creatingRegistration
+                  ? "Adding..."
+                  : "Add Offline Registration"}
               </Button>
 
               <Button
@@ -521,11 +609,18 @@ const AdminDashboardPage = () => {
                           </Grid>
                           <Grid size={{ xs: 12, md: 6 }}>
                             <Chip
-                              label={user.paymentMethod === "manual" ? "Offline / Manual" : "Online / Paid"}
+                              label={
+                                user.paymentMethod === "manual"
+                                  ? "Offline / Manual"
+                                  : "Online / Paid"
+                              }
                               size="small"
                               sx={{
                                 mt: 1,
-                                bgcolor: user.paymentMethod === "manual" ? "#FFE7A3" : "#DFF5E1",
+                                bgcolor:
+                                  user.paymentMethod === "manual"
+                                    ? "#FFE7A3"
+                                    : "#DFF5E1",
                                 color: "#000",
                                 fontWeight: 700,
                               }}
@@ -671,10 +766,61 @@ const AdminDashboardPage = () => {
               >
                 Cancel
               </Button>
+
+                {selectedActivityAddOns.length > 0 && (
+                  <Box
+                    sx={{
+                      border: "1px solid rgba(0,0,0,0.1)",
+                      borderRadius: 2,
+                      p: 2,
+                      bgcolor: "rgba(255,255,255,0.5)",
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                      Add-ons for this activity
+                    </Typography>
+                    <Stack spacing={1.5}>
+                      {selectedActivityAddOns.map((addOn) => (
+                        <Box
+                          key={addOn.id}
+                          sx={{
+                            display: "grid",
+                            gridTemplateColumns: { xs: "1fr", md: "1fr 140px" },
+                            gap: 1.5,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Box>
+                            <Typography sx={{ fontWeight: 700 }}>
+                              {addOn.label}
+                            </Typography>
+                            <Typography sx={{ fontSize: 12, color: "#666" }}>
+                              ₹{(addOn.pricePaise / 100).toFixed(2)} per item
+                            </Typography>
+                          </Box>
+                          <TextField
+                            type="number"
+                            label="Quantity"
+                            value={selectedAddOnQuantities[addOn.id] || 0}
+                            onChange={(event) => handleManualAddOnChange(addOn.id, event.target.value)}
+                            inputProps={{ min: 0, max: addOn.maxQuantity || 1 }}
+                            fullWidth
+                          />
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
               <Button
                 onClick={handleManualRegistrationSubmit}
                 variant="contained"
-                disabled={creatingRegistration || !manualForm.activityId || !manualForm.firstName || !manualForm.lastName || (!manualForm.email && !manualForm.phone)}
+                disabled={
+                  creatingRegistration ||
+                  !manualForm.activityId ||
+                  !manualForm.firstName ||
+                  !manualForm.lastName ||
+                  (!manualForm.email && !manualForm.phone)
+                }
                 sx={{
                   fontWeight: 800,
                   bgcolor: "primary.main",
