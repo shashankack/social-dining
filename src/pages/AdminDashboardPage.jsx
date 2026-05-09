@@ -19,6 +19,7 @@ import {
   Grid,
   Link,
   MenuItem,
+  useMediaQuery,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -30,19 +31,27 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useOrganizerAuth } from "../hooks/useOrganizerAuth";
 import { useOrganizerRegistrations } from "../hooks/useOrganizerRegistrations";
 import { useManualOrganizerRegistration } from "../hooks/useManualOrganizerRegistration";
+import MarkAttendanceButton from "../components/admin/MarkAttendanceButton";
 
 function normalizeAddOns(activity) {
-  const rawConfig = activity?.pricingConfig || activity?.pricing_config || activity?.additionalInfo?.pricingConfig || activity?.additional_info?.pricing_config;
+  const rawConfig =
+    activity?.pricingConfig ||
+    activity?.pricing_config ||
+    activity?.additionalInfo?.pricingConfig ||
+    activity?.additional_info?.pricing_config;
 
   if (!rawConfig) return [];
 
-  const config = typeof rawConfig === "string" ? (() => {
-    try {
-      return JSON.parse(rawConfig);
-    } catch {
-      return {};
-    }
-  })() : rawConfig;
+  const config =
+    typeof rawConfig === "string"
+      ? (() => {
+          try {
+            return JSON.parse(rawConfig);
+          } catch {
+            return {};
+          }
+        })()
+      : rawConfig;
 
   const addOns = config?.addOns || config?.addons || config?.add_ons || [];
 
@@ -52,15 +61,37 @@ function normalizeAddOns(activity) {
     .map((addOn) => {
       if (!addOn || typeof addOn !== "object") return null;
 
-      const id = typeof addOn.id === "string" && addOn.id.trim() ? addOn.id.trim() : typeof addOn.code === "string" && addOn.code.trim() ? addOn.code.trim() : typeof addOn.key === "string" && addOn.key.trim() ? addOn.key.trim() : "";
-      const label = typeof addOn.label === "string" && addOn.label.trim() ? addOn.label.trim() : typeof addOn.name === "string" && addOn.name.trim() ? addOn.name.trim() : typeof addOn.title === "string" && addOn.title.trim() ? addOn.title.trim() : id;
+      const id =
+        typeof addOn.id === "string" && addOn.id.trim()
+          ? addOn.id.trim()
+          : typeof addOn.code === "string" && addOn.code.trim()
+            ? addOn.code.trim()
+            : typeof addOn.key === "string" && addOn.key.trim()
+              ? addOn.key.trim()
+              : "";
+      const label =
+        typeof addOn.label === "string" && addOn.label.trim()
+          ? addOn.label.trim()
+          : typeof addOn.name === "string" && addOn.name.trim()
+            ? addOn.name.trim()
+            : typeof addOn.title === "string" && addOn.title.trim()
+              ? addOn.title.trim()
+              : id;
 
       if (!id || !label) return null;
 
-      const priceSource = addOn.pricePaise ?? addOn.price_paise ?? addOn.price ?? addOn.amountPaise ?? addOn.amount_paise;
+      const priceSource =
+        addOn.pricePaise ??
+        addOn.price_paise ??
+        addOn.price ??
+        addOn.amountPaise ??
+        addOn.amount_paise;
       const pricePaise = Number(priceSource);
       const maxQuantitySource = addOn.maxQuantity ?? addOn.max_quantity;
-      const maxQuantity = maxQuantitySource !== undefined ? Math.max(1, Number(maxQuantitySource) || 1) : 1;
+      const maxQuantity =
+        maxQuantitySource !== undefined
+          ? Math.max(1, Number(maxQuantitySource) || 1)
+          : 1;
 
       return {
         id,
@@ -79,6 +110,7 @@ const AdminDashboardPage = () => {
   const { data, loading, error, refetch } = useOrganizerRegistrations(token);
   const { createManualRegistration, loading: creatingRegistration } =
     useManualOrganizerRegistration();
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -241,7 +273,10 @@ const AdminDashboardPage = () => {
   }, [selectedEvent, searchQuery]);
 
   const selectedActivity = useMemo(
-    () => (data?.activities || []).find((activity) => activity.id === manualForm.activityId) || null,
+    () =>
+      (data?.activities || []).find(
+        (activity) => activity.id === manualForm.activityId,
+      ) || null,
     [data?.activities, manualForm.activityId],
   );
 
@@ -251,7 +286,9 @@ const AdminDashboardPage = () => {
   );
 
   const selectedAddOnQuantities = useMemo(() => {
-    return Object.fromEntries(manualForm.addOns.map((addOn) => [addOn.id, addOn.quantity]));
+    return Object.fromEntries(
+      manualForm.addOns.map((addOn) => [addOn.id, addOn.quantity]),
+    );
   }, [manualForm.addOns]);
 
   if (!isAuthenticated) {
@@ -302,74 +339,83 @@ const AdminDashboardPage = () => {
               />
             </Typography>
 
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                variant="outlined"
-                onClick={handleOpenManualModal}
-                disabled={
-                  loading || creatingRegistration || !data?.activities?.length
-                }
-                sx={{
-                  fontSize: { xs: 14, md: 18 },
-                  fontWeight: 700,
-                  borderColor: "primary.main",
-                  color: "#000",
-                  borderWidth: 2,
-                  px: 3,
-                  "&:hover": {
-                    borderWidth: 2,
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: "auto" }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={handleOpenManualModal}
+                  disabled={
+                    loading || creatingRegistration || !data?.activities?.length
+                  }
+                  sx={{
+                    fontSize: { xs: 14, md: 18 },
+                    fontWeight: 700,
                     borderColor: "primary.main",
-                    bgcolor: "rgba(226, 85, 23, 0.1)",
-                  },
-                }}
-              >
-                {creatingRegistration
-                  ? "Adding..."
-                  : "Add Offline Registration"}
-              </Button>
+                    color: "#000",
+                    borderWidth: 2,
+                    px: 3,
+                    "&:hover": {
+                      borderWidth: 2,
+                      borderColor: "primary.main",
+                      bgcolor: "rgba(226, 85, 23, 0.1)",
+                    },
+                  }}
+                >
+                  {creatingRegistration
+                    ? "Adding..."
+                    : "Add Offline Registration"}
+                </Button>
+              </Grid>
 
-              <Button
-                variant="outlined"
-                onClick={refetch}
-                startIcon={<RefreshIcon />}
-                disabled={loading}
-                sx={{
-                  fontSize: { xs: 14, md: 18 },
-                  fontWeight: 700,
-                  borderColor: "primary.main",
-                  color: "#000",
-                  borderWidth: 2,
-                  px: 3,
-                  "&:hover": {
-                    borderWidth: 2,
+              <Grid size={{ xs: 12, md: "auto" }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={refetch}
+                  startIcon={<RefreshIcon />}
+                  disabled={loading}
+                  sx={{
+                    fontSize: { xs: 14, md: 18 },
+                    fontWeight: 700,
                     borderColor: "primary.main",
-                    bgcolor: "rgba(226, 85, 23, 0.1)",
-                  },
-                }}
-              >
-                {loading ? "Loading..." : "Refresh Data"}
-              </Button>
+                    color: "#000",
+                    borderWidth: 2,
+                    px: 3,
+                    "&:hover": {
+                      borderWidth: 2,
+                      borderColor: "primary.main",
+                      bgcolor: "rgba(226, 85, 23, 0.1)",
+                    },
+                  }}
+                >
+                  {loading ? "Loading..." : "Refresh Data"}
+                </Button>
+              </Grid>
 
-              <Button
-                variant="outlined"
-                onClick={handleLogout}
-                sx={{
-                  fontSize: { xs: 14, md: 18 },
-                  fontWeight: 700,
-                  borderColor: "primary.main",
-                  color: "#000",
-                  borderWidth: 2,
-                  px: 3,
-                  "&:hover": {
-                    borderWidth: 2,
+              <Grid size={{ xs: 12, md: "auto" }}>
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={handleLogout}
+                  sx={{
+                    fontSize: { xs: 14, md: 18 },
+                    fontWeight: 700,
                     borderColor: "primary.main",
-                    bgcolor: "rgba(226, 85, 23, 0.1)",
-                  },
-                }}
-              >
-                Logout
-              </Button>
-            </Box>
+                    color: "#000",
+                    borderWidth: 2,
+                    px: 3,
+                    "&:hover": {
+                      borderWidth: 2,
+                      borderColor: "primary.main",
+                      bgcolor: "rgba(226, 85, 23, 0.1)",
+                    },
+                  }}
+                >
+                  Logout
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
 
           {/* Error State */}
@@ -458,10 +504,16 @@ const AdminDashboardPage = () => {
             onClose={handleCloseModal}
             maxWidth="md"
             fullWidth
+            fullScreen={isMobile}
             PaperProps={{
               sx: {
-                borderRadius: "16px",
+                borderRadius: { xs: 0, md: "16px" },
                 boxShadow: "4px 4px 0 #E25517",
+                height: { xs: "100dvh", md: "auto" },
+                maxHeight: { xs: "100dvh", md: "90dvh" },
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
               },
             }}
           >
@@ -475,6 +527,7 @@ const AdminDashboardPage = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                flexShrink: 0,
               }}
             >
               {selectedEvent?.activity.name}
@@ -489,7 +542,16 @@ const AdminDashboardPage = () => {
               </Button>
             </DialogTitle>
 
-            <DialogContent sx={{ pt: 2 }}>
+            <DialogContent
+              sx={{
+                pt: 2,
+                flex: 1,
+                minHeight: 0,
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               {/* Search Bar */}
               <Box
                 sx={{
@@ -529,8 +591,16 @@ const AdminDashboardPage = () => {
                 registrant{(selectedEvent?.users.length || 0) !== 1 ? "s" : ""}
               </Typography>
 
-              {/* Registrants List */}
-              <Stack spacing={2} sx={{ maxHeight: "500px", overflowY: "auto" }}>
+              <Stack
+                spacing={2}
+                sx={{
+                  flex: 1,
+                  minHeight: 0,
+                  maxHeight: { xs: "calc(100dvh - 220px)", md: "500px" },
+                  overflowY: "auto",
+                  pr: 0.5,
+                }}
+              >
                 {filteredUsers.length === 0 ? (
                   <Typography
                     sx={{
@@ -552,112 +622,154 @@ const AdminDashboardPage = () => {
                         bgcolor: "#90BDF5",
                         borderRadius: 2,
                         border: "2px solid #E25517",
-                        pt: 1.5,
-                        pb: { xs: 12, md: 6 },
-                        px: 2,
+                        p: 2,
+                        minHeight: { xs: 200, md: 118 },
+                        width: "100%",
                       }}
                     >
-                      <Stack spacing={2}>
-                        <Grid container>
-                          <Grid size={{ xs: 12, md: 6 }}>
-                            {/* Name */}
-                            <Box
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: { xs: "stretch", md: "center" },
+                          gap: 2,
+                          flexDirection: { xs: "column", md: "row" },
+                        }}
+                      >
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              mb: 1,
+                            }}
+                          >
+                            <PersonIcon sx={{ color: "#000", fontSize: 20 }} />
+                            <Typography
                               sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
+                                color: "#000",
+                                fontSize: 16,
+                                fontWeight: 700,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
                               }}
                             >
-                              <PersonIcon
-                                sx={{ color: "#000", fontSize: 20 }}
-                              />
-                              <Typography
-                                sx={{
-                                  color: "#000",
-                                  fontSize: 16,
-                                  fontWeight: 700,
-                                }}
-                              >
-                                {user.firstName} {user.lastName}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                          <Grid size={{ xs: 12, md: 6 }}>
-                            {/* Email */}
+                              {user.firstName} {user.lastName}
+                            </Typography>
+                          </Box>
+
+                          <Stack spacing={0.75} sx={{ minWidth: 0 }}>
                             {user.email && (
                               <Box
                                 sx={{
                                   display: "flex",
                                   alignItems: "center",
                                   gap: 1,
+                                  minWidth: 0,
                                 }}
                               >
                                 <EmailIcon
-                                  sx={{ color: "#000", fontSize: 20 }}
+                                  sx={{ color: "#000", fontSize: 18 }}
                                 />
                                 <a
                                   href={`mailto:${user.email}`}
                                   style={{
                                     color: "#000",
-                                    fontSize: "14px",
+                                    fontSize: "13px",
                                     fontWeight: 600,
                                     textDecoration: "none",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    minWidth: 0,
                                   }}
                                 >
                                   {user.email}
                                 </a>
                               </Box>
                             )}
-                          </Grid>
-                          <Grid size={{ xs: 12, md: 6 }}>
-                            {" "}
-                            {/* Phone */}
+
                             {user.phone && (
                               <Box
                                 sx={{
                                   display: "flex",
                                   alignItems: "center",
                                   gap: 1,
+                                  minWidth: 0,
                                 }}
                               >
                                 <PhoneIcon
-                                  sx={{ color: "#000", fontSize: 20 }}
+                                  sx={{ color: "#000", fontSize: 18 }}
                                 />
                                 <a
                                   href={`tel:${user.phone}`}
                                   style={{
                                     color: "#000",
-                                    fontSize: "14px",
+                                    fontSize: "13px",
                                     fontWeight: 600,
                                     textDecoration: "none",
+                                    overflowWrap: "anywhere",
                                   }}
                                 >
                                   {user.phone}
                                 </a>
                               </Box>
                             )}
-                          </Grid>
-                          <Grid size={{ xs: 12, md: 6 }}>
-                            <Chip
-                              label={
+                          </Stack>
+                        </Box>
+
+                        <Stack
+                          spacing={1}
+                          sx={{
+                            alignItems: { xs: "stretch", md: "flex-end" },
+                            width: { xs: "100%", md: 220 },
+                            minWidth: 0,
+                          }}
+                        >
+                          <Chip
+                            label={
+                              user.paymentMethod === "manual"
+                                ? "Offline / Manual"
+                                : "Online / Paid"
+                            }
+                            size="small"
+                            sx={{
+                              bgcolor:
                                 user.paymentMethod === "manual"
-                                  ? "Offline / Manual"
-                                  : "Online / Paid"
+                                  ? "#FFE7A3"
+                                  : "#DFF5E1",
+                              color: "#000",
+                              fontWeight: 700,
+                            }}
+                          />
+                          <MarkAttendanceButton
+                            token={token}
+                            registrationId={user.registrationId}
+                            status={user.registrationStatus}
+                            onMarked={async () => {
+                              try {
+                                const fresh = await refetch();
+                                // update the selectedEvent to the refreshed activity data
+                                if (fresh && selectedEvent?.activity?.id) {
+                                  const updated = (
+                                    fresh.registrations || []
+                                  ).find(
+                                    (r) =>
+                                      r.activity.id ===
+                                      selectedEvent.activity.id,
+                                  );
+                                  if (updated) setSelectedEvent(updated);
+                                }
+                              } catch (e) {
+                                // ignore - refetch already sets error state
                               }
-                              size="small"
-                              sx={{
-                                mt: 1,
-                                bgcolor:
-                                  user.paymentMethod === "manual"
-                                    ? "#FFE7A3"
-                                    : "#DFF5E1",
-                                color: "#000",
-                                fontWeight: 700,
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Stack>
+                            }}
+                            fullWidth
+                          />
+                        </Stack>
+                      </Box>
                     </Card>
                   ))
                 )}
@@ -723,7 +835,11 @@ const AdminDashboardPage = () => {
                   sx={manualFieldSx}
                 >
                   {(data?.activities || []).map((activity) => (
-                    <MenuItem key={activity.id} value={activity.id} sx={{color: "primary.main"}}>
+                    <MenuItem
+                      key={activity.id}
+                      value={activity.id}
+                      sx={{ color: "primary.main" }}
+                    >
                       {activity.name}
                     </MenuItem>
                   ))}
@@ -803,51 +919,56 @@ const AdminDashboardPage = () => {
                 Cancel
               </Button>
 
-                {selectedActivityAddOns.length > 0 && (
-                  <Box
-                    sx={{
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      borderRadius: 2,
-                      p: 2,
-                      bgcolor: "rgba(255,255,255,0.5)",
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: 800, mb: 1 }}>
-                      Add-ons for this activity
-                    </Typography>
-                    <Stack spacing={1.5}>
-                      {selectedActivityAddOns.map((addOn) => (
-                        <Box
-                          key={addOn.id}
-                          sx={{
-                            display: "grid",
-                            gridTemplateColumns: { xs: "1fr", md: "1fr 140px" },
-                            gap: 1.5,
-                            alignItems: "center",
-                          }}
-                        >
-                          <Box>
-                            <Typography sx={{ fontWeight: 700 }}>
-                              {addOn.label}
-                            </Typography>
-                            <Typography sx={{ fontSize: 12, color: "#666" }}>
-                              ₹{(addOn.pricePaise / 100).toFixed(2)} per item
-                            </Typography>
-                          </Box>
-                          <TextField
-                            type="number"
-                            label="Quantity"
-                            value={selectedAddOnQuantities[addOn.id] || 0}
-                            onChange={(event) => handleManualAddOnChange(addOn.id, event.target.value)}
-                            inputProps={{ min: 0, max: addOn.maxQuantity || 1 }}
-                            fullWidth
-                            sx={manualFieldSx}
-                          />
+              {selectedActivityAddOns.length > 0 && (
+                <Box
+                  sx={{
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    borderRadius: 2,
+                    p: 2,
+                    bgcolor: "rgba(255,255,255,0.5)",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 800, mb: 1 }}>
+                    Add-ons for this activity
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    {selectedActivityAddOns.map((addOn) => (
+                      <Box
+                        key={addOn.id}
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: { xs: "1fr", md: "1fr 140px" },
+                          gap: 1.5,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Box>
+                          <Typography sx={{ fontWeight: 700 }}>
+                            {addOn.label}
+                          </Typography>
+                          <Typography sx={{ fontSize: 12, color: "#666" }}>
+                            ₹{(addOn.pricePaise / 100).toFixed(2)} per item
+                          </Typography>
                         </Box>
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
+                        <TextField
+                          type="number"
+                          label="Quantity"
+                          value={selectedAddOnQuantities[addOn.id] || 0}
+                          onChange={(event) =>
+                            handleManualAddOnChange(
+                              addOn.id,
+                              event.target.value,
+                            )
+                          }
+                          inputProps={{ min: 0, max: addOn.maxQuantity || 1 }}
+                          fullWidth
+                          sx={manualFieldSx}
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
               <Button
                 onClick={handleManualRegistrationSubmit}
                 variant="contained"

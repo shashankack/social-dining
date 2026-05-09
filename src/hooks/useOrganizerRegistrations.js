@@ -19,10 +19,12 @@ export const useOrganizerRegistrations = (token) => {
       });
       setData(response.data);
       setLoading(false);
+      return response.data;
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Failed to fetch registrations';
       setError(errorMessage);
       setLoading(false);
+      throw err;
     }
   };
 
