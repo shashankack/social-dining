@@ -101,7 +101,7 @@ const EventDetailsPage = () => {
             onLoad={(event) => {
               const { naturalWidth, naturalHeight } = event.currentTarget;
               setImageOrientation(
-                naturalHeight > naturalWidth ? "portrait" : "landscape"
+                naturalHeight > naturalWidth ? "portrait" : "landscape",
               );
             }}
             sx={{
@@ -186,6 +186,8 @@ const EventDetailsPage = () => {
               disableElevation
               disableRipple
               disableFocusRipple
+              href={activity.mapUrl || "#"}
+              target="_blank"
               sx={{
                 position: "relative",
                 fontSize: { xs: "1rem", md: "1.9rem" },

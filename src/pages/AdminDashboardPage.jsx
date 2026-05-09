@@ -511,6 +511,7 @@ const AdminDashboardPage = () => {
                   sx={{
                     "& .MuiOutlinedInput-root": {
                       borderRadius: 2,
+                      color: "#111",
                     },
                   }}
                 />
@@ -710,7 +711,7 @@ const AdminDashboardPage = () => {
                 </Alert>
               )}
 
-              <Stack spacing={2}>
+              <Stack spacing={2} py={2}>
                 <TextField
                   select
                   label="Activity"
@@ -722,7 +723,7 @@ const AdminDashboardPage = () => {
                   sx={manualFieldSx}
                 >
                   {(data?.activities || []).map((activity) => (
-                    <MenuItem key={activity.id} value={activity.id}>
+                    <MenuItem key={activity.id} value={activity.id} sx={{color: "primary.main"}}>
                       {activity.name}
                     </MenuItem>
                   ))}
