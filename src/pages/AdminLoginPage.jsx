@@ -14,8 +14,13 @@ const AdminLoginPage = () => {
     setFadeIn(true);
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   if (isAuthenticated) {
-    navigate('/admin/dashboard');
     return null;
   }
 

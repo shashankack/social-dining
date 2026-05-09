@@ -2,16 +2,9 @@ import { useState, useEffect } from 'react';
 import api from '../lib/api';
 
 export const useOrganizerAuth = () => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem('organizerToken'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('organizerToken');
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
 
   const login = async (email, password) => {
     setLoading(true);
