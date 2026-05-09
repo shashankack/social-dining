@@ -95,6 +95,35 @@ const AdminDashboardPage = () => {
     addOns: [],
   });
 
+  const manualFieldSx = {
+    backgroundColor: "#fff",
+    borderRadius: 2,
+    "& .MuiInputBase-input": {
+      color: "#111",
+    },
+    "& .MuiInputLabel-root": {
+      color: "#333",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#E25517",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "#111",
+      "& fieldset": {
+        borderColor: "rgba(0,0,0,0.3)",
+      },
+      "&:hover fieldset": {
+        borderColor: "rgba(0,0,0,0.6)",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#E25517",
+      },
+    },
+    "& .MuiSelect-icon": {
+      color: "#111",
+    },
+  };
+
   useEffect(() => {
     if (!loading) {
       setFadeIn(true);
@@ -690,6 +719,7 @@ const AdminDashboardPage = () => {
                   onChange={handleManualFieldChange}
                   fullWidth
                   required
+                  sx={manualFieldSx}
                 >
                   {(data?.activities || []).map((activity) => (
                     <MenuItem key={activity.id} value={activity.id}>
@@ -707,6 +737,7 @@ const AdminDashboardPage = () => {
                       onChange={handleManualFieldChange}
                       fullWidth
                       required
+                      sx={manualFieldSx}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -717,6 +748,7 @@ const AdminDashboardPage = () => {
                       onChange={handleManualFieldChange}
                       fullWidth
                       required
+                      sx={manualFieldSx}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -726,6 +758,7 @@ const AdminDashboardPage = () => {
                       value={manualForm.email}
                       onChange={handleManualFieldChange}
                       fullWidth
+                      sx={manualFieldSx}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -735,6 +768,7 @@ const AdminDashboardPage = () => {
                       value={manualForm.phone}
                       onChange={handleManualFieldChange}
                       fullWidth
+                      sx={manualFieldSx}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -747,6 +781,7 @@ const AdminDashboardPage = () => {
                       inputProps={{ min: 1, max: 4 }}
                       fullWidth
                       required
+                      sx={manualFieldSx}
                     />
                   </Grid>
                 </Grid>
@@ -805,6 +840,7 @@ const AdminDashboardPage = () => {
                             onChange={(event) => handleManualAddOnChange(addOn.id, event.target.value)}
                             inputProps={{ min: 0, max: addOn.maxQuantity || 1 }}
                             fullWidth
+                            sx={manualFieldSx}
                           />
                         </Box>
                       ))}
